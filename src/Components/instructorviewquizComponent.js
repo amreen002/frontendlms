@@ -6,6 +6,8 @@ import Sidebar from "./sidebar";
 import DashboardCard from "./dashboardcardComponent";
 import { set } from 'rsuite/esm/utils/dateUtils';
 const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
+const datatoken = localStorage.getItem('datatoken');
+const coursedatafetch = JSON.parse(datatoken)
 function InstructorviewquizComponent(token) {
     const [quizze, setQuizze] = useState([]);
     const [question, setQuestion] = useState([]);
@@ -89,7 +91,8 @@ function InstructorviewquizComponent(token) {
                                 <h5 class="title">Quiz View</h5>
                                 {question.map((item, index) => (
                                     <div className='box' key={item.id}>
-                                           <div className='pt--5 pl--5'>
+
+                                        <div className='pt--5 pl--5'>
                                             <div className='flex-row d-flex'>
                                                 <div className='icon grips'>
                                                     <i class="fa-grip-vertical fa-light"></i>
@@ -146,9 +149,6 @@ function InstructorviewquizComponent(token) {
                                                 </div>
 
                                             </div>
-
-
-
                                         </div>
                                         <div className='pt--50 pl--5'>
                                             <div>
@@ -204,7 +204,11 @@ function InstructorviewquizComponent(token) {
                                             </div>
 
                                         </div>
-
+ {coursedatafetch.Role.Name === "Guest/Viewer" && (
+                                                                    <div className="sociallocker-overlay">
+                                                                        <i className="fas fa-lock"></i> Unlock content to login with Instructor or Student.
+                                                                    </div>
+                                                                )}
                                     </div>
                                 ))}
                             </div>

@@ -200,10 +200,10 @@ const InstructorCourseadd = () => {
     };
     // video start handleChangeVideo
     const handleChangeVideo = (e) => {
-        const { name, files, value } = e.target;
+        const { name, value } = e.target;
         setFormDataVideo(formDataVideo => ({
             ...formDataVideo,
-            [name]: files ? files[0] : value
+            [name]: value
         }));
     };
 
@@ -733,7 +733,7 @@ const InstructorCourseadd = () => {
                                                                         <textarea
                                                                             id="full-featured-non-premium"
                                                                             name="VideoIframe"
-                                                                            value={formDataVideo.VideoUplod} onChange={handleChangeVideo}
+                                                                            value={formDataVideo.VideoIframe} onChange={handleChangeVideo}
                                                                             className="form-control w-100"
                                                                             data-gramm="false"
                                                                             wt-ignore-input="true"

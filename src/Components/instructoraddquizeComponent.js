@@ -9,6 +9,8 @@ import DashboardCard from "./dashboardcardComponent";
 const { REACT_APP_API_ENDPOINT } = process.env;
 const animatedComponents = makeAnimated();
 function InstructoreaddquizeComponent(token) {
+    const datatoken = localStorage.getItem('datatoken');
+    const coursedatafetch = JSON.parse(datatoken)
     const [table, setTable] = useState("");
     const [course, setCourse] = useState([]);
     const [coursesCount, setCoursesCount] = useState(null);
@@ -85,7 +87,7 @@ function InstructoreaddquizeComponent(token) {
 
     // Format options for react-select
     const options = batch.map(option => ({
-      
+
         value: option.id,
         label: option.Title,
     }));
@@ -201,7 +203,7 @@ function InstructoreaddquizeComponent(token) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-    
+
         try {
             const formData = {
                 QuizzName,
@@ -218,14 +220,14 @@ function InstructoreaddquizeComponent(token) {
                 QuizzCategoryId,
                 CourseId,
             };
-    
+
             const token = localStorage.getItem('token');
-    
+
             if (!token) {
                 alert('Token not found. Please log in again.');
                 return;
             }
-    
+
             const response = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/quizze`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -233,10 +235,10 @@ function InstructoreaddquizeComponent(token) {
             });
             const quizzesdata = response.data.quizze;
             alert('Quiz successfully created');
-            navigate(`/instructorquestion/${quizzesdata.id}`); 
+            navigate(`/instructorquestion/${quizzesdata.id}`);
             if (response.status === 200) {
                 alert('Quiz successfully created');
-                navigate(`/instructorquestion/${quizzesdata.id}`); 
+                navigate(`/instructorquestion/${quizzesdata.id}`);
             } else {
                 console.error('Unexpected response status:', response.status);
                 alert('Failed to create quiz. Please try again.');
@@ -246,7 +248,7 @@ function InstructoreaddquizeComponent(token) {
             alert('Failed to create quiz. Please try again.');
         }
     };
-    
+
 
 
     return (
@@ -255,131 +257,180 @@ function InstructoreaddquizeComponent(token) {
                 <Navbarmenu />
             </section>
 
-            <DashboardCard/>
+            <DashboardCard />
 
             <div class="dashboard--area-main pt--100 pt_sm--50">
                 <div class="container">
                     <div class="row g-5">
                         <Sidebar />
-                        <div class="col-lg-9">
-                        <div class="right-sidebar-dashboard" style={{ backgroundColor: '#fff' }}>
-                                <h5 class="title"> Manage Quiz</h5>
+                        <div className="col-lg-9">
+                            <div className="right-sidebar-dashboard" style={{ backgroundColor: '#fff' }}>
+                                <h5 className="title">Manage Quiz</h5>
                                 <form className='row' onSubmit={handleSubmit}>
+                                    {coursedatafetch.Role.Name === "Guest/Viewer" ? (
+                                        <div className="sociallocker">
+                                            <div className="sociallocker-content">
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6'>
+                                                    <label className='pb-2'>Name Quiz</label>
+                                                    <input className='inputts' name='QuizzName' onChange={(e) => setQuizzName(e.target.value)} value={QuizzName} placeholder='Name Quiz' type='text' />
+                                                </div>
+                                                <div className='col-12 col-md-3 col-lg-3 col-xl-3'>
+                                                    <label className='pb-2'>Start Time</label>
+                                                    <input className='inputts' type="datetime-local" name="QuizzStartTime" onChange={(e) => setQuizzStartTime(e.target.value)} value={QuizzStartTime} />
+                                                </div>
+                                                <div className='col-12 col-md-3 col-lg-3 col-xl-3'>
+                                                    <label className='pb-2'>End Time</label>
+                                                    <input className='inputts' type="datetime-local" name="QuizzEndTime" onChange={(e) => setQuizzEndTime(e.target.value)} value={QuizzEndTime} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Test Duration (in minutes)</label>
+                                                    <input className='inputts' type='number' placeholder='Test Duration' name="QuizzTestDuration" onChange={(e) => setQuizzTestDuration(e.target.value)} value={QuizzTestDuration} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Number of Easy Questions (1 Mark)</label>
+                                                    <input className='inputts' type='number' placeholder='Number of easy questions' name="EasyQuestions" onChange={(e) => setEasyQuestions(e.target.value)} value={EasyQuestions} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Number of Medium Questions (2 Marks)</label>
+                                                    <input className='inputts' type='number' placeholder='Number of medium questions' name="MediumQuestions" onChange={(e) => setMediumQuestions(e.target.value)} value={MediumQuestions} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Number of Hard Questions (4 Marks)</label>
+                                                    <input className='inputts' type='number' placeholder='Number of hard questions' name="HardQuestions" onChange={(e) => setHardQuestions(e.target.value)} value={HardQuestions} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Total Questions</label>
+                                                    <input className='inputts' type='number' placeholder='Total Questions' name="TotalQuestions" onChange={(e) => setTotalQuestions(e.target.value)} value={TotalQuestions} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Total Marks</label>
+                                                    <input className='inputts' type='number' placeholder='Total Marks' name="TotalMarks" onChange={(e) => setTotalMarks(e.target.value)} value={TotalMarks} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Introduction</label>
+                                                    <input className='inputts' type='text' placeholder='Introduction' name="Instructions" onChange={(e) => setInstructions(e.target.value)} value={Instructions} />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Batch</label>
+                                                    <Select
+                                                        isMulti
+                                                        value={options.filter(option => BatchId.includes(option.value))}
+                                                        name="BatchId"
+                                                        onChange={(selectedOptions) => setBatchId(selectedOptions.map(option => option.value))}
+                                                        options={options}
+                                                    />
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Course Category</label>
+                                                    <select className='inputts' name="QuizzCategoryId" value={QuizzCategoryId} onChange={(e) => setQuizzCategoryId(e.target.value)}>
+                                                        <option value="">Select</option>
+                                                        {category.map((option) => (
+                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                                    <label className='pb-2'>Courses</label>
+                                                    <select className='inputts' name="CourseId" value={CourseId} onChange={(e) => setCourseId(e.target.value)}>
+                                                        <option value="">Select</option>
+                                                        {course.map((option) => (
+                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="col-3 mb-3 d-flex mt-3">
+                                                    <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+                                                    <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                                                    <input type="hidden" />
+                                                </div>
 
 
-
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6'>
+                                                <div className="sociallocker-overlay mt-5">
+                                                    <i className="fas fa-lock"></i> Unlock content to login with Instructor or Student.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (<><div className='col-12 col-md-6 col-lg-6 col-xl-6'>
                                         <label className='pb-2'>Name Quiz</label>
                                         <input className='inputts' name='QuizzName' onChange={(e) => setQuizzName(e.target.value)} value={QuizzName} placeholder='Name Quiz' type='text' />
-
                                     </div>
-                                    <div className='col-12 col-md-3 col-lg-3 col-xl-3'>
-                                        <label className='pb-2'>Start Time</label>
-                                        <input className='inputts' type="datetime-local" name="QuizzStartTime" onChange={(e) => setQuizzStartTime(e.target.value)} value={QuizzStartTime} />
+                                        <div className='col-12 col-md-3 col-lg-3 col-xl-3'>
+                                            <label className='pb-2'>Start Time</label>
+                                            <input className='inputts' type="datetime-local" name="QuizzStartTime" onChange={(e) => setQuizzStartTime(e.target.value)} value={QuizzStartTime} />
+                                        </div>
+                                        <div className='col-12 col-md-3 col-lg-3 col-xl-3'>
+                                            <label className='pb-2'>End Time</label>
+                                            <input className='inputts' type="datetime-local" name="QuizzEndTime" onChange={(e) => setQuizzEndTime(e.target.value)} value={QuizzEndTime} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Test Duration (in minutes)</label>
+                                            <input className='inputts' type='number' placeholder='Test Duration' name="QuizzTestDuration" onChange={(e) => setQuizzTestDuration(e.target.value)} value={QuizzTestDuration} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Number of Easy Questions (1 Mark)</label>
+                                            <input className='inputts' type='number' placeholder='Number of easy questions' name="EasyQuestions" onChange={(e) => setEasyQuestions(e.target.value)} value={EasyQuestions} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Number of Medium Questions (2 Marks)</label>
+                                            <input className='inputts' type='number' placeholder='Number of medium questions' name="MediumQuestions" onChange={(e) => setMediumQuestions(e.target.value)} value={MediumQuestions} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Number of Hard Questions (4 Marks)</label>
+                                            <input className='inputts' type='number' placeholder='Number of hard questions' name="HardQuestions" onChange={(e) => setHardQuestions(e.target.value)} value={HardQuestions} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Total Questions</label>
+                                            <input className='inputts' type='number' placeholder='Total Questions' name="TotalQuestions" onChange={(e) => setTotalQuestions(e.target.value)} value={TotalQuestions} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Total Marks</label>
+                                            <input className='inputts' type='number' placeholder='Total Marks' name="TotalMarks" onChange={(e) => setTotalMarks(e.target.value)} value={TotalMarks} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Introduction</label>
+                                            <input className='inputts' type='text' placeholder='Introduction' name="Instructions" onChange={(e) => setInstructions(e.target.value)} value={Instructions} />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Batch</label>
+                                            <Select
+                                                isMulti
+                                                value={options.filter(option => BatchId.includes(option.value))}
+                                                name="BatchId"
+                                                onChange={(selectedOptions) => setBatchId(selectedOptions.map(option => option.value))}
+                                                options={options}
+                                            />
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Course Category</label>
+                                            <select className='inputts' name="QuizzCategoryId" value={QuizzCategoryId} onChange={(e) => setQuizzCategoryId(e.target.value)}>
+                                                <option value="">Select</option>
+                                                {category.map((option) => (
+                                                    <option key={option.id} value={option.id}>{option.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
+                                            <label className='pb-2'>Courses</label>
+                                            <select className='inputts' name="CourseId" value={CourseId} onChange={(e) => setCourseId(e.target.value)}>
+                                                <option value="">Select</option>
+                                                {course.map((option) => (
+                                                    <option key={option.id} value={option.id}>{option.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="col-3 mb-3 d-flex mt-3">
+                                            <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+                                            <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                                            <input type="hidden" />
+                                        </div>
 
-                                    </div>
-                                    <div className='col-12 col-md-3 col-lg-3 col-xl-3'>
-                                        <label className='pb-2'>End Time</label>
-                                        <input className='inputts' type="datetime-local" name="QuizzEndTime"
-                                            onChange={(e) => setQuizzEndTime(e.target.value)}
-                                            value={QuizzEndTime} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5'>
-                                        <label className='pb-2'>Test Duration (in minits)</label>
-                                        <input className='inputts' type='number' placeholder='Test Duration' name="QuizzTestDuration"
-                                            onChange={(e) => setQuizzTestDuration(e.target.value)}
-                                            value={QuizzTestDuration} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Number of Easy Questions (1 Mark)</label>
-                                        <input className='inputts' type='number' placeholder='Number of easy questions' name="EasyQuestions"
-                                            onChange={(e) => setEasyQuestions(e.target.value)}
-                                            value={EasyQuestions} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Number of Medium Questions (2 Mark)</label>
-                                        <input className='inputts' type='number' placeholder='Number of medium questions' name="MediumQuestions"
-                                            onChange={(e) => setMediumQuestions(e.target.value)}
-                                            value={MediumQuestions} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Number of Hard Questions (4 Mark)</label>
-                                        <input className='inputts' type='number' placeholder='Number of hard questions' name="HardQuestions"
-                                            onChange={(e) => setHardQuestions(e.target.value)}
-                                            value={HardQuestions} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Total Questions</label>
-                                        <input className='inputts' type='number' placeholder='Total Questions' name="TotalQuestions"
-                                            value={TotalQuestions} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Total Marks</label>
-                                        <input className='inputts' type='number' placeholder='Total Marks' name="TotalMarks"
-                                            value={TotalMarks} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Introduction</label>
-                                        <input className='inputts' type='text' placeholder='Introduction' name="Instructions"
-                                            onChange={(e) => setInstructions(e.target.value)}
-                                            value={Instructions} />
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Batch</label>
-
-                                        <Select
-                                            isMulti
-                                            value={options.filter(option => BatchId.includes(option.value))}
-                                            name="BatchId"
-                                            onChange={handleChange}
-                                            options={options}
-                                            components={animatedComponents}
-
-                                        />
-
-                                    </div>
-
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'>Course Category</label>
-                                        <select className='inputts' name="QuizzCategoryId" value={QuizzCategoryId} onChange={(e) => setQuizzCategoryId(e.target.value)}>
-                                            <option value="">Select</option>
-                                            {category.map((option) => (
-                                                <option key={option.id} value={option.id}>{option.name}</option>
-                                            ))}
-                                        </select>
-
-                                    </div>
-                                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                        <label className='pb-2'  >Courses</label>
-                                        <select className='inputts' name="CourseId" value={CourseId} onChange={(e) => setCourseId(e.target.value)}>
-                                            <option value="">Select</option>
-                                            {course.map((option) => (
-                                                <option key={option.id} value={option.id}>{option.name}</option>
-                                            ))}
-                                        </select>
-
-
-                                    </div>
-                                    <div class="col-3 mb-3 d-flex mt-3">
-                                        <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
-                                        <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-                                        <input type="hidden" />
-                                    </div>
-
+                                    </>)
+                                    }
 
                                 </form>
-
-
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

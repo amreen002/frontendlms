@@ -167,21 +167,36 @@ const CompleteProfile = () => {
     CoursesId: userData?.Students[0]?.CoursesId || '',
     BatchId: userData?.Students[0]?.BatchId || ''
   });
-  const setGestFormData = (userData) => ({
-    name: userData?.name || '',
-    userName: userData?.userName || '',
-    email: userData?.email || '',
-    departmentId: userData?.departmentId || '',
-    phoneNumber: userData?.phoneNumber || '',
-    image: null,
-    CountryId: userData?.Address?.CountryId || '',
-    StateId: userData?.Address?.StateId || '',
-    DistrictId: userData?.Address?.DistrictId || '',
-    Address: userData?.Address?.Address || '',
-    City: userData?.Address?.City || '',
-    studentId: 4,
-    teacherId:3
-  });
+  const setGestFormData = (userData) => {
+    const baseData = {
+      name: userData?.name || '',
+      userName: userData?.userName || '',
+      email: userData?.email || '',
+      departmentId: userData?.departmentId || '',
+      phoneNumber: userData?.phoneNumber || '',
+      image: null,
+      CountryId: userData?.Address?.CountryId || '',
+      StateId: userData?.Address?.StateId || '',
+      DistrictId: userData?.Address?.DistrictId || '',
+      Address: userData?.Address?.Address || '',
+      City: userData?.Address?.City || ''
+    };
+  
+    if (userData?.studentId) {
+      baseData.Date = userData?.Students[0]?.Date || '';
+      baseData.CoursesId = userData?.Students[0]?.CoursesId || '';
+      baseData.BatchId = userData?.Students[0]?.BatchId || '';
+    }
+  
+    if (userData?.teacherId) {
+      baseData.DOB = userData?.Teachers[0]?.DOB || '';
+      baseData.YourIntroducationAndSkills = userData?.Teachers[0]?.YourIntroducationAndSkills || '';
+      baseData.TeacherType = userData?.Teachers[0]?.TeacherType || '';
+    }
+  
+    return baseData;
+  };
+  
 
   const fetchData = async (usersId) => {
     try {
@@ -448,17 +463,8 @@ const CompleteProfile = () => {
                     />
                   </div>
                   {userData.departmentId === 5 && (
-                    <div className='row p-3'>
-                      <div className='p-2'>
-                        <p>Choose role for complete profile</p>
-                      </div>
-                      <div className='col-12 col-md-6 col-xl-6 col-lg-6 fieldes'>
-                        <div className='flex-row d-flex prfiless'>
-                          <a className='profile_choose' onClick={() => handleProfile(formData.studentId)}>Student</a>
-                          <a className='profile_choose ml--10' onClick={() => handleProfile(formData.teacherId)}>Instructor</a>
-                        </div>
-                      </div>
-                      {showProfile === 4 ? (
+                    <div>
+                      {userData.studentId ? (
                         <div className='row mt-4'>
                           <div className="col-12 col-md-6 col-xl-6 col-lg-6 p-4 fieldes">
                             <label className="form-label field_name" htmlFor="add-user-contact">Student Date</label>
@@ -483,7 +489,7 @@ const CompleteProfile = () => {
                             </select>
                           </div>
                         </div>
-                      ) : showProfile === 3 ? (
+                      ) : userData.teacherId ? (
                         <div className='row mt-4'>
                           <div className="col-12 col-md-6 col-xl-6 col-lg-6 p-4 fieldes">
                             <label className="form-label field_name" htmlFor="add-user-email">DOB</label>
