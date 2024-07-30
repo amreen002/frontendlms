@@ -5,6 +5,8 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import ValidationCourse from'../validation/coursecategoryvalidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT } = process.env;
 
 function QuestionsCategory() {
@@ -101,11 +103,32 @@ function QuestionsCategory() {
                         Authorization: `Bearer ${token}`
                     }
                 });
+                const userdata = response.data
                 window.location.href = "/coursecategory";
-                alert('Category SuccessFully Create');
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
     };
 
@@ -114,17 +137,39 @@ function QuestionsCategory() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/categories/${categoriesId}`, {
+             const response =   await axios.delete(`${REACT_APP_API_ENDPOINT}/categories/${categoriesId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                fetchData();
-                alert('Data successfully deleted');
+                const userdata = response.data
+                fetchData2(categoriesId);
+                window.location.href = "/coursecategory";
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
     };
     const handleUpdate = async (e) => {
@@ -136,19 +181,40 @@ function QuestionsCategory() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/categories/${categoriesId}`, updatedUserData, {
+                const response =  await axios.patch(`${REACT_APP_API_ENDPOINT}/categories/${categoriesId}`, updatedUserData, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
                 fetchData2(categoriesId)
-                alert("Category Is Updated Successfully!");
+         
+                toast.success(response.data.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
                 window.location.href = "/coursecategory";
             }
         } catch (error) {
             console.error('Error updating:', error);
-            alert('An error occurred while updating');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
 
         // Clear input fields after update
@@ -419,7 +485,7 @@ function QuestionsCategory() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

@@ -5,6 +5,7 @@ import Navbarmenu from './Navbarmenu';
 import FooterFrontend from './FooterFrontend';
 import { useParams, Link } from 'react-router-dom';
 import Sidebar from "./sidebar";
+import { Last } from 'react-bootstrap/esm/PageItem';
 const { REACT_APP_API_ENDPOINT } = process.env;
 function UserMyProfile(token) {
     const { usersId } = useParams();
@@ -20,6 +21,7 @@ function UserMyProfile(token) {
     const [formData, setFormData] = useState({
         name: '',
         userName: '',
+        lastname:'',
         email: '',
         password: '',
         roleName: '',
@@ -36,7 +38,8 @@ function UserMyProfile(token) {
         YourIntroducationAndSkills: '',
         TeacherType: '',
         CoursesId: '',
-        BatchId: ''
+        BatchId: '',
+        CousesId:''
     });
 
     useEffect(() => {
@@ -81,6 +84,7 @@ function UserMyProfile(token) {
 
     const setTeacherFormData = (userData) => ({
         name: userData?.name || '',
+        LastName:userData?.LastName || '',
         userName: userData?.userName || '',
         email: userData?.email || '',
         departmentId: userData?.departmentId || '',
@@ -93,10 +97,12 @@ function UserMyProfile(token) {
         City: userData?.Address?.City || '',
         DOB: userData?.Teachers[0]?.DOB || '',
         YourIntroducationAndSkills: userData?.Teachers[0]?.YourIntroducationAndSkills || '',
-        TeacherType: userData?.Teachers[0]?.TeacherType || ''
+        TeacherType: userData?.Teachers[0]?.TeacherType || '',
+        CousesId: userData?.Teachers[0]?.CousesId || '',
     });
     const setUserFormData = (userData) => ({
         name: userData?.name || '',
+        lastname:userData.lastname || '',
         userName: userData?.userName || '',
         email: userData?.email || '',
         departmentId: userData?.departmentId || '',
@@ -110,6 +116,7 @@ function UserMyProfile(token) {
     });
     const setStudentFormData = (userData) => ({
         name: userData?.name || '',
+        LastName:userData?.LastName || '',
         userName: userData?.userName || '',
         email: userData?.email || '',
         departmentId: userData?.departmentId || '',
@@ -127,6 +134,7 @@ function UserMyProfile(token) {
     const setGestFormData = (userData) => {
         const baseData = {
             name: userData?.name || '',
+            LastName: userData?.LastName || '',
             userName: userData?.userName || '',
             email: userData?.email || '',
             departmentId: userData?.departmentId || '',
@@ -146,6 +154,7 @@ function UserMyProfile(token) {
         }
 
         if (userData?.teacherId) {
+            baseData.CousesId = userData?.Teachers[0]?.CousesId || '';
             baseData.DOB = userData?.Teachers[0]?.DOB || '';
             baseData.YourIntroducationAndSkills = userData?.Teachers[0]?.YourIntroducationAndSkills || '';
             baseData.TeacherType = userData?.Teachers[0]?.TeacherType || '';
@@ -270,7 +279,7 @@ function UserMyProfile(token) {
 
                 fetchData(usersId); // Refresh user data after update
                 alert("User data updated successfully!");
-                //window.location.href = `/user-my-profile/${usersId}`;
+               window.location.href = `/user-my-profile/${usersId}`;
             }
         } catch (error) {
             console.error('Error updating user:', error);
@@ -279,7 +288,7 @@ function UserMyProfile(token) {
 
 
     };
-    console.log(userData.id)
+ 
     return (
         <div>
             <section>
@@ -317,8 +326,8 @@ function UserMyProfile(token) {
                                 {/* <!-- single My portfolio end--> */}
                                 {/* <!-- single My portfolio start--> */}
                                 <div class="my-single-portfolio-dashed">
-                                    <div class="name">First Name:</div>
-                                    <div class="value">{userData.name}</div>
+                                    <div class="name">Full Name:</div>
+                                    <div class="value">{userData.name}  {userData.lastname}</div>
                                 </div>
                                 {/* <!-- single My portfolio end--> */}
                                 {/* <!-- single My portfolio start--> */}
@@ -372,9 +381,16 @@ function UserMyProfile(token) {
                                         <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
 
                                             <div class="col-12 col-md-6 fv-plugins-icon-container">
-                                                <label class="form-label" htmlFor="name" for="modalEditUserFirstName">Full Name</label>
+                                                <label class="form-label" htmlFor="name" for="modalEditUserFirstName">Frist Name</label>
                                                 <input type="text" id="modalEditUserFirstName" name='name' class="form-control" placeholder="John"
                                                     value={formData.name} onChange={handleChange}
+                                                />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                <label class="form-label" htmlFor="name" for="modalEditUserFirstName">Last Name</label>
+                                                <input type="text" id="modalEditUserFirstName" name='lastname' class="form-control" placeholder="John"
+                                                    value={formData.lastname} onChange={handleChange}
                                                 />
                                             </div>
 
@@ -454,6 +470,7 @@ function UserMyProfile(token) {
                                             <div class="col-12 col-md-6">
                                                 <label htmlFor="exampleFormControlSelect2" className="form-label"> Address Type</label>
                                                 <select className="select2 form-select" name="AddressType" value={formData.AddressType} onChange={handleChange}>
+                                                    <option value=" ">Select</option>
                                                     <option value="Current Address">Current Address</option>
                                                     <option value="Permanent Address">Permanent Address</option>
                                                 </select>
@@ -480,7 +497,7 @@ function UserMyProfile(token) {
                                                             disabled="false" value={formData.Date} />
                                                     </div>
                                                     <div class="col-12 col-md-6">
-                                                        <label for="exampleFormControlSelect2" class="form-label">Student Courses</label>
+                                                        <label for="exampleFormControlSelect2" class="form-label">Student Class</label>
                                                         <select id="exampleFormControlSelect2" disabled="false" class="select2 form-select" name="CoursesId" value={formData.CoursesId} onChange={handleChange}>
                                                             <option value="">Select</option>
                                                             {courses.map((option) => (
@@ -501,6 +518,15 @@ function UserMyProfile(token) {
 
                                             )}
                                             {userData.departmentId === 3 && (<>
+                                                <div class="col-12 col-md-6">
+                                                    <label for="exampleFormControlSelect2" class="form-label">Class</label>
+                                                    <select id="exampleFormControlSelect2" disabled="false" class="select2 form-select" name="CousesId" value={formData.CousesId} onChange={handleChange}>
+                                                        <option value="">Select</option>
+                                                        {courses.map((option) => (
+                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                                 <div class="col-12 col-md-6">
                                                     <label class="form-label" for="add-user-email">DOB</label>
                                                     <input type="date" className='form-control' name="DOB" value={formData.DOB} onChange={handleChange} placeholder="DOB" />
@@ -560,7 +586,17 @@ function UserMyProfile(token) {
                                                             </div>
                                                         </div>
                                                     ) : userData.teacherId ? (
+
                                                         <div className='row'>
+                                                                <div class="col-12 col-md-6">
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Class</label>
+                                                                    <select id="exampleFormControlSelect2" disabled="false" class="select2 form-select" name="CousesId" value={formData.CousesId} onChange={handleChange}>
+                                                                        <option value="">Select</option>
+                                                                        {courses.map((option) => (
+                                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
                                                             <div class="col-12 col-md-6">
                                                                 <label class="form-label" for="add-user-email">DOB</label>
                                                                 <input type="date" className='form-control' name="DOB" value={formData.DOB} onChange={handleChange} placeholder="DOB" />
@@ -614,7 +650,7 @@ function UserMyProfile(token) {
                                                 </div>
                                             </div>
                                             <div class="col-12 text-center d-flex">
-                                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
+                                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
                                                 <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                             </div>
                                             <input type="hidden" /></form>

@@ -69,8 +69,14 @@ import QuizeResultRouter from './Routers/quizresultRouter.js'
 import AttempquestionRouter from './Routers/attemtedquestionRouter.js'
 import StudentMaterialesRouter from './Routers/studentmaterialesRouter.js'
 import EasyserviceRouter from './Routers/easyserviceRouter.js';
+
+
 import QuizeUpdateRouter from './Routers/quizeupdateRouter.js';
 import UpdatequestionRouter from './Routers/questionupdateRouter.js';
+import UpdateSubjectRouter from './Routers/updatesubjectRouter.js';
+import UpdateModelRouter from './Routers/updatemodelRouter.js';
+import UpdateContentRouter from './Routers/updatecontentRouter.js';
+import UpdatequestionsRouter from './Routers/updatequestionsingleRouter.js'
 const { REACT_APP_API_ENDPOINT } = process.env;
 // -----app-----------------------
 function App() {
@@ -156,7 +162,7 @@ function App() {
           />
 
           <Route path="*" element={<Navigate to="/login" />} />
-
+         
           <Route
             path="/complete-profile/:usersId"
             element={<CompleteProfile />}
@@ -340,10 +346,10 @@ function App() {
             path="/coursedetails/:coursesId"
             element={<CoursedetailRouter />}
           />
-          <Route
+         {/*  <Route
             path="/createcourse/:coursesId"
             element={loggedIn === true ? (<InstructorUpdateCourse onLogout={handleLogout} />) : <Login onLogin={handleLogin} />} />
-
+ */}
           <Route
             path="/createcourse"
             element={loggedIn === true ? (<InstructorCourse onLogout={handleLogout} />) : <Login onLogin={handleLogin} />} />
@@ -389,7 +395,7 @@ function App() {
             element={<CalenderRouter />} />
           <Route
             path="/instructor/assignment"
-            element={<AssignmentRouter />} />
+            element={loggedIn===true?(<AssignmentRouter onLogout={handleLogout}/>):(<Login onLogin={handleLogin}/>)} />
 
           <Route
             path="/announcement"
@@ -406,12 +412,16 @@ function App() {
             path="/announcementdetails"
             element={<AnnouncementdetailRouter />} />
           <Route
-            path="/quizetresult"
-            element={<QuizeResultRouter />} />
-          <Route path='/attemptquestion' element={<AttempquestionRouter />} />
-          <Route path='/studentmateriales/:coursesId' element={<StudentMaterialesRouter />} />
+            path="/quizetresult/:studentquizeId"
+            element={loggedIn === true ? (<QuizeResultRouter  onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/attemptquestion' element={loggedIn === true ? (<AttempquestionRouter  onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/studentmateriales/:coursesId' element={loggedIn === true ? (<StudentMaterialesRouter  onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
           <Route path='/quizeupdate/:quizzeId'   element={loggedIn === true ? (<QuizeUpdateRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
-          <Route path='/updatequestion/:quizzeId/:questionId' element={<UpdatequestionRouter />} />
+          <Route path='/updatequestion/:quizzeId/:questionId'  element={loggedIn === true ? (<UpdatequestionRouter  onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/updatequestion/:questionId'  element={loggedIn === true ? (<UpdatequestionsRouter  onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/updatesubject/:topicId'   element={loggedIn === true ? (<UpdateSubjectRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/updatemodel/:lessionId'   element={loggedIn === true ? (<UpdateModelRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/updatecontent/:videoId'   element={loggedIn === true ? (<UpdateContentRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
         </Routes>
       </BrowserRouter>
     </CartProvider>

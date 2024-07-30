@@ -5,6 +5,8 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import ValidationStudentReport from '../validation/studentreportvalidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
 function StudentUse() {
     const [table, setTable] = useState([]);
@@ -33,6 +35,22 @@ function StudentUse() {
     const [FindOneInstructor, setFindOneInstructor] = useState({})
     const [courses, setCourses] = useState([])
     const [activeService, setActiveService] = useState(null);
+    const [show, setShow] = useState(false)
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
+
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    }
+    const handleshow = () => {
+        setShow(show ? false : true)
+    }
 
     const toggleDropdown = (id) => {
         setActiveService(prevState => (prevState === id ? null : id));
@@ -70,22 +88,20 @@ function StudentUse() {
         fetchData2()
         fetchData4()
     }, []);
-    const validateEmail = (Email) => {
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(Email).toLowerCase());
-    }
-    const fetchData = async () => {
+  
+    const fetchData = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/liststudents`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/liststudents?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
-                setTable(response.data.students);
+                setTable(response.data.students.rows);
+                setTotalPages(response.data.students.totalPage ||1)
             }// Updated state variable
         } catch (err) {
             console.log(err.response);
@@ -228,44 +244,46 @@ const formData = {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        /* 
-                let new_pass = e.target.value;
-                setPassword(new_pass);
-                let newname = e.target.value;
-                setPassword(newname);
-        
-                if (!validateEmail(Email)) {
-                    setError('Invalid Email', error);
-                    return;
-                }
-                var lowerCase = /[a-z]/g;
-                var upperCase = /[A-Z]/g;
-                var numbers = /[0-9]/g;
-                if (Password.length < 8 || !new_pass.match(lowerCase) || !new_pass.match(upperCase) || !new_pass.match(numbers)) {
-                    setError('Password must be at least 8 chars long Abc.@678', error);
-                    return;
-                }
-                if (Name == null) {
-                    setemail('Invalid Form, First Name can not be empty', emailerror)
-                    return
-                }
-                setError(null); */
+   
         try {
            
             const token = localStorage.getItem('token');
-            let response
+           
             if (token) {
 
-                response = await axios.post(`${REACT_APP_API_ENDPOINT}/addstudents`, formData, {
+               const response = await axios.post(`${REACT_APP_API_ENDPOINT}/addstudents`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 window.location.href = "/students";
-                alert('Student SuccessFully Create');
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
 
@@ -274,17 +292,41 @@ const formData = {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/deletestudents/${teachersId}`, {
+              const response =  await axios.delete(`${REACT_APP_API_ENDPOINT}/deletestudents/${teachersId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData();
                 alert('Data successfully deleted');
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
     const handleUpdate = async (e) => {
@@ -310,18 +352,42 @@ const formData = {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsstudents/${studentsId}`, updatedUserData, {
+               const response = await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsstudents/${studentsId}`, updatedUserData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData3(studentsId);
                 window.location.href = "/students"
-                alert("Student Is Updated Successfully!");
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
+
             }
         } catch (error) {
             console.error('Error updating:', error);
-            alert('An error occurred while updating');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
 
         // Clear input fields after update
@@ -447,7 +513,25 @@ const formData = {
                                         </div>
                                     </div>
                                     <div class="card-datatable table-responsive">
-                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
+                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2">
+                                            <div className="me-3">
+                                                <div className="dataTables_length" id="DataTables_Table_0_length">
+                                                    <label>
+                                                        <select
+                                                            name="DataTables_Table_0_length"
+                                                            aria-controls="DataTables_Table_0"
+                                                            className="form-select"
+                                                            onChange={(e) => setPage(1)} // Reset to page 1 on changing page size
+                                                        >
+                                                            <option value="10">10</option>
+                                                            <option value="25">25</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            </div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
                                             <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" />
                                             </label></div>
                                             <div class="btn-group d-flex flex-row">
@@ -466,29 +550,35 @@ const formData = {
                                             </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
-                                                        <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label="">#</th>
+                                                    <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label="">#</th>
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Id</th>
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Stutent Details</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Email</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Phone Number</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Instructor</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Billing: activate to sort column ascending">Date</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="400px;" aria-label="Status: activate to sort column ascending">Address</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Course</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Bacth</th>
+                                                      {/*   <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Billing: activate to sort column ascending">Date</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="400px;" aria-label="Status: activate to sort column ascending">Address</th> */}
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="145px;" aria-label="Actions">Actions</th>
-
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {table.map((item, index) => (
                                                         <tr key={item.id}>
-                                                            <td class="sorting_1">
+                                                          <td class="sorting_1">
                                                                 {index + 1}
                                                             </td>
                                                             <td>{item.id}</td>
                                                             <td>{item.Name + " " + item.LastName}</td>
-                                                            <td>{item.Email + " " + item.PhoneNumber}</td>
-                                                            <td>{item.Batch && item.Batch.Teacher&&item.Batch.Teacher.Name}</td>
-                                                            <td>{item.Date}</td>
-                                                            <td>{item.Address && item.Address.Address}</td>
+                                                            <td>{item.Email}</td>
+                                                            <td>{item.PhoneNumber}</td>
+                                                          
+                                                            <td>{item.Batch && item.Batch.Teacher && item.Batch.Teacher.Name}</td>
+                                                            <td>{item.Course && item.Course.name}</td>
+                                                            <td>{item.Batch && item.Batch.Title}</td>
+                                                           {/*  <td>{item.Date}</td>
+                                                            <td>{item.Address && item.Address.Address}</td> */}
                                                             <td>
                                                                 {activeService === item.id && (
                                                                     <div className="dropdown-menu dropdown-menu-end" id="listOnclicktwo">
@@ -560,9 +650,32 @@ const formData = {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+                                            <div className="row mx-2">
+                                                <div className="col-sm-12 col-md-6">
+                                                    <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                        Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-12 col-md-6">
+                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                        <ul className="pagination">
+                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                            </li>
+                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                </li>
+                                                            ))}
+                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-
                                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel" style={{ width: "28%" }}>
                                         <div class="offcanvas-header">
                                             <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add Student</h5>
@@ -609,19 +722,18 @@ const formData = {
                                                             value={Username} />
                                                              {errors.Username && <div className='errors'>{errors.Username}</div>}
                                                     </div>
-                                                    <div class="mb-3">
+                                                    <div class="mb-3 paswrd">
 
                                                         <label class="form-label" for="basic-icon-default-password">Student Password</label>
-                                                        <input type="Password"
+                                                        <input type={show ? "text" : "password"}
                                                             onChange={handleChange}
                                                             name='Password'
                                                             value={Password}
                                                             class="form-control password-mask"
                                                             id="basic-default-password12"
                                                             placeholder="Abc@123"
-                                                        />
+                                                        /> <i className={`far ${show ? 'fa-eye' : 'fa-eye-slash'}`} onClick={handleshow}></i>
                                                          {errors.Password && <div className='errors'>{errors.Password}</div>}
-                                                        {error && <div style={{ color: 'red' }}>{error}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user-contact">Student Date</label>
@@ -877,7 +989,7 @@ const formData = {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

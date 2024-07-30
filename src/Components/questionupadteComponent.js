@@ -52,24 +52,15 @@ function MultiplequestionComponent(token) {
     const handleOptionSelect = (option) => {
         if (selectedOptions.includes(option)) {          
             const newSelectedOptions = selectedOptions.filter(item => item !== option);
-            console.log(newSelectedOptions)
             setSelectedOptions(newSelectedOptions);
             setSingleOption(newSelectedOptions)
             setAnswer(newSelectedOptions);
         } else {
             const newSelectedOptions = [...selectedOptions, option];
-            console.log(newSelectedOptions)
             setSelectedOptions(newSelectedOptions);
             setSingleOption(newSelectedOptions)
             setAnswer(newSelectedOptions);
         }
-         setAnswer((prevAnswer) => {
-            if (prevAnswer.includes(option)) {
-                return prevAnswer.filter((answer) => answer !== option);
-            } else {
-                return [...prevAnswer, option];
-            }
-        });
     };
 
     useEffect(() => {
@@ -184,12 +175,18 @@ function MultiplequestionComponent(token) {
                     initialStudentState[student.id] = true;
                 });
                 setStudentId(initialStudentState)
-
-                const initialAnswerState = {};
-                userData.Answer.map(answer => {
-                    initialStudentState[answer] = true;
-                });
-                setAnswer(initialAnswerState);
+                let initialAnswerState = {};
+                if (Array.isArray(userData.Answer)) {
+                    userData.Answer.forEach((answer) => {
+                        initialAnswerState[answer] = true;
+                    });
+                    const answerArray = Object.keys(initialAnswerState);
+                     setAnswer(answerArray); 
+                } else if (typeof userData.Answer === 'string') {
+                    initialAnswerState = userData.Answer;
+                    setAnswer(initialAnswerState);
+                }
+               
             } else {
                 console.warn('No token found in localStorage');
             }
@@ -207,7 +204,7 @@ function MultiplequestionComponent(token) {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                const userData = response.data.students;
+                const userData = response.data.students.rows;
                 setStudentsFindAll(userData);
             }
         } catch (error) {
@@ -215,15 +212,13 @@ function MultiplequestionComponent(token) {
         }
     };
 
-    const handleChange = (id) => {
-        setAnswer(prevAnswer => {
-            if (prevAnswer.includes(id)) {
-                return prevAnswer.filter(studentId => studentId !== id);
-            } else {
-                return [...prevAnswer, id];
-            }
-        });
+    const handleChangestudent = (id) => {
+        setStudentId(prevState => ({
+            ...prevState,
+            [id]: !prevState[id]
+        }));
     };
+
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -371,7 +366,7 @@ function MultiplequestionComponent(token) {
                                                                             className=" me-2"
                                                                             id={`dropdown_student_${student.id}`}
                                                                             checked={!!studentId[student.id]}
-                                                                            onChange={() => handleChange(student.id)}
+                                                                            onChange={() => handleChangestudent(student.id)}
                                                                             disabled={!!studentId[student.id]}
                                                                     
                                                                         />
@@ -647,6 +642,7 @@ function MultiplequestionComponent(token) {
                                                             <div className='col-12 col-md-6 col-xl-6 col-lg-6'></div>
                                                             <div className='col-12 col-md-3 col-xl-3 col-lg-3'></div>
                                                             <div className='col-12 col-md-3 col-xl-3 col-lg-3 d-flex mt-3'>
+                                            
                                                                 {selectedOptions.map(option => (
                                                                     <div className='selected-option boxs' key={option} >
                                                                         <input value={option} name="Answer"
@@ -654,6 +650,8 @@ function MultiplequestionComponent(token) {
                                                                         />
                                                                     </div>
                                                                 ))}
+                                                             
+
 
                                                             </div>
 

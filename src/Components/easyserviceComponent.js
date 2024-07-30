@@ -10,28 +10,14 @@ function EasyserviceComponent() {
                 <section className='sticy-header logo-size'>
                     <Navbarmenu />
                 </section>
-                <div class="breadcrumb-bar">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-12 col-12">
-                                <h2 class="breadcrumb-title">Easy Service</h2>
-                                <nav aria-label="breadcrumb" class="page-breadcrumb">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                        <li class="breadcrumb-item" aria-current="page">Easy Service</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          
                 <div className="backcolor">
-                <div className="container py-5 mt-5">
+                <div className="container py-5 ">
                     <div className="row">
 
 
                         <div className="col-12 col-md-4 col-xl-4 col-lg-4">
-                            <div class="unloclk"><img src="assets/fontend/images/about/6.png" alt="" /></div>
+                            <div class="unloclk"><img src="assets/fontend/images/about/easy-service1.png" alt="" /></div>
                         </div>
                         <div className="col-12 col-md-1 col-xl-1 col-lg-1">
 
@@ -63,31 +49,30 @@ function EasyserviceComponent() {
                                 </p>
                             </div>
                             <div className="col-12 col-md-5 col-lg-5 col-xl-5">
-
+                            
+                            <div class="unloclk"><img src="assets/fontend/images/about/easyservice3.png" alt="" /></div>
                             </div>
                         </div>
 
                     </div>
 
                 </div>
-                <div className="unique">
+                <section className="py-5 bg-white">
                     <div className="container">
                         <div className="row">
                             <div className="col-12 col-md-3 col-xl-3 col-lg-3">
-                                <img src="assets/fontend/images/about/3.png" />
+                                <img src="assets/fontend/images/about/easy-service2.png" />
                             </div>
-                            <div className="col-12 col-md-6 col-xl-6 col-lg-6 text-center">
+                            <div className="col-12 col-md-9 col-xl-9 col-lg-9 text-center">
                                 <h1>OUR UNIQUE SELLING PROPOSITION</h1>
                                 <span>“We help you create your stories.” </span>
                                 <p>We achieve this by deeply understanding your background and experiences. Empathy is at the heart of our approach. We ensure our advice is grounded in genuine understanding and connection, adhering to the philosophy of “putting ourselves in your shoes.” This personalized approach ensures that every essay we help produce is unique, rich, and reflective of your journey.</p>
                             </div>
-                            <div className="col-12 col-md-3 col-xl-3 col-lg-3">
-                                <img src="assets/fontend/images/about/4.png" />
-                            </div>
+                        
                         </div>
 
                     </div>
-                </div>
+                </section>
 
 
                 <FooterFrontend />

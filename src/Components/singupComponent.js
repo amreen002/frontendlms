@@ -3,6 +3,8 @@ import axios from 'axios';
 import FooterFrontend from '../Components/FooterFrontend';
 import { useNavigate } from 'react-router-dom';
 import Navbarmenu from '../Components/Navbarmenu';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT } = process.env;
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -13,43 +15,43 @@ const SignUp = () => {
         roleName: '',
         phoneNumber: 0,
         departmentId: '',
-        studentId: null,
-        teacherId: null,
+        studentId: 0,
+        teacherId: 0,
         roleSelection: ''
     });
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         if (name === 'roleSelection') {
-          if (value === '3') {
-            setFormData((prevData) => ({
-              ...prevData,
-              roleSelection: value,
-              teacherId: 3,
-              studentId: null
-            }));
-          } else if (value === '4') {
-            setFormData((prevData) => ({
-              ...prevData,
-              roleSelection: value,
-              studentId: 4,
-              teacherId: null
-            }));
-          } else {
-            setFormData((prevData) => ({
-              ...prevData,
-              roleSelection: value,
-              studentId: null,
-              teacherId: null
-            }));
-          }
+            if (value === '3') {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    roleSelection: value,
+                    teacherId: 3,
+                    studentId: 0
+                }));
+            } else if (value === '4') {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    roleSelection: value,
+                    studentId: 4,
+                    teacherId: 0
+                }));
+            } else {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    roleSelection: value,
+                    studentId: 0,
+                    teacherId: 0
+                }));
+            }
         } else {
-          setFormData((prevData) => ({
-            ...prevData,
-            [name]: value
-          }));
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value
+            }));
         }
-      };
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,13 +59,42 @@ const SignUp = () => {
 
             let response = await axios.post(`${REACT_APP_API_ENDPOINT}/signup`, formData, {
             });
+            const userdata = response.data
             window.location.href = `/complete-profile/${response.data.users.id}`;
-            alert('Users SuccessFully Create');
+            toast.success(userdata.message, {
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+
+            });
 
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response?.data?.message, {
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+
+            });
         }
     };
+
+    const [show, setShow] = useState(false)
+
+    const handleshow = () => {
+        setShow(show ? false : true)
+    }
+
+
 
 
 
@@ -103,9 +134,10 @@ const SignUp = () => {
                                         </div>
                                     </div>
                                     <div class="half-input-wrapper">
-                                        <div class="single-input-wrapper">
+                                        <div class="single-input-wrapper paswrd">
                                             <label for="password">Your Password</label>
-                                            <input onChange={handleChange} value={formData.password} name="password" id="password" type="password" placeholder="Password" required="" />
+                                            <input onChange={handleChange} value={formData.password} name="password" id="password" type={show ? "text" : "password"} placeholder="Password" required="" />
+                                            <i className={`far ${show ? 'fa-eye' : 'fa-eye-slash'}`} onClick={handleshow}></i>
                                         </div>
                                         <div className="single-input-wrapper">
                                             <label htmlFor="departmentId">Instructor/Student</label>
@@ -148,12 +180,13 @@ const SignUp = () => {
                                 <img src="assets/fontend/images/banner/login-bg.png" width="600" height="495" alt="login-form" />
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+    </div>
+                </div >
+            </div >
 
-            <FooterFrontend />
-        </div>
+    <FooterFrontend />
+    <ToastContainer />
+        </div >
     );
 };
 

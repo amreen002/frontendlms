@@ -3,8 +3,10 @@ import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import Footer from './footerComponent';
 import Navbar from './navComponemt';
-import DashBoardMenus from './dashboardsMenuComponent';
+import DashBoardMenus from './dashboardsMenuComponent'; 
 import ValidationaddQuestion from '../validation/addquestionValidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
 
 function Questions() {
@@ -114,7 +116,7 @@ function Questions() {
 
                     }
                 });
-                const userData = response.data.quizze;
+                const userData = response.data.quizze.rows;
                 setQuizze(userData)
             }
 
@@ -220,10 +222,33 @@ function Questions() {
                     }
                 });
                 window.location.href = "/question";
-                alert('Quizze SuccessFully Create');
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
 
@@ -232,17 +257,41 @@ function Questions() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/question/${questionId}`, {
+             const response =   await axios.delete(`${REACT_APP_API_ENDPOINT}/question/${questionId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                fetchDataQuestionFindOne();
-                alert('Data successfully deleted');
+                fetchDataQuestionFindOne(questionId);
+                const userdata = response.data
+                window.location.href = "/question";
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
     const handleUpdate = async (e) => {
@@ -262,19 +311,42 @@ function Questions() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/question/${questionId}`, updatedUserData, {
+                const response =  await axios.patch(`${REACT_APP_API_ENDPOINT}/question/${questionId}`, updatedUserData, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
                 fetchDataQuestionFindOne(questionId)
-                alert("Question Is Updated Successfully!");
                 window.location.href = "/question";
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error updating:', error);
-            alert('An error occurred while updating');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
 
         // Clear input fields after update
@@ -425,7 +497,7 @@ function Questions() {
 
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Questions</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">options</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Billing: activate to sort column ascending">Quizze</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Billing: activate to sort column ascending">Quizzes</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Status: activate to sort column ascending">Category</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Status: activate to sort column ascending">Answer</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Status: activate to sort column ascending">Type</th>
@@ -444,7 +516,7 @@ function Questions() {
                                                                 <div className='flex-row d-flex'>
                                                                     <div className='ques1'>
                                                                         {item.Options1}
-                                                                    </div>
+                                      </div>
                                                                     <div className='ques2'>
                                                                         {item.Options2}
                                                                     </div>
@@ -617,7 +689,7 @@ function Questions() {
                                                         </select>
                                                     </div>
                                                     <div className='col-12 col-md-6 col-lg-6 col-xl-6 mt-5' >
-                                                        <label className='pb-2'>Quizzed</label>
+                                                        <label className='pb-2'>Quiz</label>
                                                         <select className='inputts' name="QuizzeId" value={QuizzeId} onChange={(e) => setQuizzeId(e.target.value)}>
                                                             <option value="">Select</option>
                                                             {quizze.map((option) => (
@@ -1025,7 +1097,7 @@ function Questions() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

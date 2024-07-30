@@ -6,6 +6,8 @@ import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import ValidationLession from '../validation/lessionvalidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const { REACT_APP_API_ENDPOINT } = process.env;
 function Topic() {
@@ -16,15 +18,32 @@ function Topic() {
     const [Topic, setTopic] = useState([]);
     const [selectedCourses, setSelectedCourses] = useState('');
     const [selectedFiles, setSelectedFiles] = useState(null);
+    const [findOnelession, setFindOneLession] = useState({})
+    const [files, setFiles] = useState([])
+    const [removedFiles, setRemovedFiles] = useState([]);
+    const [urlIdModel, seturlid] = useState('')
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
+
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
     useEffect(() => {
         fetchData(lessionId);
-    }, [lessionId]);
+    }, [lessionId])
+
     useEffect(() => {
         fetchData1();
         fetchData2();
         fetchData3()
     }, []);
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    }
 
     const handleCourseChange = async (e) => {
         const selectedCoursesId = parseInt(e.target.value);
@@ -55,6 +74,7 @@ function Topic() {
                     }
                 });
                 const lessonData = lessonResponse.data.lession;
+                setFindOneLession(lessonData)
                 setFormData({
                     LessionTitle: lessonData.LessionTitle,
                     CoursesId: lessonData.CoursesId,
@@ -72,19 +92,20 @@ function Topic() {
         }
     };
 
-    const fetchData1 = async () => {
+    const fetchData1 = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/lession`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/lession?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
-                const userData = response.data.lession;
+                const userData = response.data.lession.rows;
                 setLession(userData)
+                setTotalPages(response.data.lession.totalPage ||1); // Ensure totalPages has a default value
             }
 
         } catch (error) {
@@ -156,11 +177,30 @@ function Topic() {
 
     };
 
-  
+    useEffect(() => {
+        if (findOnelession?.LessionUpload) {
+            setFiles(findOnelession.LessionUpload.map(file => ({ ...file, isNew: false })));
+        }
+    }, [findOnelession]);
+
     const handleFileChange = (event) => {
         setSelectedFiles(event.target.files);
+        const newFiles = Array.from(event.target.files).map(file => ({
+            path: file.path,
+            name: file.name,
+            isNew: true,
+            file // Store the file object for later upload
+        }));
+        setFiles(prevFiles => [...prevFiles, ...newFiles]);
     };
 
+    const handleRemoveFile = (index) => {
+        const fileToRemove = files[index];
+        if (!fileToRemove.isNew) {
+            setRemovedFiles(prev => [...prev, fileToRemove.path]);
+        }
+        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -183,50 +223,96 @@ function Topic() {
 
             if (token) {
 
-                await axios.post(`${REACT_APP_API_ENDPOINT}/lession`, data, {
+             const response =   await axios.post(`${REACT_APP_API_ENDPOINT}/lession`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
                     }
                 });
 
-             //   window.location.href = "/lession";
-                alert('Module Successfully Create');
+                window.location.href = "/lession";
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
 
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     }
     const handleDelete = async (lessionId) => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/lession/${lessionId}`, {
+              const response=  await axios.delete(`${REACT_APP_API_ENDPOINT}/lession/${lessionId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData(lessionId)
-                alert('Data successfully deleted');
+                const userdata = response.data
+                window.location.href = "/lession";
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
 
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-center",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     }
     const handleUpdate = async (e) => {
         e.preventDefault();
         const data = new FormData();
 
-        // Append files to FormData
-        if (selectedFiles) {
-            for (let i = 0; i < selectedFiles.length; i++) {
-                data.append('files', selectedFiles[i]);
+        files.forEach(file => {
+            if (file.isNew) {
+                data.append('files', file.file);
             }
-        }
-
+        });
+        data.append('removedFiles', JSON.stringify(removedFiles));
         // Append other form data
         for (const key in formData) {
             data.append(key, formData[key]);
@@ -235,19 +321,42 @@ function Topic() {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/lession/${lessionId}`, data, {
+                const response =   await axios.patch(`${REACT_APP_API_ENDPOINT}/lession/${lessionId}`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData(lessionId)
-                alert("Module updated successfully!");
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-center",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
                 window.location.href = "/lession";;
             }
         } catch (error) {
             console.error('Error updating lesson:', error);
-            alert('An error occurred while updating the lesson.');
+            toast.error(error.response.data.message,{
+                position: "top-center",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
 
@@ -296,7 +405,7 @@ function Topic() {
 
 
                                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                                    <label for="exampleFormControlSelect2" class="form-label">Select Class</label>
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Select Class / Course</label>
                                                                     <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId" value={formData.CoursesId} onChange={handleCourseChange}>
                                                                         <option value="Select">Select</option>
                                                                         {courses.map((option) => (
@@ -374,14 +483,32 @@ function Topic() {
                                                 </div>
                                             </div>
                                             <div class="card-datatable table-responsive">
-                                                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
+                                                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2">
+                                                    <div className="me-3">
+                                                        <div className="dataTables_length" id="DataTables_Table_0_length">
+                                                            <label>
+                                                                <select
+                                                                    name="DataTables_Table_0_length"
+                                                                    aria-controls="DataTables_Table_0"
+                                                                    className="form-select"
+                                                                    onChange={(e) => setPage(1)} // Reset to page 1 on changing page size
+                                                                >
+                                                                    <option value="10">10</option>
+                                                                    <option value="25">25</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                </select>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    </div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
                                                     <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div><div class="dt-buttons btn-group flex-wrap"> <div class="btn-group"><button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><i class="bx bx-export me-1"></i>Export</span></button></div><i class="bx bx-plus me-0 me-sm-1"></i> </div></div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                         <thead>
                                                             <tr>
                                                                 <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label="" width="20px;"></th>
                                                                 <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Id</th>
                                                                 <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="270px;" aria-label="Role: activate to sort column ascending">Module</th>
-                                                                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="350px;" aria-label="Role: activate to sort column ascending">Class</th>
+                                                                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="350px;" aria-label="Role: activate to sort column ascending">Class / Course</th>
                                                                 <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="400px;" aria-label="Role: activate to sort column ascending">Subject</th>
                                                                 <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Board</th>
                                                                 <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="50px;" aria-label="Role: activate to sort column ascending">Duration</th>
@@ -433,7 +560,31 @@ function Topic() {
                                                             ))}
                                                         </tbody>
                                                     </table>
-                                                    <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+                                                    <div className="row mx-2">
+                                                        <div className="col-sm-12 col-md-6">
+                                                            <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-sm-12 col-md-6">
+                                                            <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                <ul className="pagination">
+                                                                    <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                    </li>
+                                                                    {[...Array(totalPages).keys()].map(p => (
+                                                                        <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                            <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                        </li>
+                                                                    ))}
+                                                                    <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        </div>
                                             </div>
                                         </div>
                                     </div>
@@ -463,7 +614,7 @@ function Topic() {
                                                     </div>
 
                                                     <div class="mb-3">
-                                                        <label for="exampleFormControlSelect2" class="form-label">Select Class</label>
+                                                        <label for="exampleFormControlSelect2" class="form-label">Select Class / Course</label>
                                                         <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId"
                                                             value={formData.CoursesId}
                                                             onChange={handleCourseChange}>
@@ -494,6 +645,28 @@ function Topic() {
 
 
                                                         </div>
+                                                    </div>
+                                                    <div className="d-flex flex-wrap">
+                                                        {files.map((file, index) => (
+                                                            <div key={index} className="col-12 col-md-6 col-lg-6 col-xl-6 mb-3">
+                                                                <div className="card">
+                                                                    <div className="card-body">
+                                                                        <iframe
+                                                                            src={`${process.env.REACT_APP_API_IMG}/${file.path}`}
+                                                                            width="100%"
+                                                                            height="300px"
+                                                                            style={{ border: 'none' }}
+                                                                        ></iframe>
+                                                                        <button
+                                                                            onClick={() => handleRemoveFile(index)}
+                                                                            className="btn btn-danger mt-2 w-100"
+                                                                        >
+                                                                            Remove
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                     <div class="mb-3">
                                                         <Editor
@@ -529,7 +702,7 @@ function Topic() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

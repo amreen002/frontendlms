@@ -494,14 +494,16 @@ function CoursedetailsComponent() {
                         </div>
                     </div>
 
-                    <div className="swiper-containerr" id='swiperContainerr'>
+                    <div className="slider-container" id='swiperContainerr'>
 
-                        <div className='swiper-wrappere' >
+                       
                             <Slider {...settings} >
+                            
                                 {courses.map((course) => {
                                     if (course.Status == 1) {
                                         return (
-                                            <div class="swiper-slide ">
+                                            <div  >
+                                            <div >
                                                 <div class="single-course-style-three" style={{ marginLeft: '15px' }}>
                                                     <a href={`/coursedetails/${course.id}`} class="thumbnail">
                                                         <img src={`${REACT_APP_API_IMG}/${course.CourseUplod}`} alt="course" />
@@ -530,6 +532,7 @@ function CoursedetailsComponent() {
                                                     </div>
                                                     </a>
                                                 </div>
+                                            </div>
                                             </div>)
                                     } else {
                                         return null
@@ -539,7 +542,7 @@ function CoursedetailsComponent() {
                             </Slider>
 
 
-                        </div>
+                        
 
                     </div>
 

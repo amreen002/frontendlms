@@ -5,6 +5,8 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import ValidationBatch from '../validation/batchvalidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT } = process.env;
 function BatchesUse() {
 
@@ -87,7 +89,7 @@ function BatchesUse() {
 
                     }
                 });
-                const userData = response.data.teachers;
+                const userData = response.data.teachers.rows;
                 setTeachers(userData)
             }
 
@@ -98,6 +100,7 @@ function BatchesUse() {
     useEffect(() => {
         fetchData3(batchesId)
     }, [batchesId]);
+
     const fetchData3 = async (batchesId) => {
         try {
             const token = localStorage.getItem('token');
@@ -168,19 +171,43 @@ function BatchesUse() {
         try {
            
             const token = localStorage.getItem('token');
-            let response
+          
             if (token) {
 
-                response = await axios.post(`${REACT_APP_API_ENDPOINT}/addbatches`, formData, {
+               const response = await axios.post(`${REACT_APP_API_ENDPOINT}/addbatches`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 window.location.href = "/batches";
-                alert('Batches SuccessFully Create');
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
+
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
 
@@ -189,17 +216,41 @@ function BatchesUse() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/deletebatches/${batchesId}`, {
+               const response= await axios.delete(`${REACT_APP_API_ENDPOINT}/deletebatches/${batchesId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                fetchData();
-                alert('Data successfully deleted');
+                fetchData3(batchesId);
+                const userdata = response.data
+                window.location.href = "/batches";
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
     const handleUpdate = async (e) => {
@@ -222,18 +273,41 @@ function BatchesUse() {
                     BatchDatails
     
                 }
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsbatches/${batchesId}`, updatedUserData, {
+                const response =   await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsbatches/${batchesId}`, updatedUserData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData3(batchesId);
                 window.location.href = "/batches"
-                alert("Batches Is Updated Successfully!");
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error updating:', error);
-            alert('An error occurred while updating');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
 
         // Clear input fields after update
@@ -687,7 +761,7 @@ function BatchesUse() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />                                                    
         </>
     )
 }

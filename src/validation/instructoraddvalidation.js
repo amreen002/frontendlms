@@ -4,13 +4,13 @@ const ValidationaddInstructor =(formData) => {
     if (!formData.Name) {
       error.Name = 'First Name is required';
     } 
-    else if (!/^[a-zA-Z]+$/.test(formData.Name)) {
+    else if (!/^[a-zA-Z. ]+$/.test(formData.Name)) {
       error.Name = 'First Name should only contain alphabetic characters';
     }
     if (!formData.LastName) {
       error.LastName = 'Last Name is required';
     } 
-    else if (!/^[a-zA-Z]+$/.test(formData.LastName)) {
+    else if (!/^[a-zA-Z. ]+$/.test(formData.LastName)) {
       error.LastName = 'Last Name should only contain alphabetic characters';
     }
       if (!formData.Email) {
@@ -37,11 +37,12 @@ const ValidationaddInstructor =(formData) => {
       }
       if (!formData.Password) {
         error.Password = 'Password is required';
-      } else if (formData.Password.length < 8) {
-        error.Password = 'Password must be at least 8 characters long';
-      } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(formData.Password)) {
-        error.Password = "Password must contain at least one special character, e.g., 'Abc@123'.";
       }
+      //  else if (formData.Password.length < 8) {
+      //   error.Password = 'Password must be at least 8 characters long';
+      // } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(formData.Password)) {
+      //   error.Password = "Password must contain at least one special character, e.g., 'Abc@123'.";
+      // }
 
 
       if (!formData.DOB) {

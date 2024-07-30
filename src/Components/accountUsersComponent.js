@@ -13,6 +13,7 @@ function AccountP() {
     const [formData, setFormData] = useState({
         name: '',
         userName: '',
+        lastname:'',
         email: '',
         password: '',
         roleName: '',
@@ -211,7 +212,7 @@ function AccountP() {
                                             <form id="formAccountSettings" method="POST" onSubmit={handleSubmit}>
                                                 <div class="row">
                                                     <div class="mb-3 col-md-6">
-                                                        <label for="firstName" class="form-label">Full Name</label>
+                                                        <label for="firstName" class="form-label">Frist Name</label>
                                                         <input
                                                             class="form-control"
                                                             type="text"
@@ -219,6 +220,18 @@ function AccountP() {
                                                             name='name'
                                                             onChange={handleChange}
                                                             value={formData.name}
+                                                            autofocus
+                                                        />
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <label for="firstName" class="form-label">Last Name</label>
+                                                        <input
+                                                            class="form-control"
+                                                            type="text"
+                                                            id="name"
+                                                            name='lastname'
+                                                            onChange={handleChange}
+                                                            value={formData.lastname}
                                                             autofocus
                                                         />
                                                     </div>
@@ -325,7 +338,7 @@ function AccountP() {
                                                         </select>
                                                     </div>
 
-                                                    <div class="mb-3">
+                                                    <div class="col-12">
                                                         <label htmlFor="exampleFormControlSelect2" className="form-label"> District</label>
                                                         <select
                                                             id="exampleFormControlSelect2"

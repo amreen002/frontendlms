@@ -4,8 +4,8 @@ import { useNavigate, useParams, Link, useLocation } from 'react-router-dom';
 import Navbarmenu from "./Navbarmenu";
 import Sidebar from './sidebar';
 import DashboardCard from './dashboardcardComponent';
-
-
+const datatoken = localStorage.getItem('datatoken');
+const coursedatafetch = JSON.parse(datatoken)
 const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 
 function Materiales() {
@@ -61,18 +61,40 @@ function Materiales() {
             }
         ] // ad
     };
+
     const [courses, setCourse] = useState([]);
     const [totalLessionCount, settotalLessionCount] = useState(0);
     const [totalStudentCount, settotalStudentCount] = useState(0);
     const [Lastupdated, setLastupdated] = useState(null);
     const [CoureseFindOne, setCoureseFindOne] = useState({});
     const { coursesId } = useParams();
+
+    const { videoId } = useParams();
+    const [userData, setUserData] = useState({});
+    const [Topic, setTopic] = useState({});
+    const [category, setCategory] = useState([]);
+    const [selectedCourses, setSelectedCourses] = useState('');
+    const [selectedvideo, setselectedvideo] = useState('');
+    const [subject, setSubject] = useState({})
+
+
+    const handleSelectVideo = (e) => {
+        const value = e.target.value;
+        setselectedvideo(value);
+    };
+
+
+
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [])
+
+
     useEffect(() => {
         fetchData1(coursesId);
-    }, [coursesId]);
+    }, [coursesId])
+
+
     const fetchData = async () => {
         try {
             const response = await axios.get(`${REACT_APP_API_ENDPOINT}/courses`);
@@ -86,7 +108,9 @@ function Materiales() {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }
+
+
     const fetchData1 = async (coursesId) => {
         try {
             if (!coursesId) {
@@ -114,6 +138,7 @@ function Materiales() {
     const [isExpandedTopic, setIsExpandedTopic] = useState('');
     const [isExpandedLesson, setIsExpandedLesson] = useState('');
     const [isExpandedVideo, setIsExpandedVideo] = useState('');
+    const [activeService, setActiveService] = useState(null);
 
     const toggleDropdownTopic = (id) => {
         setIsExpandedTopic(isExpandedTopic === id ? '' : id);
@@ -146,6 +171,37 @@ function Materiales() {
         setModalContentPDF(null);
     };
 
+
+    //Dropdown Navigation
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleDropdown = (serviceName) => {
+        setIsExpanded(isExpanded === serviceName ? '' : serviceName);
+    };
+
+
+
+    const fetchData2 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/categories`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userDatas = response.data.categories;
+                setCategory(userDatas)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+
     return (
         <div>
             <section>
@@ -159,8 +215,8 @@ function Materiales() {
                     <div className="row g-5">
                         <Sidebar />
                         {/* <!-- course details area start --> */}
-                        <div class="col-lg-9">
-                            <div class="exrolled-course-wrapper-dashed">
+                        <div class="col-lg-9" >
+                            <div class="exrolled-course-wrapper-dashed " style={{backgroundColor:"#fff"}}>
                                 <div className="rts-course-area rts-section-gap">
                                     <div className="container">
                                         <div className="row g-5">
@@ -173,7 +229,7 @@ function Materiales() {
                                                         <li className="nav-item" role="presentation">
                                                             <button className="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Course Content</button>
                                                         </li>
-                                                       
+
                                                     </ul>
                                                 </div>
                                                 <div className="tab-content tabcnt mt--50" id="myTabContent">
@@ -187,28 +243,33 @@ function Materiales() {
                                                             <p className="disc">
                                                                 {CoureseFindOne.Description}
                                                             </p>
-                                                            <p className="disc">
+                                                            {/* <p className="disc">
                                                                 {CoureseFindOne.Description}
                                                             </p>
                                                             <p className="disc">
                                                                 {CoureseFindOne.Description}
-                                                            </p>
+                                                            </p> */}
 
                                                         </div>
                                                     </div>
                                                     <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                                         <div className="course-content-wrapper-main">
-                                                            <h5 className="title">Course Content</h5>
+
+                                                            <div className='flex-row d-flex'>
+                                                                <h5 className="title">{CoureseFindOne.name}</h5>
+                                                            </div>
+
+
 
                                                             {/* <!-- course content accordion area --> */}
                                                             <div className="accordion mt--30" id="accordionExample">
 
 
-                                                                <div className="accordion-item">
+                                                                <div>
                                                                     {CoureseFindOne.topics && Array.isArray(CoureseFindOne.topics) ? (
                                                                         CoureseFindOne.topics.map((topic) => (
-                                                                            <div key={topic.id} className="accordion-item">
-                                                                                <h2 className="accordion-header" id={`heading${topic.id}`}>
+                                                                            <div key={topic.id} className="accordion-item mb-4 acordin_space">
+                                                                                <h2 className="accordion-header arr_clrs" id={`heading${topic.id}`}>
                                                                                     <button
                                                                                         className="accordion-button"
                                                                                         onClick={() => toggleDropdownTopic(`collapse${topic.id}`)}
@@ -218,14 +279,20 @@ function Materiales() {
                                                                                         aria-expanded={isExpandedTopic === `collapse${topic.id}`}
                                                                                         aria-controls={`collapse${topic.id}`}
                                                                                     >
-                                                                                        <span>{topic.name}</span>
-                                                                                        <span>{CoureseFindOne.lessionCount} Lectures . 9 min</span>
+                                                                                        <span className='topic_name'>{topic.name}</span>
+
+                                                                                        <span className='timess'>{CoureseFindOne.lessionCount} Lectures . 9 min
+                                                                                            <i class="fa-chevron-double-down fa-regular ml--10">{coursedatafetch?.Role?.Name === "Instructor" && (
+                                                                                                <Link to={`/updatesubject/${topic.id}`}  >
+                                                                                                    <i class="fa-light fa-pen-to-square ml--15" ></i>
+                                                                                                </Link>)}
+                                                                                            </i></span>
                                                                                     </button>
                                                                                 </h2>
                                                                                 {isExpandedTopic === `collapse${topic.id}` && (
                                                                                     <div
                                                                                         id={`collapse${topic.id}`}
-                                                                                        className="accordion-collapse collapse show"
+                                                                                        className="accordion-collapse collapse show "
                                                                                         aria-labelledby={`heading${topic.id}`}
                                                                                         data-bs-parent="#accordionExample"
                                                                                     >
@@ -233,9 +300,9 @@ function Materiales() {
 
 
                                                                                             <div key={video.id}>
-                                                                                                <h2 className="accordion-header" id={`heading${video.id}`}>
+                                                                                                <h2 className="accordion-header acordion_head backa_color" id={`heading${video.id}`}>
                                                                                                     <button
-                                                                                                        className="accordion-button"
+                                                                                                        className="accordion-button ardion_btn "
                                                                                                         onClick={() => toggleDropdownVideo(`collapse${video.id}`)}
                                                                                                         type="button"
                                                                                                         data-bs-toggle="collapse"
@@ -243,31 +310,54 @@ function Materiales() {
                                                                                                         aria-expanded={isExpandedVideo === `collapse${video.id}`}
                                                                                                         aria-controls={`collapse${video.id}`}
                                                                                                     >
-                                                                                                        <span>{video.Title}</span>
+                                                                                                        <span className='flex-row d-flex ml--10 titlees'>
+                                                                                                        <i class="fa-arrow-right-long fa-regular mr--10 mt-1 arrow_icon" ></i> {video.Title}</span> 
+                                                                                                        <i class="fa-chevron-double-down titlees fa-regular ml--10">{coursedatafetch?.Role?.Name === "Instructor" && (
+                                                                                                            <Link to={`/updatecontent/${video.id}`}  >
+                                                                                                                <i class="fa-light fa-pen-to-square titlees ml--15" ></i>
+                                                                                                            </Link>)}
+                                                                                                        </i>
                                                                                                     </button>
                                                                                                 </h2>
                                                                                                 {isExpandedVideo === `collapse${video.id}` && (
                                                                                                     <div
                                                                                                         id={`collapse${video.id}`}
-                                                                                                        className="accordion-collapse collapse show"
+                                                                                                        className="accordion-collapse acordion_head  collapse show  p-3"
                                                                                                         aria-labelledby={`heading${video.id}`}
                                                                                                         data-bs-parent="#accordionExample"
                                                                                                     >
                                                                                                         {video.VideoUplod.map((videofiles) => (
 
-                                                                                                            <div className="accordion-body" key={videofiles.id}>
-                                                                                                                <a href="#" className="play-video-wrapper" onClick={() => openModal(videofiles)}>
-                                                                                                                    <div className="left">
+                                                                                                            <div className=" text-end" key={videofiles.id}>
 
-                                                                                                                        <i class="fa-solid fa-share bx-tada-hover" style={{ color: "red" }}></i>
-                                                                                                                        <i className="fa-light fa-circle-play"></i>
-                                                                                                                        <span>{videofiles.name}</span>
+
+                                                                                                                <div className='row'>
+                                                                                                                    <div className="col-12 col-md-6 col-lg-6 col-lx-6  ">
+                                                                                                                        <a href="#" className="play-video-wrapperes d-flex " onClick={() => openModal(videofiles)}>
+                                                                                                                       
+                                                                                                                            <video src={`${REACT_APP_API_IMG}/${videofiles.path}`} autoplay="true" muted className='videoes_play'>
+                                                                                                                            </video>
+                                                                                                                           <div className='video_icons'>
+                                                                                                                            <i class="fa-play-circle fa-regular "></i>
+                                                                                                                           </div>
+                                                                                                                           
+                                                                                                                            <div className='mt-3 ml--10 videos_name'>{videofiles.name}</div>
+                                                                                                                         
+                                                                                                                        </a>
                                                                                                                     </div>
-                                                                                                                    <div className="right">
-                                                                                                                        <span className="play">Preview</span>
-                                                                                                                        <span>9 min</span>
+
+                                                                                                                    <div className="col-12 col-md-6 col-lg-6 col-lx-6 text-end mt-4 ">
+                                                                                                                        <span className="play timess ">Preview</span>
+                                                                                                                        <span className='min_nine timess mr--15'> 9 min</span>
+                                                                                                                       
+
                                                                                                                     </div>
-                                                                                                                </a>
+
+
+
+                                                                                                                </div>
+
+
                                                                                                             </div>))}
                                                                                                     </div>
                                                                                                 )}
@@ -276,7 +366,7 @@ function Materiales() {
                                                                                         ))}
                                                                                         {topic.lessions && Array.isArray(topic.lessions) && topic.lessions.map((lession) => (
                                                                                             <div key={lession.id}>
-                                                                                                <h2 className="accordion-header" id={`heading${lession.id}`}>
+                                                                                                <h2 className="accordion-header acordion_head colorsss " id={`heading${lession.id}`}>
                                                                                                     <button
                                                                                                         className="accordion-button"
                                                                                                         onClick={() => toggleDropdownLesson(`collapse${lession.id}`)}
@@ -286,25 +376,37 @@ function Materiales() {
                                                                                                         aria-expanded={isExpandedLesson === `collapse${lession.id}`}
                                                                                                         aria-controls={`collapse${lession.id}`}
                                                                                                     >
-                                                                                                        <span>{lession.Title}</span>
+                                                                                                        <p className='d-flex mb--0 ml--10 titlees'><i class="fa-arrow-right-long fa-regular mr--10 mt-1 arrow_icon"></i> Lession Title : <span className='titlees'> {lession.Title} </span>
+                                                                                                            
+                                                                                                        </p> 
+                                                                                                        <i class="fa-chevron-double-down chervn fa-regular">{coursedatafetch?.Role?.Name === "Instructor" && (
+                                                                                                            <Link to={`/updatemodel/${lession.id}`}>
+                                                                                                                <i class="fa-light fa-pen-to-square squer ml--15" ></i>
+                                                                                                            </Link>
+                                                                                                        )}</i>
                                                                                                     </button>
                                                                                                 </h2>
                                                                                                 {isExpandedLesson === `collapse${lession.id}` && (
                                                                                                     <div
                                                                                                         id={`collapse${lession.id}`}
-                                                                                                        className="accordion-collapse collapse show"
+                                                                                                        className="accordion-collapse acordion_head  collapse show  p-4"
                                                                                                         aria-labelledby={`heading${lession.id}`}
                                                                                                         data-bs-parent="#accordionExample"
                                                                                                     >
                                                                                                         {lession.LessionUpload.map((file) => (
                                                                                                             <div className="accordion-body" key={file.id}>
                                                                                                                 <a href="#" className="play-video-wrapper" onClick={() => openModalPDF(file)}>
-                                                                                                                    <div className="left">
-                                                                                                                        <i class="fa-solid fa-share bx-tada-hover" style={{ color: "red" }}></i>
-                                                                                                                        <i className="fa-light fa-file-pdf" style={{ color: "red" }}></i>
-                                                                                                                        <span>{file.name}</span>
+                                                                                                                    <div className="left editers">
+                                                                                                                        <i class="fa-solid fa-share bx-tada-hover" ></i>
+                                                                                                                        <i class="fa-file-pdf fa-light mt-1 p-1"></i>
+                                                                                                                        <span className='p-1 ml--10'>{file.name}
+
+                                                                                                                        </span>
+
                                                                                                                     </div>
+
                                                                                                                 </a>
+                              
                                                                                                             </div>))}
                                                                                                     </div>
                                                                                                 )}
@@ -371,7 +473,7 @@ function Materiales() {
                                                 </div>
 
                                             </div>
-                                    
+
                                         </div>
                                     </div>
                                 </div>

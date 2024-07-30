@@ -30,23 +30,55 @@ const Login = ({ onLogin }) => {
     setErrors(ValidationLogin(state))
     try {
       const response = await onLogin(email, password);
+      const usedata = response.data
       if (!response.success) {
         setError(response.message);
-        console.log(response.message)
-        toast.error(error)
+        toast.error(error.response?.data?.message, {
+          position: "top-right",
+          autoClose: true,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+
+        });
+
       } else {
         // Redirect to dashboard page
         navigate('/dashboard');
-        console.log(response.message)
+        toast.success(response.message ,{
+          position: "top-right",
+          autoClose: true,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          
+       });
       }
     } catch (error) {
       setError(error.response?.data?.message);
+      toast.error(error.response?.data?.message,{
+        position: "top-right",
+        autoClose: true,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        
+     });
    
     }
   };
 
 
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false) 
 
   const handleshow=()=>{
     setShow(show ? false : true)
@@ -77,7 +109,7 @@ const Login = ({ onLogin }) => {
                       value={state.email}
                       onChange={handleChange}
                     />
-                     {errors.email && <div className="error">{errors.email}</div>}
+                     {errors.email && <div className="errors">{errors.email}</div>}
                     
                   </div>
                   <div className="single-input-wrapper paswrd">
@@ -92,7 +124,7 @@ const Login = ({ onLogin }) => {
                       onChange={handleChange}
                     />
                      <i className={`far ${show ? 'fa-eye' : 'fa-eye-slash'}`} onClick={handleshow}></i>
-                     {errors.password && <div className="error">{errors.password}</div>}
+                     {errors.password && <div className="errors">{errors.password}</div>}
                   </div>
                   <button className="rts-btn btn-primary" type="submit">Login</button>
                 </form>
@@ -105,7 +137,6 @@ const Login = ({ onLogin }) => {
                   </div> */}
                   {/* Add your other login options here */}
                 </div>
-                {error && <span style={{ color: 'red' }}>{error}</span>}
                 <p>Don't Have an account? <a href="signup">Registration</a></p>
               </div>
             </div>
@@ -118,6 +149,7 @@ const Login = ({ onLogin }) => {
       </div>
 
       <FooterFrontend />
+      <ToastContainer />
     </div>
   );
 };

@@ -76,7 +76,7 @@ function InstructorviewquizComponent(token) {
             <DashboardCard />
     
 
-          <div className="dashboard--area-main pt-100 pt_sm-50">
+          <div className="dashboard--area-main pt-5 mt-5 pt_sm-50">
                 <div className="container">
                     <div className="row g-5">
                         <Sidebar />

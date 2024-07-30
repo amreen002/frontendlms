@@ -5,7 +5,10 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import Select, { StylesConfig } from 'react-select'
-import makeAnimated from 'react-select/animated';
+import makeAnimated from 'react-select/animated'; 
+import ValidationQuize from '../validation/quizevalidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
 
 const animatedComponents = makeAnimated();
@@ -32,7 +35,18 @@ function Quizze() {
     const [course, setCourse] = useState([]);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
 
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    }
     useEffect(() => {
         setTotalQuestions(parseInt(EasyQuestions) + parseInt(MediumQuestions) + parseInt(HardQuestions));
         setTotalMarks(parseInt(EasyQuestions) * 1 + parseInt(MediumQuestions) * 2 + parseInt(HardQuestions) * 4);
@@ -66,19 +80,20 @@ function Quizze() {
         setBatchId(batchIds);
     };
 
-    const fetchData = async () => {
+    const fetchData = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/quizze`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/quizze?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
-                const userData = response.data.quizze;
+                const userData = response.data.quizze.rows;
                 setQuizze(userData)
+                setTotalPages(response.data.students.totalPage ||1)
             }
 
         } catch (error) {
@@ -184,28 +199,47 @@ function Quizze() {
             console.error('Error fetching data:', error);
         }
     };
-
+    const [errors, setErrors] = useState({})
+    const formData = {
+        QuizzName,
+        QuizzStartTime,
+        QuizzEndTime,
+        QuizzTestDuration,
+        EasyQuestions,
+        MediumQuestions,
+        HardQuestions,
+        TotalQuestions,
+        TotalMarks,
+        Instructions,
+        BatchId,
+        QuizzCategoryId,
+        CourseId,
+    }
+    const handleChanges = (e) => {
+        const { name, value } = e.target;
+        const updatedFormData = { ...formData, [name]: value };
+        const validationErrors = ValidationQuize(updatedFormData);
+        setErrors(validationErrors);
+        setQuizzName(updatedFormData.QuizzName || '');
+        setQuizzStartTime(updatedFormData.QuizzStartTime || '');
+        setQuizzEndTime(updatedFormData.QuizzEndTime || '');
+        setQuizzTestDuration(updatedFormData.QuizzTestDuration || '');
+        setEasyQuestions(updatedFormData.EasyQuestions || '');
+        setMediumQuestions(updatedFormData.MediumQuestions || '');
+        setHardQuestions(updatedFormData.HardQuestions || '');
+        setTotalQuestions(updatedFormData.TotalQuestions || '');
+        setTotalMarks(updatedFormData.TotalMarks || '');
+        setInstructions(updatedFormData.Instructions || '');
+        setBatchId(updatedFormData.BatchId || '');
+        setQuizzCategoryId(updatedFormData.QuizzCategoryId || '');
+        setCourseId(updatedFormData.CourseId || '');
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            let formData = {
-                QuizzName,
-                QuizzStartTime,
-                QuizzEndTime,
-                QuizzTestDuration,
-                EasyQuestions,
-                MediumQuestions,
-                HardQuestions,
-                TotalQuestions,
-                TotalMarks,
-                Instructions,
-                BatchId,
-                QuizzCategoryId,
-                CourseId,
-            }
-
+           
             const token = localStorage.getItem('token');
             if (token) {
                 const response = await axios.post(`${REACT_APP_API_ENDPOINT}/quizze`, formData, {
@@ -214,10 +248,34 @@ function Quizze() {
                     }
                 });
                 window.location.href = "/quizzes";
-                alert('Quizze SuccessFully Create');
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
+
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
 
@@ -226,17 +284,41 @@ function Quizze() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/quizze/${quizzeId}`, {
+            const response =    await axios.delete(`${REACT_APP_API_ENDPOINT}/quizze/${quizzeId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                fetchData();
-                alert('Data successfully deleted');
+                fetchData(quizzeId);
+                window.location.href = "/quizzes";
+                const userdata =response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
     const handleUpdate = async (e) => {
@@ -260,18 +342,41 @@ function Quizze() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/quizze/${quizzeId}`, updatedUserData, {
+                const response =  await axios.patch(`${REACT_APP_API_ENDPOINT}/quizze/${quizzeId}`, updatedUserData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData3(quizzeId)
-                alert("Quizze Is Updated Successfully!");
                 window.location.href = "/quizzes";
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
             }
         } catch (error) {
             console.error('Error updating:', error);
-            alert('An error occurred while updating');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
 
         // Clear input fields after update
@@ -398,7 +503,25 @@ function Quizze() {
                                         </div>
                                     </div>
                                     <div class="card-datatable table-responsive">
-                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
+                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2">
+                                        <div className="me-3">
+                                                <div className="dataTables_length" id="DataTables_Table_0_length">
+                                                    <label>
+                                                        <select
+                                                            name="DataTables_Table_0_length"
+                                                            aria-controls="DataTables_Table_0"
+                                                            className="form-select"
+                                                            onChange={(e) => setPage(1)} // Reset to page 1 on changing page size
+                                                        >
+                                                            <option value="10">10</option>
+                                                            <option value="25">25</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            </div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
                                             <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label>
                                             </div>
                                             <div class="btn-group d-flex flex-row">
@@ -458,7 +581,31 @@ function Quizze() {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+                                            <div className="row mx-2">
+                                                <div className="col-sm-12 col-md-6">
+                                                    <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                        Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-12 col-md-6">
+                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                        <ul className="pagination">
+                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                            </li>
+                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                </li>
+                                                            ))}
+                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel" style={{ width: "28%" }}>
@@ -473,8 +620,9 @@ function Quizze() {
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user-fullname">Quizze Name</label>
                                                         <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='QuizzName'
-                                                            onChange={(e) => setQuizzName(e.target.value)}
+                                                            onChange={handleChanges}
                                                             defaultValue={QuizzName} aria-label="John Doe" />
+                                                             {errors.QuizzName && <div className='errors'>{errors.QuizzName}</div>}
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
 
 
@@ -482,56 +630,67 @@ function Quizze() {
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user-contact">Quizze Start Time</label>
                                                         <input type="datetime-local" id="add-user-contact" class="form-control phone-mask" placeholder="Quizz Start Time" name="QuizzStartTime"
-                                                            onChange={(e) => setQuizzStartTime(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={QuizzStartTime} />
+                                                             {errors.QuizzStartTime && <div className='errors'>{errors.QuizzStartTime}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">Quizze End Time</label>
                                                         <input type="datetime-local" id="add-user" class="form-control" placeholder="Quizz End Time" name="QuizzEndTime"
-                                                            onChange={(e) => setQuizzEndTime(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={QuizzEndTime} />
+                                                             {errors.QuizzEndTime && <div className='errors'>{errors.QuizzEndTime}</div>}
                                                     </div>
 
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">Test duration (in Minutes)</label>
                                                         <input type="number" id="add-user" class="form-control" placeholder="Quizze Test Duration" name="QuizzTestDuration"
-                                                            onChange={(e) => setQuizzTestDuration(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={QuizzTestDuration} />
                                                     </div>
+                                                    {errors.QuizzTestDuration && <div className='errors'>{errors.QuizzTestDuration}</div>}
 
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">No of Easy Questions (1 Mark)</label>
                                                         <input type="number" id="add-user" class="form-control" placeholder="Easy Questions" name="EasyQuestions"
-                                                            onChange={(e) => setEasyQuestions(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={EasyQuestions} />
+                                                             {errors.EasyQuestions && <div className='errors'>{errors.EasyQuestions}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">No of Medium Questions (2 Mark)</label>
                                                         <input type="number" id="add-user" class="form-control" placeholder="Medium Questions" name="MediumQuestions"
-                                                            onChange={(e) => setMediumQuestions(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={MediumQuestions} />
+                                                             {errors.MediumQuestions && <div className='errors'>{errors.MediumQuestions}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user"> No of Hard Questions (4 Mark)</label>
                                                         <input type="number" id="add-user" class="form-control" placeholder="Hard Questions" name="HardQuestions"
-                                                            onChange={(e) => setHardQuestions(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={HardQuestions} />
+                                                             {errors.HardQuestions && <div className='errors'>{errors.HardQuestions}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">Total Questions</label>
                                                         <input type="number" id="add-user" class="form-control" placeholder="Total Questions" name="TotalQuestions"
-                                                            value={TotalQuestions} />
+                                                            value={TotalQuestions}
+                                                            onChange={handleChanges} />
+                                                             {errors.number && <div className='errors'>{errors.number}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">Total Marks</label>
                                                         <input type="number" id="add-user" class="form-control" placeholder="Total Marks" name="TotalMarks"
-                                                            value={TotalMarks} />
+                                                            value={TotalMarks}
+                                                            onChange={handleChanges} />
+                                                             {errors.TotalMarks && <div className='errors'>{errors.TotalMarks}</div>}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user">Instructions</label>
                                                         <input type="text" id="add-user" class="form-control" placeholder="Instructions" name="Instructions"
-                                                            onChange={(e) => setInstructions(e.target.value)}
+                                                            onChange={handleChanges}
                                                             value={Instructions} />
+                                                             {errors.Instructions && <div className='errors'>{errors.Instructions}</div>}
                                                     </div>
 
                                                     <div className="col-6 fv-plugins-icon-container">
@@ -545,25 +704,28 @@ function Quizze() {
                                                             components={animatedComponents}
                                                             inputId="exampleFormControlSelect2"
                                                         />
+                                                         {errors.BatchId && <div className='errors'>{errors.BatchId}</div>}
 
                                                     </div>
                                                     <div class="col-6 fv-plugins-icon-container mb-3">
                                                         <label for="exampleFormControlSelect2" class="form-label">Courses Category</label>
-                                                        <select id="exampleFormControlSelect2" class="select2 form-select" name="QuizzCategoryId" value={QuizzCategoryId} onChange={(e) => setQuizzCategoryId(e.target.value)}>
+                                                        <select id="exampleFormControlSelect2" class="select2 form-select" name="QuizzCategoryId" value={QuizzCategoryId} onChange={handleChanges}>
                                                             <option value="">Select</option>
                                                             {category.map((option) => (
                                                                 <option key={option.id} value={option.id}>{option.name}</option>
                                                             ))}
                                                         </select>
+                                                        {errors.QuizzCategoryId && <div className='errors'>{errors.QuizzCategoryId}</div>}
                                                     </div>
                                                     <div class="col-6 fv-plugins-icon-container mb-3 ">
                                                         <label for="exampleFormControlSelect2" class="form-label">Courses</label>
-                                                        <select id="exampleFormControlSelect2" class="select2 form-select" name="CourseId" value={CourseId} onChange={(e) => setCourseId(e.target.value)}>
+                                                        <select id="exampleFormControlSelect2" class="select2 form-select" name="CourseId" value={CourseId} onChange={handleChanges}>
                                                             <option value="">Select</option>
                                                             {course.map((option) => (
                                                                 <option key={option.id} value={option.id}>{option.name}</option>
                                                             ))}
                                                         </select>
+                                                        {errors.CourseId && <div className='errors'>{errors.CourseId}</div>}
                                                     </div>
                                                     <div class="mb-3 d-flex mt-5">
                                                         <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
@@ -722,7 +884,7 @@ function Quizze() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+<ToastContainer />
         </>
     )
 }

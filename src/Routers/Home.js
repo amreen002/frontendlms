@@ -61,7 +61,7 @@ const Home = () => {
         </section>
 
         <div className="banner-area-one shape-move">
-            <div className="container-fluid">
+            <div className="container">
                 <div className="row">
                     <div className="col-lg-6 order-xl-1 order-lg-1 order-sm-2 order-2">
                         <div className="banner-content-one">
@@ -105,9 +105,9 @@ Welcome to The Good Student Co., where we believe every student has the potentia
         </div>
 
         <div className="about-area-start">
-            <div className="container-fluid">
+            <div className="container">
                 <div className="row align-items-center">
-                    <div className='col-12 col-md-6 col-lg-6 col-xl-6'>
+                    <div className='col-12 col-md-7 col-lg-7 col-xl-7'>
                         <div className="about-one-left-image">
                            
                             <div className={` second-order pb-2 ${animate4 ? 'bounce-left' : ''}`}>
@@ -116,8 +116,8 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                             </div>
                         </div>
                     </div>
-                    <div className='col-12 col-md-6 col-lg-6 col-xl-6 '>
-                        <div className="title-area-left-style">
+                    <div className='col-12 col-md-5 col-lg-5 col-xl-5 '>
+                        <div className="title-area-left-style-11">
 
                             <h2 className="title">Soar Off To Success</h2>
                             <hr />
@@ -129,15 +129,12 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                 </div>
             </div>
         </div>
-
-
-
-        <div className="why-choose-us bg-blue bg-choose-us-one bg_image pb-3  shape-move">
-            <div className="container-fluid">
+        <div className="why-choose-us bg-blue bg-choose-us-one bg_image pb-3  shape-move cus_bg_explore">
+            <div className="container">
                 <div className="row align-items-center">
                    
-                    <div className="col-lg-6 pl--90 pl_md--15 mt_md--50 pl_sm--15 pt_sm--50">
-                        <div className="title-area-left-style">
+                    <div className="col-12 col-xl-6 col-lg-6">
+                        <div className="title-area-left-style-2">
                         <div class="owText" >
                         <span class="text">Explore</span>
                         </div>
@@ -147,7 +144,6 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                         </div>
                    
                     </div>
-
                     <div className="col-lg-6">
                         <div className="why-choose-us-area-image">
                             <img className="one" src="assets/fontend/images/why-choose/2.png" alt="why-choose" />
@@ -161,7 +157,7 @@ Welcome to The Good Student Co., where we believe every student has the potentia
 
 
         <div class="category-area-style-one shape-move rts-section-gap bg_image">
-            <div class="container-fluid">
+            <div class="container">
                 <div class="row">
 
                 </div>
@@ -169,7 +165,7 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                 <div className={` col-md-6 ${animate15 ? 'bounce-in-right' : ''}`}>
                         <img src='assets/fontend/images/about/join.png' className='img-fluid' style={{width:'80%'}} />
                     </div>
-                    <div class="col-lg-6 pt--160">
+                    <div class="col-lg-6 pt--100">
                     <div class="title-area-center-style who">
                            
                            <h2 class="title ">UNLOCK ENDLESS POSSIBILITIES</h2>
@@ -197,19 +193,19 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                 <div className="row">
                     <div className="col-lg-12">
                         <div className="title-between-area">
-                            {/* <div className="title-area-left-style">
+                            <div className="title-area-left-style">
                                 <div className="pre-title">
-                                    <img src="assets/fontend/images/banner/bulb.png" alt="icon" />
-                                    <span>Courses Content</span>
+                                  
+                                    <h2>Enroll Now</h2>
                                 </div>
                                 <p className="post-title">You'll find something to spark your curiosity and enhance</p>
-                            </div> */}
-                            {/* <div className="button-group filters-button-group">
+                            </div> 
+                           <div className="button-group filters-button-group">
                                 <button className="button is-checked" data-filter="*">All Courses</button>
                                 <button className="button" data-filter=".creative"> Class 6</button>
                                 <button className="button" data-filter=".design"> Class 7</button>
                                 <button className="button" data-filter=".photo"> Class 8</button>
-                            </div> */}
+                            </div> 
                         </div>
                     </div>
                 </div>
@@ -332,11 +328,9 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                     </div>
                 </div>
             </section>
-            <section className='pt--10 joingood'>
+            <section className='joingood'>
                 <div className='container'>
                     <div className='row'>
-                       
-
                         <div className='col-12 col-xl-3 col-lg-3 col-md-3'>
                             <div className='img_one'>
                                 <img src='../assets/img/home-img/7.png' className='img-fluid' />
@@ -362,27 +356,24 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                 </div>
 
             </section>
+<section className='shinebr'>
+    <div className='container'>
+        <div className='row'>
 
 
+            
+              <div className='col-12 col-xl-3 col-lg-3 col-md-3'>
+              
 
-            <div class="category-area-style-one shape-move py-5 bg_image">
-                <div class="container-fluid">
-                    <div class="row uncld">
-                       
-                           <div className='col-12 col-xl-3 col-lg-3 col-md-3'>
-                           <div className='student_parent_img'>
+              <div className='student_parent_img'>
                                 <img src="assets/fontend/images/about/12.png" className='img-fluid' />
                             </div>
-                     
-                           </div>
-
-                           <div className='col-12 col-xl-6 col-lg-6 col-md-6'>
-                              
-                                    <div className='uncl'>
-                                        <div class="title-area-center-style">
-                                            <div class="pre-title mr--90">
+              </div>
+              <div className='col-12 col-xl-6 col-lg-6 col-md-6'>
+              <div class="title-area-center-style cus_shinex">
+                                            <div class="pre-title ">
                                               
-                                                <span className='exploress'>SHINE BRIGHT, STAY CURIOUS</span>
+                                                <h2 className='exploress'>SHINE BRIGHT, STAY CURIOUS</h2>
                                             </div>
                                             <p class="post-title">At The Good Student Co., we're not just about grades – we're 
                                                 about nurturing a lifelong love for learning.</p>
@@ -393,50 +384,53 @@ Welcome to The Good Student Co., where we believe every student has the potentia
                                                 Together, let's unlock the secrets of the universe and become the best versions of ourselves!
                                                 </p>
                                         </div>
+              </div>
+              <div className='col-12 col-xl-3 col-lg-3 col-md-3'>
+              <div class="unloclk"><img src="assets/fontend/images/banner/sun.png" alt=""  /></div>
+              </div>
+        </div>
+    </div>
+</section>
+<section className='takeoff'>
+    <div className='container'>
+    <div className='row'>
+        <div className='col-12 col-xl-2'></div>
+        <div className='col-12 col-xl-8 col-lg-12 col-md-8'>
+                            <div class="pt--55 shape sun1 two " >
+                                <center>
+                                    <img src="assets/fontend/images/about/13.png" alt="" /></center>
+
+                                <div className=''>
+                                    <div className='tkeofrdy'>
+                                        <div class="title-area-center-style">
+                                            <div class="pre-title">
+                                                <h2>READY TO TAKE OFF?</h2>
+                                            </div>
+                                        </div>
+                                        <div class="title-area-center-style">
+
+                                            <p class="post-title">
+                                                Click below to begin your epic learning quest with
+                                                The Good Student Co.
+                                                Let's make every day a great day to learn!
+                                            </p>
+
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='col-12 col-xl-3 col-lg-3 col-md-3'>
-                         
-                            <div class="unloclk"><img src="assets/fontend/images/banner/sun.png" alt=""  /></div>
-                           </div>
-
-                     
-                  
-                 
-                        <div className='col-12 col-xl-12 col-lg-12 col-md-12 unclde'>
-                            <div className='row'>
-                            <div class="shape two sun1" >
-                               <center>
-                               <img src="assets/fontend/images/about/13.jpg" alt=""  /></center> 
-                                </div>
-                                <div className='col-12 col-xl-12 col-lg-12 col-md-12 ushine'>
-                                <div class="title-area-center-style">
-                                <div class="pre-title">
-                                    <h2>READY TO TAKE OFF?</h2>
-                                </div>
-                            </div>
-                            <div class="title-area-center-style">
-
-<p class="post-title">
-Click below to begin your epic learning quest with
- The Good Student Co. 
-Let's make every day a great day to learn!
-</p>
-
-</div>
 
                                 </div>
+
                             </div>
 
-                        </div>
+        </div>
+        <div className='col-12 col-xl-3'>
+            
+        </div>
+                            
+                            </div>
+    </div>
+</section>
 
-
-                    
-                    </div>
-                  
-                </div>
-              
-            </div>
             <FooterFrontend />
         </div>
     );

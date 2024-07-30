@@ -339,7 +339,7 @@ div#listOnclick {
   font-weight: bold;
 }
 .icon i {
-  font-size: 20px; /* Adjust the size as needed */
+  font-size: 28px; /* Adjust the size as needed */
 }
 
 .selected {
@@ -376,6 +376,7 @@ div#listOnclick {
   border-radius: 4px;
   padding: 20px;
   margin-bottom: 20px;
+  background-color: #fff;
 }
 /* Add to your CSS file */
 .quiz-card.disabled {
@@ -398,3 +399,59 @@ div#listOnclick {
   color: white;
 }
 
+.quize-h2 {
+  font-size: 34px;
+  color: #310402;
+  padding-bottom: 20px;
+}
+.qiuze-view{
+  padding: 1.5rem 1.5rem;
+  margin-bottom: 0;
+  background-color: #edebeb;
+  border-bottom: 0 solid #a3b5c7;
+}
+/* student attempted card */
+
+.accordion-collapse {
+  transition: max-height 0.4s ease;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.quiz-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.quiz-card:hover {
+  background: #e9ecef;
+  cursor: pointer;
+}
+
+.quiz-name {
+  font-size: 1.25rem;
+  font-weight: 300;
+  text-transform: capitalize;
+  
+}
+.quiz-name:hover {
+   text-decoration: none; 
+}
+
+.quiz-description {
+  font-size: 0.875rem;
+}
+
+.start-button {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.start-button:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}

@@ -13,7 +13,6 @@ function AnnouncementComponent() {
   
   const openPopup = () => {
     setIsPopupOpen(true);
-    console.log(setIsPopupOpen)
   };
 
   const closePopup = () => {

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Select, { StylesConfig } from 'react-select'
+import makeAnimated from 'react-select/animated';
 import { Link, useParams } from 'react-router-dom';
 import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
+const animatedComponents = makeAnimated();
 const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 function ListUse() {
     const [table, setTable] = useState([]);
@@ -17,15 +20,20 @@ function ListUse() {
     const [selectedState, setSelectedState] = useState('');
     const [selectedCourses, setSelectedCourses] = useState('');
     const [courses, setCourses] = useState([])
-    const [batches,setBatches]= useState([])
-    
+    const [batches, setBatches] = useState([])
+    const [options, setOptions] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState(null);
     const [isVisible, setIsVisible] = useState(null);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
+
 
     const toggleVisibility = (id) => {
         setIsVisible(isVisible === id ? null : id);
     };
     const [formData, setFormData] = useState({
         name: '',
+        lastname:'',
         userName: '',
         email: '',
         password: '',
@@ -33,43 +41,70 @@ function ListUse() {
         phoneNumber: '',
         image: null,
         AddressType: '',
-        departmentId:'',
+        departmentId: '',
         Address: '',
         StateId: '',
         CountryId: '',
         DistrictId: '',
         City: '',
         DOB: '',
-        YourIntroducationAndSkills:  '',
+        YourIntroducationAndSkills: '',
         TeacherType: '',
         Date: '',
         CoursesId: '',
-        BatchId: ''
-      });
+        BatchId: '',
+        CousesId: [],
+        studentId: 0,
+        teacherId: 0,
+        roleSelection: ''
+    });
 
-      const handleCountryChange = (e) => {
+    const handleCountryChange = (e) => {
         const selectedCountryId = parseInt(e.target.value, 10);
         const selectedCountry = countryTable.find((country) => country.id === selectedCountryId);
         setFormData({
-          ...formData,
-          CountryId: selectedCountryId,
-          StateId: '',
-          DistrictId: '',
+            ...formData,
+            CountryId: selectedCountryId,
+            StateId: '',
+            DistrictId: '',
         });
         setSelectedCountry(selectedCountry);
         setSelectedState('');
-      };
-    
-      const handleStateChange = (e) => {
+    };
+
+    const handleStateChange = (e) => {
         const selectedStateId = parseInt(e.target.value, 10);
         const selectedState = selectedCountry ? selectedCountry.Staties.find((state) => state.id === selectedStateId) : '';
         setFormData({
-          ...formData,
-          StateId: selectedStateId,
-          DistrictId: '',
+            ...formData,
+            StateId: selectedStateId,
+            DistrictId: '',
         });
         setSelectedState(selectedState);
-      };
+    };
+
+
+    const handleNewChange = (selectedOptions) => {
+        const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setFormData({
+            ...formData,
+            CousesId: selectedIds,
+        });
+
+    };
+    const handleFileChange = (event) => {
+        setSelectedFiles(event.target.files);
+    };
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    };
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
     useEffect(() => {
         fetchData();
         fetchData1()
@@ -78,18 +113,19 @@ function ListUse() {
         fetchData4()
     }, []);
 
-    const fetchData = async () => {
+    const fetchData = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/users`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/users?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 setTable(response.data.users);
+                setTotalPages(response.data.users.totalPage ||1);
             }// Updated state variable
         } catch (err) {
             console.log(err.response);
@@ -135,7 +171,7 @@ function ListUse() {
             console.error('Error fetching data:', error);
         }
     };
-  
+
     const fetchData3 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -148,6 +184,11 @@ function ListUse() {
                     }
                 });
                 const userDatas = response.data.courses;
+                const courses = response.data.courses.map(course => ({
+                    value: course.id,
+                    label: course.name
+                }));
+                setOptions(courses);
                 setCourses(userDatas)
             }
 
@@ -176,11 +217,36 @@ function ListUse() {
         }
     };
     const handleChange = (e) => {
-        const { name, files, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: files ? files[0] : value
-        });
+        const { name, value } = e.target;
+        if (name === 'roleSelection') {
+            if (value === '3') {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    roleSelection: value,
+                    teacherId: 3,
+                    studentId: 0
+                }));
+            } else if (value === '4') {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    roleSelection: value,
+                    studentId: 4,
+                    teacherId: 0
+                }));
+            } else {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    roleSelection: value,
+                    studentId: 0,
+                    teacherId: 0
+                }));
+            }
+        } else {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value
+            }));
+        }
         if (name === 'departmentId') {
             toggleVisibility(value);
         }
@@ -190,14 +256,21 @@ function ListUse() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData();
-        for (const key in formData) {
-            data.append(key, formData[key]);
+        if (selectedFiles) {
+            data.append('file', selectedFiles[0]);
+        }    
+         const formDataWithCoursesId = {
+            ...formData,
+            CousesId: formData.CousesId.join(',')  // Convert array to comma-separated string
+        };
+        for (const key in formDataWithCoursesId) {
+            data.append(key, formDataWithCoursesId[key]);
         }
         try {
             const token = localStorage.getItem('token');
             let response
             if (token) {
-                response = await axios.post(`${REACT_APP_API_ENDPOINT}/users`, formData, {
+                response = await axios.post(`${REACT_APP_API_ENDPOINT}/users`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
@@ -410,24 +483,24 @@ function ListUse() {
                                                                 </div>
                                                             </td>
                                                             <td>{index + 1}</td>
-                                                            <td>{item.name}</td>
+                                                            <td>{item.name} {item.lastname}</td>
                                                             <td>{item.userName}</td>
                                                             <td>{item.phoneNumber}</td>
                                                             <td>{item.email}</td>
                                                             <td>{item.Role && item.Role.Name}</td>
                                                             <td>
                                                                 <div class="d-inline-block text-nowrap">
-                                                                <button class="btn btn-sm btn-icon" onClick={() => toggleDropdown('dropdownprofile')}>
-                                                                    <i class="bx bx-edit"></i>
-                                                                </button>
-                                                                <button class="btn btn-sm btn-icon delete-record" onClick={() => handleDelete(item.id)}>
-                                                                    <i class="bx bx-trash"></i>
-                                                                </button>
+                                                                    <button class="btn btn-sm btn-icon" onClick={() => toggleDropdown('dropdownprofile')}>
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-icon delete-record" onClick={() => handleDelete(item.id)}>
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </button>
 
-                                                                {activeService === 'dropdownprofile' && (
-                                                                    <div classNmae="dropdown-menu dropdown-menu-end m-0">
-                                                                        <Link to={`/userviews/${item.id}`} classNmae="dropdown-item">View</Link></div>
-                                                                )}</div>
+                                                                    {activeService === 'dropdownprofile' && (
+                                                                        <div classNmae="dropdown-menu dropdown-menu-end m-0">
+                                                                            <Link to={`/userviews/${item.id}`} classNmae="dropdown-item">View</Link></div>
+                                                                    )}</div>
                                                             </td>
 
                                                         </tr>
@@ -444,25 +517,32 @@ function ListUse() {
                                         </div>
                                         <div class="offcanvas-body mx-0 flex-grow-0">
                                             <form class="add-new-user row g-3 pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" onSubmit={handleSubmit} novalidate="novalidate">
-                                           
-                                            
+
+
                                                 <div class="col-12 col-md-6">
                                                     {emailerror && <div style={{ color: 'red' }}>{emailerror}</div>}
-                                                    <label class="form-label" for="add-user-fullname">Full Name</label>
+                                                    <label class="form-label" for="add-user-fullname">Frist Name</label>
                                                     <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='name'
                                                         onChange={handleChange}
                                                         value={formData.name} aria-label="John Doe" />
-                                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                
-                                                
+                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                                                <div class="col-12 col-md-6">
+                                                    {emailerror && <div style={{ color: 'red' }}>{emailerror}</div>}
+                                                    <label class="form-label" for="add-user-fullname">Last Name</label>
+                                                    <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='lastname'
+                                                        onChange={handleChange}
+                                                        value={formData.lastname} aria-label="John Doe" />
+                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+
+
                                                 <div class="col-12 col-md-6">
                                                     <label class="form-label" for="add-user-fullname">User Name</label>
                                                     <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='userName'
                                                         onChange={handleChange}
                                                         value={formData.userName} aria-label="John Doe" />
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                
-                                                
+
+
                                                 <div class="col-12 col-md-6">
                                                     <label class="form-label" for="add-user-email">Email</label>
                                                     <input type="text" id="add-user-email" class="form-control" placeholder="john.doe@example.com" name='email'
@@ -470,16 +550,16 @@ function ListUse() {
                                                         value={formData.email} />
 
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                               
-                                               
+
+
                                                 <div class="col-12 col-md-6">
                                                     <label class="form-label" for="add-user-contact">Contact</label>
                                                     <input type="number" id="add-user-contact" class="form-control phone-mask" placeholder="+91 (609) 988-44-11" name="phoneNumber"
                                                         onChange={handleChange}
                                                         value={formData.phoneNumber} />
                                                 </div>
-                                               
-                                               
+
+
                                                 <div class="col-12 col-md-6">
                                                     <label class="form-label" for="basic-icon-default-password">Password</label>
                                                     <input type="password"
@@ -492,7 +572,7 @@ function ListUse() {
                                                         aria-describedby="basic-default-password2" />
                                                     {error && <div style={{ color: 'red' }}>{error}</div>}
                                                 </div>
-                                                
+
                                                 <div className="col-12 col-md-6">
                                                     <label htmlFor="exampleFormControlSelect2" className="form-label">Roles</label>
                                                     <select
@@ -516,67 +596,67 @@ function ListUse() {
                                                     </select>
                                                 </div>
                                                 <div class="col-lg-6 p-t-20">
-                                                        <label htmlFor="exampleFormControlSelect2" className="form-label"> Country</label>
-                                                        <select
-                                                            id="exampleFormControlSelect2"
-                                                            className="select2 form-select"
-                                                            name="CountryId"
-                                                            value={formData.CountryId}
-                                                            onChange={handleCountryChange}
-                                                        >
-                                                            <option value="">Select</option>
-                                                            {countryTable.map(option => (
-                                                                <option key={option.id} value={option.id}>{option.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-lg-6 p-t-20">
-                                                        <label htmlFor="exampleFormControlSelect2" className="form-label"> State</label>
-                                                        <select
-                                                            id="exampleFormControlSelect2"
-                                                            className="select2 form-select"
-                                                            name="StateId"
-                                                            value={formData.StateId}
-                                                            onChange={handleStateChange}
-                                                        >
-                                                            <option value="">Select</option>
-                                                            {selectedCountry && selectedCountry.Staties.map(state => (
-                                                                <option key={state.id} value={state.id}>{state.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
+                                                    <label htmlFor="exampleFormControlSelect2" className="form-label"> Country</label>
+                                                    <select
+                                                        id="exampleFormControlSelect2"
+                                                        className="select2 form-select"
+                                                        name="CountryId"
+                                                        value={formData.CountryId}
+                                                        onChange={handleCountryChange}
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {countryTable.map(option => (
+                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-6 p-t-20">
+                                                    <label htmlFor="exampleFormControlSelect2" className="form-label"> State</label>
+                                                    <select
+                                                        id="exampleFormControlSelect2"
+                                                        className="select2 form-select"
+                                                        name="StateId"
+                                                        value={formData.StateId}
+                                                        onChange={handleStateChange}
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {selectedCountry && selectedCountry.Staties.map(state => (
+                                                            <option key={state.id} value={state.id}>{state.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
 
-                                                    <div class="col-lg-6 p-t-20">
-                                                        <label htmlFor="exampleFormControlSelect2" className="form-label"> District</label>
-                                                        <select
-                                                            id="exampleFormControlSelect2"
-                                                            className="select2 form-select"
-                                                            name="DistrictId"
-                                                            value={formData.DistrictId}
-                                                            onChange={handleChange}
-                                                        >
-                                                            <option value="">Select</option>
-                                                            {selectedState && selectedState.Cities.map(city => (
-                                                                <option key={city.id} value={city.id}>{city.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
+                                                <div class="col-lg-6 p-t-20">
+                                                    <label htmlFor="exampleFormControlSelect2" className="form-label"> District</label>
+                                                    <select
+                                                        id="exampleFormControlSelect2"
+                                                        className="select2 form-select"
+                                                        name="DistrictId"
+                                                        value={formData.DistrictId}
+                                                        onChange={handleChange}
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {selectedState && selectedState.Cities.map(city => (
+                                                            <option key={city.id} value={city.id}>{city.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="add-user-email"> City</label>
-                                                        <input type="text" id="add-user-email" class="form-control" placeholder="City" name='City'
-                                                            onChange={handleChange}
-                                                            value={formData.City} />
-                                                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                    </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="add-user-email"> City</label>
+                                                    <input type="text" id="add-user-email" class="form-control" placeholder="City" name='City'
+                                                        onChange={handleChange}
+                                                        value={formData.City} />
+                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="add-user-email"> Address</label>
-                                                        <input type="text" id="add-user-email" class="form-control" placeholder="Address" name='Address'
-                                                            onChange={handleChange}
-                                                            value={formData.Address} />
-                                                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                    </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="add-user-email"> Address</label>
+                                                    <input type="text" id="add-user-email" class="form-control" placeholder="Address" name='Address'
+                                                        onChange={handleChange}
+                                                        value={formData.Address} />
+                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                </div>
 
 
                                                 {isVisible === '4' && (
@@ -610,7 +690,21 @@ function ListUse() {
                                                 )}
 
 
-                                                {isVisible ===  '3' && (<>
+                                                {isVisible === '3' && (<>
+                                                    <div class="col-12">
+                                                        <label htmlFor="exampleFormControlSelect2" className="form-label field_name"> Class</label>
+
+                                                        <Select
+                                                            isMulti
+                                                            value={options.filter(option => formData.CousesId.includes(option.value))}
+                                                            name="CousesId"
+                                                            onChange={handleNewChange}
+                                                            options={options}
+                                                            components={animatedComponents}
+                                                            inputId="exampleFormControlSelect2"
+                                                        />
+                                                    </div>
+
                                                     <div class="col-12 col-md-6">
                                                         <label class="form-label" for="add-user-email">DOB</label>
                                                         <input type="date" className='form-control' name="DOB" value={formData.DOB} onChange={handleChange} placeholder="DOB" />
@@ -641,8 +735,91 @@ function ListUse() {
                                                 </>
                                                 )}
 
+                                                {isVisible === '5' && (
+                                                    <div>
+                                                        {formData.studentId==4 ? (
+                                                            <div className='row'>
+                                                                <div class="col-12">
+                                                                    <label class="form-label" for="add-user-contact">Student Date</label>
+                                                                    <input type="date" id="add-user-contact" class="form-control phone-mask" placeholder="Date" name="Date"
+                                                                        onChange={handleChange}
+                                                                        value={formData.Date} />
+                                                                </div>
+                                                                <div class="col-12 col-md-6">
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Student Courses</label>
+                                                                    <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId" value={formData.CoursesId} onChange={handleChange}>
+                                                                        <option value="">Select</option>
+                                                                        {courses.map((option) => (
+                                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-12 col-md-6">
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Student Batch</label>
+                                                                    <select id="exampleFormControlSelect2" class="select2 form-select" name="BatchId" value={formData.BatchId} onChange={handleChange}>
+                                                                        <option value="">Select</option>
+                                                                        {batches.map(batch => (
+                                                                            <option key={batch.id} value={batch.id}>{batch.Title}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        ) : formData.teacherId==3 ? (
+                                                            <div className='row'>
+                                                                <div class="col-12">
+                                                                    <label htmlFor="exampleFormControlSelect2" className="form-label field_name"> Class</label>
+                                                                    <Select
+                                                                        isMulti
+                                                                        value={options.filter(option => formData.CousesId.includes(option.value))}
+                                                                        name="CousesId"
+                                                                        onChange={handleNewChange}
+                                                                        options={options}
+                                                                        components={animatedComponents}
+                                                                        inputId="exampleFormControlSelect2"
+                                                                    />
+                                                                </div>
 
+                                                                <div class="col-12 col-md-6">
+                                                                    <label class="form-label" for="add-user-email">DOB</label>
+                                                                    <input type="date" className='form-control' name="DOB" value={formData.DOB} onChange={handleChange} placeholder="DOB" />
+                                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6">
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Type</label>
+                                                                    <select id="exampleFormControlSelect2" class="select2 form-select" name="TeacherType" value={formData.TeacherType} onChange={handleChange}>
+                                                                        <option value="">Select</option>
+                                                                        <option value="Online">Online</option>
+                                                                        <option value="Offline">Offline</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <label class="form-label" for="basic-icon-default-message">Introducation & Skills</label>
+                                                                    <div class="input-group input-group-merge">
 
+                                                                        <textarea
+                                                                            id="basic-icon-default-message"
+                                                                            class="form-control"
+                                                                            rows="8"
+                                                                            placeholder="Hi, Your Introducation And Skills?"
+                                                                            aria-label="Hi, Your Introducation And Skills?"
+                                                                            aria-describedby="basic-icon-default-message2"
+                                                                            name="YourIntroducationAndSkills" value={formData.YourIntroducationAndSkills} onChange={handleChange}></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : null}
+                                                    </div>
+                                                )}
+                                                {isVisible === "5" && (
+                                                    <div className="single-input-wrapper">
+                                                        <label htmlFor="roleSelection">Role</label>
+                                                        <select id="roleSelection" name="roleSelection" className="form-select" value={formData.studentId === 4 ? "4" : formData.teacherId === 3 ? "3" : ""} onChange={handleChange}>
+                                                            <option value="">---Select---</option>
+                                                            <option value="3">Instructor</option>
+                                                            <option value="4">Student</option>
+                                                        </select>
+                                                    </div>
+                                                )}
                                                 <div class="col-12">
                                                     <label class="form-label" for="basic-icon-default-message">Message</label>
                                                     <div class="input-group input-group-merge">
@@ -664,11 +841,10 @@ function ListUse() {
                                                             id="inputGroupFile04"
                                                             aria-describedby="inputGroupFileAddon04"
                                                             aria-label="Upload"
-                                                            name="file"
                                                             accept="image/png, image/jpeg"
-                                                            value={formData.image} onChange={handleChange}
+                                                            onChange={handleFileChange}
                                                         />
-                                                        
+
                                                     </div>
                                                 </div>
                                                 <div className='d-flex'>

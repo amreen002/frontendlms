@@ -34,7 +34,7 @@ const About = () => {
 <section className='sticy-header logo-size'>
         <Navbarmenu />
       </section> 
-          <div class="breadcrumb-bar">
+          {/* <div class="breadcrumb-bar">
               <div class="container">
                   <div class="row">
                       <div class="col-md-12 col-12">
@@ -48,12 +48,13 @@ const About = () => {
                       </div>
                   </div>
               </div>
-          </div>
+          </div> */}
           <section class="cmpny">
               <div class="container">
                   <div class="row" >
                       <div className="col-12 col-xl-8 col-lg-8 col-md-8">
-                         <div className={` content ${animate1 ? 'bounce-in-right' : ''}`}>
+                        <div className='cus_abtn'>
+                        <div className={` content ${animate1 ? 'bounce-in-right' : ''}`}>
                          <div class="section-sub-head dd">
                                  
                                  <h2 class="headline  headline-aligned-to-left  
@@ -93,6 +94,8 @@ child's needs. Our platform assesses their learning style and offers customised 
 
 
                           </div>
+                        </div>
+                        
                       </div>
                       <div className={`col-lg-4 order--xl-2 order-lg-2 order-sm-1 order-1 ${animate3 ? 'bounce-down' : ''}`}>
                           <div className="banner-right-img">
@@ -113,20 +116,22 @@ child's needs. Our platform assesses their learning style and offers customised 
                               <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
                                   <div className={` cntt content ${animate1 ? 'bounce-in-right' : ''}`}>
 
-                                      <div class="section-sub-head headone">
+                                      <div class="section-sub-head headone d-flex">
+<div className='image_abt1'>
+    <img src='assets/fontend/images/about/Banner-Icon-11.png' className='img-fluid' />
+</div>
 
-                                          <h2 class="headline  headline-aligned-to-left  
-                       headline-with-subtitle pt-2 pb-2 ">Comprehensive Learning Management System</h2>
-                                      </div>
 
                                       <div >
                                           <div class="elementor-widget-container peraone">
+                                          <h2 class="headline  headline-aligned-to-left  
+                       headline-with-subtitle pt-2 pb-2 ">Comprehensive Learning Management System</h2>
                                               <p>Our innovative Learning Management System (LMS) empowers students to take control of their learning journey. They can monitor and evaluate their scores, performance, and understanding, making learning a more engaging and rewarding experience. With TGSC, education is no longer a one-size-fits-all approach but a personalised journey toward mastery.
 
                                               </p>
                                           </div>
                                       </div>
-
+                                      </div>
                                   </div>
                               </div>
                               
@@ -140,19 +145,20 @@ child's needs. Our platform assesses their learning style and offers customised 
                  <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
                  <div className= {` content cnty ${animate4 ? 'bounce-left' : ''}`}>
                
-               <div class="section-sub-head headtwo">
-                       
-                       <h2 class="headline  headline-aligned-to-left  
-                       headline-with-subtitle pt-2 pb-2 ">Expert Consultations and Support</h2>
-                   </div>
-              
+               <div class="section-sub-head headtwo d-flex">
+       
                <div >
                    <div class="elementor-widget-container peratwo">
+                   <h2 class="headline  headline-aligned-to-left  
+                       headline-with-subtitle pt-2 pb-2 ">Expert Consultations and Support</h2>
                        <p>We provide more than just resources – we offer ongoing support through expert consultations. Our team of dedicated educators is committed to helping your child succeed by addressing their individual learning needs and providing continuous guidance.
                        </p>
                    </div>
                </div>
-               
+               <div className='image_abt2'>
+    <img src='assets/fontend/images/about/Banner-Icon-12.png' className='img-fluid' />
+</div>
+               </div>
       </div>
                  </div>
                 </div>
@@ -164,19 +170,19 @@ child's needs. Our platform assesses their learning style and offers customised 
                               <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
                                   <div className={`cnthre content ${animate1 ? 'bounce-in-right' : ''}`}>
 
-                                      <div class="section-sub-head headthree">
-
-                                          <h2 class="headline  headline-aligned-to-left  
-                       headline-with-subtitle pt-2 pb-2 ">Our Unique Advantages</h2>
-                                      </div>
-
+                                      <div class="section-sub-head headthree d-flex">
+                                      <div className='image_abt3'>
+    <img src='assets/fontend/images/about/Banner-Icon-13.png' className='img-fluid' />
+</div>
                                       <div >
                                           <div class="elementor-widget-container perathree">
+                                          <h2 class="headline  headline-aligned-to-left  
+                       headline-with-subtitle pt-2 pb-2 ">Our Unique Advantages</h2>
                                               <p>Our USP lies in our dedication to personalised education. We recognise that no single method of teaching works for everyone. By focusing on understanding and catering to individual learning styles, we ensure that every student can reach their full potential. With TGSC, your child won’t have to look back and say, “I wish I knew it earlier.”
                                               </p>
                                           </div>
                                       </div>
-
+                                      </div>
                                   </div>
                               </div>
                              
@@ -186,20 +192,23 @@ child's needs. Our platform assesses their learning style and offers customised 
         </div>
     </div>
 </section>
-         <section className='py-5 invest'>
+<section className='box_avbt_img'> 
+</section>
+         <section className='invest'>
+          
             <div className='container'>
                 <div className='row'>
+                    
                     <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
                         <div className='abt_cnt'>
                             <h2>Invest in Your Child’s Future</h2>
-                            <hr/>
+                            
                             <p>
                             Choosing TGSC means investing in a future where your child understands concepts deeply and thoroughly. Our platform is designed to make learning accessible, engaging, and effective for every student. Don’t let your child’s education be limited by traditional methods – empower them with the tools and support they need to thrive.
 Join us at TGSC and experience the future of learning. Together, we can make understanding the foundation of education.
-
                             </p>
                             <h2 className='mt--10'>Story behind our idea</h2>
-                            <hr />
+                           
                             <p>
                             I have always been an average grade scorer, but my love for learning has never waned. From grade 6 in 
                             my ICSE school, we had separate subjects for biology, physics, and chemistry. My childhood was marked 
@@ -243,15 +252,15 @@ Join us at TGSC and experience the future of learning. Together, we can make und
   preferences allowed me to study more effectively and efficiently, transforming my academic performance. The skills 
   and self-awareness I gained from this experience continue to benefit me, proving the lasting value of personalized 
   learning strategies.
-  </p>
- 
-                            
+  </p>        
                         </div>
                     </div>
                 </div>
             </div>
          </section>
-    
+    <section className='investt'>
+
+    </section>
       <FooterFrontend />
 </div>
 

@@ -135,7 +135,7 @@ const closebtn=()=>{
             </div>
           </div>
         </div>
-        <div className="container-fluid">
+        <div className="container">
           <div className="row">
             <div className="col-lg-12">
               <div className="header-one-wrapper">
@@ -252,7 +252,7 @@ const closebtn=()=>{
                   
 {/*Login Sign Disable for now becasue client request  */}
 
-                   {/* {(loggedIn) ? (
+                  {/* {(loggedIn) ? (
                     <div className="buttons-area">
                        <Link to={`${dashboards}`} className="rts-btn btn-border">Dashboard</Link>
                       <Link onClick={handleLogout} className="rts-btn btn-border">Logout</Link>
@@ -262,7 +262,7 @@ const closebtn=()=>{
                       <Link to="/login" className="rts-btn btn-border">Log In</Link>
                       <Link to="/signup" className="rts-btn btn-primary">Sign Up</Link>
                     </div>
-                  )}  */}
+                  )}   */}
 
                   {/*Login Sign Disable for now becasue client request  */}
                    <div className='menubtns'>

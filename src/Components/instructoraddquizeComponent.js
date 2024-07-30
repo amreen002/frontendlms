@@ -6,8 +6,13 @@ import Sidebar from "./sidebar";
 import Select, { StylesConfig } from 'react-select'
 import makeAnimated from 'react-select/animated';
 import DashboardCard from "./dashboardcardComponent";
+import ValidationInstructoraddquize from '../validation/instructoraddquizevalidation';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT } = process.env;
 const animatedComponents = makeAnimated();
+const datatoken = localStorage.getItem('datatoken');
+const coursedatafetch = JSON.parse(datatoken)
 function InstructoreaddquizeComponent(token) {
     const datatoken = localStorage.getItem('datatoken');
     const coursedatafetch = JSON.parse(datatoken)
@@ -109,7 +114,7 @@ function InstructoreaddquizeComponent(token) {
 
                     }
                 });
-                const userData = response.data.quizze;
+                const userData = response.data.quizze.rows;
                 setQuizze(userData)
             }
 
@@ -196,7 +201,41 @@ function InstructoreaddquizeComponent(token) {
     };
 
 
-
+    const [errors, setErrors] = useState({})
+    const formData = {
+        QuizzName,
+        QuizzStartTime,
+        QuizzEndTime,
+        QuizzTestDuration,
+        EasyQuestions,
+        MediumQuestions,
+        HardQuestions,
+        TotalQuestions,
+        TotalMarks,
+        Instructions,
+        BatchId,
+        QuizzCategoryId,
+        CourseId,
+    }
+    const handleChanges = (e) => {
+        const { name, value } = e.target;
+        const updatedFormData = { ...formData, [name]: value };
+        const validationErrors = ValidationInstructoraddquize(updatedFormData);
+        setErrors(validationErrors);
+        setQuizzName(updatedFormData.QuizzName || '');
+        setQuizzStartTime(updatedFormData.QuizzStartTime || '');
+        setQuizzEndTime(updatedFormData.QuizzEndTime || '');
+        setQuizzTestDuration(updatedFormData.QuizzTestDuration || '');
+        setEasyQuestions(updatedFormData.EasyQuestions || '');
+        setMediumQuestions(updatedFormData.MediumQuestions || '');
+        setHardQuestions(updatedFormData.HardQuestions || '');
+        setTotalQuestions(updatedFormData.TotalQuestions || '');
+        setTotalMarks(updatedFormData.TotalMarks || '');
+        setInstructions(updatedFormData.Instructions || '');
+        setBatchId(updatedFormData.BatchId || '');
+        setQuizzCategoryId(updatedFormData.QuizzCategoryId || '');
+        setCourseId(updatedFormData.CourseId || '');
+    }
 
 
 
@@ -205,22 +244,8 @@ function InstructoreaddquizeComponent(token) {
 
 
         try {
-            const formData = {
-                QuizzName,
-                QuizzStartTime,
-                QuizzEndTime,
-                QuizzTestDuration,
-                EasyQuestions,
-                MediumQuestions,
-                HardQuestions,
-                TotalQuestions,
-                TotalMarks,
-                Instructions,
-                BatchId,
-                QuizzCategoryId,
-                CourseId,
-            };
-
+          
+    
             const token = localStorage.getItem('token');
 
             if (!token) {
@@ -233,19 +258,60 @@ function InstructoreaddquizeComponent(token) {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const quizzesdata = response.data.quizze;
-            alert('Quiz successfully created');
-            navigate(`/instructorquestion/${quizzesdata.id}`);
+            const userdata =  response.data.quizze
+
+            toast.success(userdata.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+             navigate(`/instructorquestion/${userdata.id}`); 
             if (response.status === 200) {
-                alert('Quiz successfully created');
-                navigate(`/instructorquestion/${quizzesdata.id}`);
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+                 navigate(`/instructorquestion/${userdata.id}`); 
             } else {
                 console.error('Unexpected response status:', response.status);
-                alert('Failed to create quiz. Please try again.');
+                toast.error(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
             }
         } catch (error) {
             console.error('Error creating quiz:', error);
-            alert('Failed to create quiz. Please try again.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
     };
 
@@ -267,7 +333,7 @@ function InstructoreaddquizeComponent(token) {
                             <div className="right-sidebar-dashboard" style={{ backgroundColor: '#fff' }}>
                                 <h5 className="title">Manage Quiz</h5>
                                 <form className='row' onSubmit={handleSubmit}>
-                                    {coursedatafetch.Role.Name === "Guest/Viewer" ? (
+                                {coursedatafetch.Role.Name === "Guest/Viewer" ? (
                                         <div className="sociallocker">
                                             <div className="sociallocker-content">
                                                 <div className='col-12 col-md-6 col-lg-6 col-xl-6'>
@@ -434,7 +500,7 @@ function InstructoreaddquizeComponent(token) {
                     </div>
                 </div>
             </div>
-
+            <ToastContainer />
         </div>
     );
 }

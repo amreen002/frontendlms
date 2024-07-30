@@ -8,7 +8,8 @@ import Sidebar from "./sidebar";
 import PopupComponent from './popupComponent';
 import DashboardCard from './dashboardcardComponent';
 import ProgressBar from './progressbar';
-
+const datatoken = localStorage.getItem('datatoken');
+const coursedatafetch = JSON.parse(datatoken)
 const { REACT_APP_API_ENDPOINT } = process.env;
 function AssignmentComponent(token) {
 
@@ -129,7 +130,7 @@ function AssignmentComponent(token) {
                                                     <span class="questions">{question.AttemptedQuestions}</span>
                                                 </td>
                                                 <td>
-                                                    <span class="questions">{question.Grads}</span>
+                                                    <span class="questions" style={{color:"red"}}>{question.Grads}</span>
                                                 </td>
                                                 <td>
                                                     <ProgressBar percentage={question.Percentage} />
@@ -144,7 +145,14 @@ function AssignmentComponent(token) {
                                                         <Link to={'/assignmentdetail'}><button class="rts-btn btn-border">Details</button></Link>
                                                     </div>
                                                 </td>
+                                                {coursedatafetch.Role.Name === "Guest/Viewer" && (
+                                                                    <div className="sociallocker-overlay">
+                                                                        <i className="fas fa-lock"></i> Unlock content to login with Instructor or Student.
+                                                                    </div>
+                                                                )}
+                                                                <div className="tags-area-wrapper d-flex" style={{ justifyContent: 'space-between' }}></div>
                                             </tr>
+                                             
                                         ))}
 
                                     </tbody>

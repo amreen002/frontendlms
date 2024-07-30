@@ -6,6 +6,8 @@ import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import ValidationVideo from '../validation/videovalidation'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
 function Video() {
     const { videoId } = useParams();
@@ -16,9 +18,19 @@ function Video() {
     const [findOnevideo, setfindOnevido] = useState({})
     const [selectedCourses, setSelectedCourses] = useState('');
     const [selectedFiles, setSelectedFiles] = useState(null);
+    const [files, setFiles] = useState([])
+    const [removedFiles, setRemovedFiles] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
+
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
     useEffect(() => {
         fetchData(videoId);
     }, [videoId]);
+
     useEffect(() => {
         fetchData1();
         fetchData2();
@@ -31,6 +43,12 @@ function Video() {
         const value = e.target.value;
         setselectedvideo(value);
     };
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    }
     const handleCourseChange = async (e) => {
         const selectedCoursesId = parseInt(e.target.value);
         const selectedCourse = courses.find(course => course.id === selectedCoursesId);
@@ -43,7 +61,8 @@ function Video() {
         if (selectedCoursesId) {
             fetchData3(selectedCoursesId);
         }
-    };
+    }
+    
     const fetchData = async (videoId) => {
         try {
 
@@ -79,19 +98,20 @@ function Video() {
         }
     };
 
-    const fetchData1 = async () => {
+    const fetchData1 = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/video`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/video?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
-                const userData = response.data.video;
+                const userData = response.data.video.rows;
                 setVideo(userData)
+                setTotalPages(response.data.video.totalPage ||1); // Ensure totalPages has a default value
             }
 
         } catch (error) {
@@ -148,10 +168,23 @@ function Video() {
     });
 
     const [errors ,setErrors] =useState({})
+    useEffect(() => {
+        if (findOnevideo?.VideoUplod) {
+            setFiles(findOnevideo.VideoUplod.map(file => ({ ...file, isNew: false })));
+        }
+    }, [findOnevideo]);
 
     const handleFileChange = (event) => {
-        setSelectedFiles(event.target.files);
+        setSelectedFiles(event.target.files) 
+        const newFiles = Array.from(event.target.files).map(file => ({
+            path: file.path,
+            name: file.name,
+            isNew: true,
+            file // Store the file object for later upload
+        }));
+        setFiles(prevFiles => [...prevFiles, ...newFiles]);
     };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(formData => ({
@@ -165,7 +198,13 @@ function Video() {
         const validationErrors = ValidationVideo(updatedFormData);
         setErrors(validationErrors);
     };
-
+    const handleRemoveFile = (index) => {
+        const fileToRemove = files[index];
+        if (!fileToRemove.isNew) {
+            setRemovedFiles(prev => [...prev, fileToRemove.path]);
+        }
+        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData();
@@ -183,7 +222,7 @@ function Video() {
 
             if (token) {
 
-                await axios.post(`${REACT_APP_API_ENDPOINT}/video`, data, {
+             const response =   await axios.post(`${REACT_APP_API_ENDPOINT}/video`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
@@ -191,40 +230,86 @@ function Video() {
                 });
 
                 window.location.href = "/video";
-                alert('Video Successfully Create');
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
 
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     }
     const handleDelete = async (videoId) => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/video/${videoId}`, {
+             const response =   await axios.delete(`${REACT_APP_API_ENDPOINT}/video/${videoId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 window.location.href = "/video";
-                alert('Data successfully deleted');
+                const userdata=response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
 
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     }
     const handleUpdate = async (e) => {
         e.preventDefault();
         const data = new FormData();
-          // Append files to FormData
-          if (selectedFiles) {
-            for (let i = 0; i < selectedFiles.length; i++) {
-              data.append('files', selectedFiles[i]);
+        files.forEach(file => {
+            if (file.isNew) {
+                data.append('files', file.file);
             }
-          }
+        });
+        data.append('removedFiles', JSON.stringify(removedFiles));
         for (const key in formData) {
             data.append(key, formData[key]);
         }
@@ -238,11 +323,35 @@ function Video() {
                     }
                 });
                 fetchData(videoId)
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+
                 window.location.href = '/video'
             }
         } catch (error) {
             console.error('Error updating video:', error);
-            alert('An error occurred while updating the video.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
+
         }
     };
 
@@ -291,7 +400,7 @@ function Video() {
 
 
                                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                                    <label for="exampleFormControlSelect2" class="form-label">Select Class</label>
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Select Class / Course</label>
                                                                     <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId" value={formData.CoursesId} onChange={handleCourseChange}>
                                                                         <option value="">Select</option>
                                                                         {courses.map((option) => (
@@ -344,7 +453,7 @@ function Video() {
                                                                     </div>) : selectedvideo === 'gallery' ? (
                                                                         <div class="mb-3" data-quillbot-parent="oopPrLVIHzQ4Ey_EnMuDh">
                                                                             <label class="form-label">Video Url</label>
-                                                                            <textarea id="full-featured-non-premium" name="VideoIframe" value={formData.VideoUplod} onChange={handleChange} class="form-control w-100" data-gramm="false" wt-ignore-input="true" data-quillbot-element="oopPrLVIHzQ4Ey_EnMuDh"></textarea>
+                                                                            <textarea id="full-featured-non-premium" name="VideoIframe" value={formData.VideoIframe} onChange={handleChange} class="form-control w-100" data-gramm="false" wt-ignore-input="true" data-quillbot-element="oopPrLVIHzQ4Ey_EnMuDh"></textarea>
 
                                                                         </div>
                                                                     ) : ''
@@ -379,8 +488,24 @@ function Video() {
                                                         <input type="search" class="form-control" placeholder="Search Category" aria-controls="DataTables_Table_0" /></label></div></div>
                                                     <div class="d-flex justify-content-start justify-content-md-end align-items-baseline">
                                                         <div class="dt-action-buttons d-flex align-items-start align-items-md-center justify-content-sm-center mb-3 mb-sm-0 gap-3 pt-0">
-                                                            <div class="dataTables_length mt-0 mt-md-3" id="DataTables_Table_0_length">
-                                                                <label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="7">7</option><option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="70">70</option><option value="100">100</option></select></label></div><div class="dt-buttons btn-group flex-wrap">
+                                                            <div className="me-3">
+                                                                <div className="dataTables_length" id="DataTables_Table_0_length">
+                                                                    <label>
+                                                                        <select
+                                                                            name="DataTables_Table_0_length"
+                                                                            aria-controls="DataTables_Table_0"
+                                                                            className="form-select"
+                                                                            onChange={(e) => setPage(1)} // Reset to page 1 on changing page size
+                                                                        >
+                                                                            <option value="10">10</option>
+                                                                            <option value="25">25</option>
+                                                                            <option value="50">50</option>
+                                                                            <option value="100">100</option>
+                                                                        </select>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                                <div class="dt-buttons btn-group flex-wrap">
 
                                                             </div></div></div></div><table class="datatables-category-list table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                         <thead>
@@ -448,7 +573,32 @@ function Video() {
                                                             ))}
 
                                                         </tbody>
-                                                    </table><div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 7 of 14 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div><div width="1%;"></div></div>
+                                                    </table>
+                                                    <div className="row mx-2">
+                                                        <div className="col-sm-12 col-md-6">
+                                                            <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-sm-12 col-md-6">
+                                                            <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                <ul className="pagination">
+                                                                    <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                    </li>
+                                                                    {[...Array(totalPages).keys()].map(p => (
+                                                                        <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                            <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                        </li>
+                                                                    ))}
+                                                                    <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
                                             </div>
                                         </div>
 
@@ -522,6 +672,30 @@ function Video() {
                                                         <textarea id="full-featured-non-premium" name="VideoIframe" value={formData.VideoIframe} onChange={handleChange} class="form-control w-100" data-gramm="false" wt-ignore-input="true" data-quillbot-element="oopPrLVIHzQ4Ey_EnMuDh"></textarea>
                                                     </div>
 
+                                                    <div className="d-flex flex-wrap">
+                                                        {files.map((file, index) => (
+                                                            <div key={index} className="col-12 col-md-6 col-lg-4 col-xl-3 mb-3 d-flex flex-column align-items-center" style={{ marginRight: "70px" }}
+                                                            >
+                                                                <div className="card" style={{ width: '100%' }}>
+                                                                    <iframe
+                                                                        src={`${process.env.REACT_APP_API_IMG}/${file.path}`}
+                                                                        width="100%"
+                                                                        height="150px"
+                                                                        style={{ border: 'none' }}
+                                                                        title={`File ${index}`}
+                                                                    ></iframe>
+                                                                    <div className="card-body text-center">
+                                                                        <button
+                                                                            onClick={() => handleRemoveFile(index)}
+                                                                            className="btn btn-danger"
+                                                                        >
+                                                                            Remove
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                     <div class="col-12 text-center d-flex">
                                                         <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
                                                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
@@ -546,7 +720,7 @@ function Video() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

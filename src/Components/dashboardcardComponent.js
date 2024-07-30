@@ -13,6 +13,24 @@ function DashboardCard(token) {
 
     const datatoken =localStorage.getItem('datatoken');
     const coursedatafetch =JSON.parse(datatoken)
+    const [dataUserss, setTabledataUserssss] = useState({});
+    const fetchData3 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/userwisedata`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setTabledataUserssss(response.data);
+            }// Updated state variable
+        } catch (err) {
+            console.log(err.response);
+        }
+    }
+
     const fetchData1 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -38,6 +56,7 @@ function DashboardCard(token) {
     };
     useEffect(() => {
         fetchData1()
+        fetchData3()
     }, []);
 
     // Function to toggle a specific dropdown
@@ -66,11 +85,11 @@ function DashboardCard(token) {
 
                             </div>
                             <div className="author-profile-image-and-name">
-                                <div className="profile-pic">
-                                    <img src={`${REACT_APP_API_IMG}/uploads/images/${coursedatafetch.image}`} alt="dashboard" />
+                                <div className="profile-pices">
+                                    <img src={`${REACT_APP_API_IMG}/uploads/images/${dataUserss.image}`} alt="dashboard" />
                                 </div>
                                 <div className="name-desig">
-                                    <h1 className="title">{coursedatafetch.name}</h1>
+                                    <h1 className="title">{coursedatafetch.name}  {coursedatafetch.lastname}</h1>
                                     <div className="course-vedio">
                                         <div className="single">
                                             <i className="fa-light fa-users"></i>

@@ -243,7 +243,12 @@ function QuizeComponent(token) {
             await fetchDataFindOne(quizzeId)
             if (response.status === 200) {
                 alert('Quiz successfully Update');
-                navigate(`/updatequestion/${FindOneInstructor.id}/${selectedQuestionId}`);
+                if (selectedQuestionId) {
+                    navigate(`/updatequestion/${FindOneInstructor.id}/${selectedQuestionId}`);
+                }else{
+                    navigate(`/instructor/viewquize`)
+                }
+               
             } else {
                 console.error('Unexpected response status:', response.status);
                 alert('Failed to create quiz. Please try again.');

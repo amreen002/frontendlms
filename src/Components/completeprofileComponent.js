@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Navbarmenu from './Navbarmenu';
 import FooterFrontend from './FooterFrontend';
 import axios from 'axios';
+import Select, { StylesConfig } from 'react-select'
+import makeAnimated from 'react-select/animated'; 
 import { useParams } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+const animatedComponents = makeAnimated();
 const { REACT_APP_API_ENDPOINT } = process.env;
+
 const CompleteProfile = () => {
 
   const [roleData, setSaleTeamData] = useState([]);
@@ -15,6 +21,8 @@ const CompleteProfile = () => {
   const [countryTable, setCountryTable] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
+  const [options, setOptions] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     userName: '',
@@ -34,7 +42,9 @@ const CompleteProfile = () => {
     YourIntroducationAndSkills: '',
     TeacherType: '',
     CoursesId: '',
-    BatchId: ''
+    BatchId: '',
+    CoursesId:'',
+    CousesId:[]
   });
 
   useEffect(() => {
@@ -90,7 +100,18 @@ const CompleteProfile = () => {
     }
 
   };
-
+    // Handle change event
+    const handleNewChange = (selectedOptions) => {
+      const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+      setFormData({
+        ...formData,
+        CousesId: selectedIds,
+      });
+    
+  };
+  const handleFileChange = (event) => {
+    setSelectedFiles(event.target.files);
+};
   const fetchData1 = async () => {
     try {
       const response = await axios.get(`${REACT_APP_API_ENDPOINT}/country`);
@@ -105,6 +126,11 @@ const CompleteProfile = () => {
 
       const response = await axios.get(`${REACT_APP_API_ENDPOINT}/courses`);
       const userDatas = response.data.courses;
+      const courses = response.data.courses.map(course => ({
+        value: course.id,
+        label: course.name
+    }));
+    setOptions(courses);
       setCourses(userDatas)
 
 
@@ -136,7 +162,9 @@ const CompleteProfile = () => {
     City: userData?.Address?.City || '',
     DOB: userData?.Teachers[0]?.DOB || '',
     YourIntroducationAndSkills: userData?.Teachers[0]?.YourIntroducationAndSkills || '',
-    TeacherType: userData?.Teachers[0]?.TeacherType || ''
+    CousesId: userData?.Teachers[0]?.CousesId || '',
+    TeacherType: userData?.Teachers[0]?.TeacherType || '',
+
   });
   const setUserFormData = (userData) => ({
     name: userData?.name || '',
@@ -189,6 +217,7 @@ const CompleteProfile = () => {
     }
   
     if (userData?.teacherId) {
+      baseData.CousesId = userData?.Teachers[0]?.CousesId || '';
       baseData.DOB = userData?.Teachers[0]?.DOB || '';
       baseData.YourIntroducationAndSkills = userData?.Teachers[0]?.YourIntroducationAndSkills || '';
       baseData.TeacherType = userData?.Teachers[0]?.TeacherType || '';
@@ -229,10 +258,10 @@ const CompleteProfile = () => {
 
 
   const handleChange = (e) => {
-    const { name, files, value } = e.target;
+    const { name,value } = e.target;
     setFormData(formData => ({
       ...formData,
-      [name]: files ? files[0] : value
+      [name]: value
     }));
   };
 
@@ -240,22 +269,45 @@ const CompleteProfile = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     const data = new FormData();
+    if (selectedFiles) {
+      data.append('file', selectedFiles[0]);
+    }
     for (const key in formData) {
       data.append(key, formData[key]);
     }
     try {
-      await axios.patch(`${REACT_APP_API_ENDPOINT}/signup/${usersId}`, data, {
+     const response = await axios.patch(`${REACT_APP_API_ENDPOINT}/signup/${usersId}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data for file upload
         },
       });
-
+      const userdata = response.data
       fetchData(usersId); // Refresh user data after update
-      alert("User data updated successfully!");
-      window.location.href = '/login'
+      toast.success(userdata.message,{
+        position: "top-right",
+        autoClose: true,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        
+     });
+       window.location.href = '/login'
     } catch (error) {
       console.error('Error updating user:', error);
-      alert('An error occurred while updating user data');
+      toast.error(error.response.data.message,{
+        position: "top-right",
+        autoClose: true,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        
+     });
     }
   }
   const [showProfile, setShowProfile] = useState(false);
@@ -326,9 +378,6 @@ const CompleteProfile = () => {
                       <option value="3">Instructor</option>
                       <option value="4">Student</option>
                       <option value="5">Guest/Viewer</option>
-
-
-
                     </select>
 
                   </div>
@@ -416,6 +465,18 @@ const CompleteProfile = () => {
 
                   )}
                   {userData.departmentId === 3 && (<>
+                    <div className="col-12 col-md-6 col-xl-6 col-lg-6 p-4 fieldes">
+                      <label htmlFor="exampleFormControlSelect2" className="form-label field_name">Class</label>
+                      <Select
+                        isMulti
+                        value={options.filter(option => formData.CousesId.includes(option.value))}
+                        name="CousesId"
+                        onChange={handleNewChange}
+                        options={options}
+                        components={animatedComponents}
+                        inputId="exampleFormControlSelect2"
+                      />
+                    </div>
                     <div class="col-12 col-12 col-md-6 col-xl-6 col-lg-6 p-4 fieldes">
                       <label class="form-label field_name" for="add-user-email">DOB</label>
                       <input type="date" className='form-control ' name="DOB" value={formData.DOB} onChange={handleChange} placeholder="DOB" />
@@ -455,10 +516,9 @@ const CompleteProfile = () => {
                       id="inputGroupFile04"
                       aria-describedby="inputGroupFileAddon04"
                       aria-label="Upload"
-                      name="file"
                       accept="image/png, image/jpeg"
-                      onChange={handleChange}
-                      value={formData.image}
+                      onChange={handleFileChange}
+
 
                     />
                   </div>
@@ -491,6 +551,19 @@ const CompleteProfile = () => {
                         </div>
                       ) : userData.teacherId ? (
                         <div className='row mt-4'>
+                            <div className="col-12 col-md-6 col-xl-6 col-lg-6 p-4 fieldes">
+                            <label htmlFor="exampleFormControlSelect2" className="form-label field_name"> Class</label>
+          
+                              <Select
+                                isMulti
+                                value={options.filter(option => formData.CousesId.includes(option.value))}
+                                name="CousesId"
+                                onChange={handleNewChange}
+                                options={options}
+                                components={animatedComponents}
+                                inputId="exampleFormControlSelect2"
+                              />
+                          </div>
                           <div className="col-12 col-md-6 col-xl-6 col-lg-6 p-4 fieldes">
                             <label className="form-label field_name" htmlFor="add-user-email">DOB</label>
                             <input type="date" className='form-control' name="DOB" value={formData.DOB} onChange={handleChange} placeholder="DOB" />
@@ -527,7 +600,7 @@ const CompleteProfile = () => {
               </form>
             </div>
           </div>
-
+          <ToastContainer />
 
         </div>
       </section>

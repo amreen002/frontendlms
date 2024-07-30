@@ -19,10 +19,10 @@ function LernerenrollcourseComponent(token) {
             const token = localStorage.getItem('token');
             if (token) {
                 let courseurl
-                if (coursedatafetch.Role.Name == "Student") {
+                if (coursedatafetch.Role.Name == "Student"||coursedatafetch.Role.Name == "Instructor") {
                     courseurl = "studentcourses"
                 } else if (coursedatafetch.Role.Name == "Guest/Viewer") {
-                    if (coursedatafetch.studentId) {
+                    if (coursedatafetch.studentId||coursedatafetch.teacherId) {
                         courseurl = "studentcourses"
                     } else {
                         courseurl = "listcourses"
@@ -67,11 +67,11 @@ function LernerenrollcourseComponent(token) {
                     <div class="row g-5">
                         <Sidebar />
                         <div class="col-lg-9">
-                            <div class="exrolled-course-wrapper-dashed">
+                            <div class="exrolled-course-wrapper-dashed bg-white">
                                 <h5 class="title">Enrolleld Class</h5>
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Enrolleld Class</button>
+                                        <button class="nav-link active " id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home"  aria-selected="true">Enrolleld Class</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Active Class</button>

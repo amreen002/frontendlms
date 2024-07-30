@@ -5,7 +5,6 @@ const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
 function NavAllPages(token) {
     const datatoken =localStorage.getItem('datatoken');
     const coursedatafetch =JSON.parse(datatoken)
-    console.log(coursedatafetch)
     const handleLogout = async () => {
         try {
             await axios.post(`${REACT_APP_API_ENDPOINT}/logout`); // Send logout request to backend

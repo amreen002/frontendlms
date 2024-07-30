@@ -5,7 +5,9 @@ import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import ValidationTopic from '../validation/topicvalidation';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 function Topic() {
     const { topicId } = useParams();
     const navigate = useNavigate();
@@ -15,7 +17,14 @@ function Topic() {
     const [errors, setErrors] = useState({});
     const token = localStorage.getItem('token');
     const [table, setTopic] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
 
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
+ 
     useEffect(() => {
         fetchData(topicId);
     }, [topicId]);
@@ -53,19 +62,20 @@ function Topic() {
             console.log(err.response);
         }
     }
-    const fetchData1 = async () => {
+    const fetchData1 = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/topic`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/topic?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
                 const userDatas = response.data.topic;
-                setTopic(userDatas)
+                setTopic(response.data.topic.rows);
+                setTotalPages(response.data.topic.totalPage ||1);
             }
 
         } catch (error) {
@@ -84,7 +94,7 @@ function Topic() {
                     }
                 });
                 const userDatas = response.data.courses;
-                setCourse(userDatas) 
+                setCourse(userDatas)
             }
 
         } catch (error) {
@@ -96,83 +106,170 @@ function Topic() {
         const { name, value } = e.target;
         const updatedFormData = { ...formData, [name]: value };
         setFormData(updatedFormData);
-    
+
         // Validate the updated form data
         const validationErrors = ValidationTopic(updatedFormData);
         setErrors(validationErrors);
-      };
+    };
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
-    
+
         // Perform client-side validation
-        const validationErrors = ValidationTopic(formData );
+        const validationErrors = ValidationTopic(formData);
         if (Object.keys(validationErrors).length > 0) {
-          setErrors(validationErrors);
-          return;
+            setErrors(validationErrors);
+            return;
         }
-    
+
         try {
-            if (window.confirm('Subject Successfully Create')) {
-          // Make the API request
-          await axios.post(`${REACT_APP_API_ENDPOINT}/topic`, formData, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          // Clear the form and errors upon successful submission
-          setFormData({ name: '', CoursesId: '' });
-          setErrors({});
-          window.location.href = "/topic";
-        }else{
-            alert('Information Cancel it,s Successfully');
-        }
-        } catch (error) {
-          console.error(error);
-          setErrors({ api: error.response?.data?.message || 'An error occurred while creating the topic.' });
           
+            if (window.confirm('Are You Sure Information Check this Information')) {
+                // Make the API request
+                const response = await axios.post(`${REACT_APP_API_ENDPOINT}/topic`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const userData = response.data
+                setUserData(response.data.topic)
+                // Clear the form and errors upon successful submission
+                setFormData({ name: '', CoursesId: '' });
+                setErrors({});
+
+                // Show success toast notification
+                toast.success(userData.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+
+                });
+                window.location.href = "/topic";
+            } else {
+                toast.error(userData.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            setErrors({ api: error.response?.data?.message || 'An error occurred while creating the topic.' });
+            toast.error(error.response?.data?.message || 'An error occurred while creating the topic.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+
+            });
+            throw error
         }
-      };
-    
+    };
+
     const handleDelete = async (topicId) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/topic/${topicId}`, {
+                const response = await axios.delete(`${REACT_APP_API_ENDPOINT}/topic/${topicId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                fetchData();
+                const userdata = response.data
+                fetchData(topicId);
                 window.location.href = "/topic";
-                alert('Data successfully deleted');
+                toast.success(userdata.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+
+                });
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message, {
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+
+            });
         }
     };
-    
+
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
+          
             const token = localStorage.getItem('token');
             if (token) {
               
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/topic/${topicId}`, formData, {
+                const response = await axios.patch(`${REACT_APP_API_ENDPOINT}/topic/${topicId}`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
+                const userdata = response.data
+
                 fetchData(topicId)
-                alert("Subject updated successfully!");
+                toast.success(userdata.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+
+                });
                 window.location.href = "/topic";
             }
         } catch (error) {
             console.error('Error updating user:', error);
-            alert('An error occurred while updating user data');
+            toast.error(error.response.data.message, {
+                position: "top-right",
+                autoClose: 5000,
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+
+            });
         }
 
 
@@ -208,7 +305,7 @@ function Topic() {
                                             <div class="card-body">
                                                 <div class=" align-items-start justify-content-between">
                                                     <div class="content-left">
-                                                        <h3>Add Subject</h3>
+                                                        <h3> Subject</h3>
                                                         <div class="offcanvas-body mx-0 flex-grow-0">
                                                             <form class="add-new-user pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" onSubmit={handleFormSubmit} novalidate="novalidate">
 
@@ -218,16 +315,16 @@ function Topic() {
                                                                     <input type="text" class="form-control" id="add-user-fullname" placeholder="Subject" name='name'
                                                                         value={formData.name} aria-label="John Doe"
                                                                         onChange={handleChange}
-                                                             />
-                                                                      {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
-                                                                  
+                                                                    />
+                                                                    {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
+
                                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                               
+
                                                                 </div>
 
                                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                                    <label for="exampleFormControlSelect2" class="form-label">Select Class</label>
-                                                                    <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId"  value={formData.CoursesId}  onChange={handleChange}>
+                                                                    <label for="exampleFormControlSelect2" class="form-label">Select Class / Course</label>
+                                                                    <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId" value={formData.CoursesId} onChange={handleChange}>
                                                                         <option value="">Select</option>
                                                                         {courses.map((option) => (
                                                                             <option key={option.id} value={option.id}>{option.name}</option>
@@ -240,7 +337,7 @@ function Topic() {
 
                                                                 </div>
                                                                 <input type="hidden" /></form>
-                                                                {errors.api && <span style={{ color: 'red' }}>{errors.api}</span>}
+                                                            {errors.api && <span style={{ color: 'red' }}>{errors.api}</span>}
 
                                                         </div>
                                                     </div>
@@ -275,8 +372,8 @@ function Topic() {
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label="" width="20px;"></th>
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="400px;" aria-label="Role: activate to sort column ascending">Subject</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="350px;" aria-label="Role: activate to sort column ascending">Classes</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="Role: activate to sort column ascending">Price</th>                                                    
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="350px;" aria-label="Role: activate to sort column ascending">Classes / Course</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="Role: activate to sort column ascending">Price</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="100px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
@@ -289,8 +386,8 @@ function Topic() {
                                                             </td>
                                                             <td>{index + 1}</td>
                                                             <td>{item.name}</td>
-                                                            <td>{item.Course&&item.Course.name}</td>
-                                                            <td>{item.Course&&item.Course.CoursePrice}</td>
+                                                            <td>{item.Course && item.Course.name}</td>
+                                                            <td>{item.Course && item.Course.CoursePrice}</td>
                                                             <td>
                                                                 <div class="d-inline-block text-nowrap">
                                                                     <Link to={`/topic/${item.id}`} className="navbar-brand" >  <button class="btn btn-sm btn-icon" data-bs-target="#editUser" data-bs-toggle="modal">
@@ -307,7 +404,31 @@ function Topic() {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+                                            <div className="row mx-2">
+                                            <div className="col-sm-12 col-md-6">
+                                                <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                    Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-12 col-md-6">
+                                                <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                    <ul className="pagination">
+                                                        <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                            <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                        </li>
+                                                        {[...Array(totalPages).keys()].map(p => (
+                                                            <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                            </li>
+                                                        ))}
+                                                        <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                            <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {/*  <!-- Modal -->
@@ -327,12 +448,12 @@ function Topic() {
                                                     <div class="mb-3 fv-plugins-icon-container">
                                                         <label class="form-label" for="add-user-fullname">Subject Name</label>
                                                         <input type="text" class="form-control" id="add-user-fullname" placeholder="Subject" name='name'
-                                                           value={formData.name}onChange={handleChange} />
+                                                            value={formData.name} onChange={handleChange} />
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                     </div>
 
                                                     <div class="mb-3 fv-plugins-icon-container">
-                                                        <label for="exampleFormControlSelect2" class="form-label">Select Class</label>
+                                                        <label for="exampleFormControlSelect2" class="form-label">Select Class / Course</label>
                                                         <select id="exampleFormControlSelect2" class="select2 form-select" name="CoursesId" value={formData.CoursesId} onChange={handleChange}>
                                                             <option value="">Select</option>
                                                             {courses.map((option) => (
@@ -365,7 +486,7 @@ function Topic() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

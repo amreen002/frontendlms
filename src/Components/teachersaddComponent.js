@@ -3,7 +3,12 @@ import axios from 'axios';
 import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
+import Select, { StylesConfig } from 'react-select'
+import makeAnimated from 'react-select/animated'; 
 import ValidateCreate from '../validation/addteachervalidations'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+const animatedComponents = makeAnimated();
 const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
 function ListUse() {
     const [countryTable, setCountryTable] = useState([]);
@@ -23,8 +28,11 @@ function ListUse() {
     const [TeacherType, setTeacherType] = useState('')
     const [Username, setUsername] = useState('')
     const [YourIntroducationAndSkills, setYourIntroducationAndSkills] = useState('')
-    const { REACT_APP_API_ENDPOINT } = process.env;
     const [errors, setErrors] = useState({});
+    const [CousesId, setCousesId] = useState('')
+    const [courses, setCourses] = useState([])
+    const [image, setimage] = useState(null)
+    const [selectedFiles, setSelectedFiles] = useState(null);
     const formData = {
         Name,
         LastName,
@@ -41,6 +49,8 @@ function ListUse() {
         CountryId,
         DistrictId,
         City,
+        CousesId,
+        image
     }
     const handleCountryChange = (e) => {
         const selectedCountryId = parseInt(e.target.value);
@@ -52,7 +62,9 @@ function ListUse() {
         setDistrictId('');
     };
 
-
+    const handleFileChange = (event) => {
+        setSelectedFiles(event.target.files);
+    };
     const handleStateChange = (e) => {
         const selectedStateId = parseInt(e.target.value);
         const selectedState = selectedCountry ? selectedCountry.Staties.find(state => state.id === selectedStateId) : '';
@@ -63,6 +75,7 @@ function ListUse() {
 
     useEffect(() => {
         fetchData2()
+        fetchData3()
     }, []);
 
 
@@ -88,9 +101,33 @@ function ListUse() {
         }
     };
 
+    const fetchData3 = async () => {
+        try {
+
+            const response = await axios.get(`${REACT_APP_API_ENDPOINT}/courses`);
+            const userDatas = response.data.courses;
+            setCourses(userDatas)
+
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const options = courses.map(option => ({
+        value: option.id,
+        label: option.name
+    }));
+
+    // Handle change event
+    const handleNewChange = (selectedOptions) => {
+        const coursesIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setCousesId(coursesIds);
+    };
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        const updatedFormData = { ...formData, [name]: value };
+        const { name,files, value } = e.target;
+        const updatedFormData = { ...formData, [name]: files ? files[0] : value};
         const validationErrors = ValidateCreate(updatedFormData);
         setErrors(validationErrors);
         setName(updatedFormData.Name || '');
@@ -107,25 +144,64 @@ function ListUse() {
         setAddress(updatedFormData.Address || '');
         setCity(updatedFormData.City || '');
         setYourIntroducationAndSkills(updatedFormData.YourIntroducationAndSkills || '');
+        setCousesId(updatedFormData.CousesId || '')
+        setimage(updatedFormData.image || null)
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const data = new FormData();
+        const formDataWithCoursesId = {
+            ...formData,
+            CousesId: formData.CousesId.join(',')  // Convert array to comma-separated string
+        };
+        if (selectedFiles) {
+            data.append('file', selectedFiles[0]);
+        }
+        for (const key in formDataWithCoursesId) {
+            data.append(key, formDataWithCoursesId[key]);
+        }
         try {
+         
             const token = localStorage.getItem('token');
 
+            let response
             if (token) {
-
-                await axios.post(`${REACT_APP_API_ENDPOINT}/addteachers`, formData, {
+           
+                response = await axios.post(`${REACT_APP_API_ENDPOINT}/addteachers`, data, {
                     headers: {
+                        'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
                     }
                 });
-                window.location.href = "/teachers";
-                alert('Teachers SuccessFully Create');
+              
+                const userdata = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
+                 window.location.href = "/teachers";
             }
+          
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message ,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
     };
 
@@ -250,14 +326,14 @@ function ListUse() {
                                     <div class="card-header border-bottom">
                                         <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
                                             <div class="offcanvas-header">
-                                                <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add Instructor</h5>
+                                                <h5 id="offcanvasAddUserLabel" class="offcanvas-title"> Fculty</h5>
                                                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                             </div>
                                             <div class="offcanvas-body mx-0 flex-grow-0">
                                                 <form class="add-new-user pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" onSubmit={handleSubmit} novalidate="novalidate">
                                                     <div class="card-body row">
 
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
 
                                                             <label class="form-label" for="add-user-fullname">Frist Name</label>
                                                             <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='Name'
@@ -265,35 +341,35 @@ function ListUse() {
                                                                 value={Name} aria-label="John Doe" />
                                                                  {errors.Name && <span style={{ color: 'red' }}>{errors.Name}</span>}
                                                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
                                                             <label class="form-label" for="add-user-fullname">Last Name</label>
                                                             <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='LastName'
                                                                 onChange={handleChange}
                                                                 value={LastName} aria-label="John Doe" />
                                                                  {errors.LastName && <span style={{ color: 'red' }}>{errors.LastName}</span>}
                                                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                            <div class="col-lg-6 p-t-20">
+                                                            <div class="col-lg-3 p-t-20">
                                                             <label class="form-label" for="add-user-email">Email</label>
                                                             <input type="text" id="add-user-email" class="form-control" placeholder="john.doe@example.com" name='Email'
                                                                 onChange={handleChange}
                                                                 value={Email} />
                                                               {errors.Email && <span style={{ color: 'red' }}>{errors.Email}</span>}
                                                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                            <div class="col-lg-6 p-t-20">
+                                                            <div class="col-lg-3 p-t-20">
                                                             <label class="form-label" for="add-user-contact">Contact</label>
                                                             <input type="number" id="add-user-contact" class="form-control phone-mask" placeholder="+91 (609) 988-44-11" name="PhoneNumber"
                                                                 onChange={handleChange}
                                                                 value={PhoneNumber} />
                                                                  {errors.PhoneNumber && <span style={{ color: 'red' }}>{errors.PhoneNumber}</span>}
                                                         </div>
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
                                                             <label class="form-label" for="add-user">User Name</label>
                                                             <input type="text" id="add-user" class="form-control" placeholder="User@123" name="Username"
                                                                 onChange={handleChange}
                                                                 value={Username} />
                                                                  {errors.Username && <span style={{ color: 'red' }}>{errors.Username}</span>}
                                                         </div>
-                                                        <div class="col-lg-6 p-t-20 paswrd">
+                                                        <div class="col-lg-3 p-t-20 paswrd">
 
                                                             <label class="form-label" for="basic-icon-default-password">Password</label>
                                                             <input  type={show ? "text" : "password"} 
@@ -308,7 +384,7 @@ function ListUse() {
                                                              {errors.Password && <span style={{ color: 'red' }}>{errors.Password}</span>}
 
                                                         </div>
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
 
                                                             <label class="form-label" for="basic-icon-default-password">DOB</label>
                                                             <input type="date"
@@ -322,7 +398,7 @@ function ListUse() {
                                                                  {errors.DOB && <span style={{ color: 'red' }}>{errors.DOB}</span>}
 
                                                         </div>
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
                                                             <label for="exampleFormControlSelect2" class="form-label">Teacher Type</label>
                                                             <select id="exampleFormControlSelect2" class="select2 form-select" name="TeacherType" value={TeacherType} onChange={handleChange}>
                                                                 <option value="">Select</option>
@@ -331,7 +407,22 @@ function ListUse() {
                                                             </select>
                                                             {errors.TeacherType && <span style={{ color: 'red' }}>{errors.TeacherType}</span>}
                                                         </div>
-                                                        <div class="col-lg-4 p-t-20">
+
+                                                        <div class="col-lg-3 p-t-20">
+                                                        <label htmlFor="exampleFormControlSelect2" className="form-label">Class / Course</label>
+                                                        <Select
+                                                            isMulti
+                                                            value={options.filter(option => CousesId.includes(option.value))}
+                                                            name="CousesId"
+                                                            onChange={handleNewChange}
+                                                            options={options}
+                                                            components={animatedComponents}
+                                                            inputId="exampleFormControlSelect2"
+                                                        />
+                                                         {/* {errors.BatchId && <div className='errors'>{errors.BatchId}</div>} */}
+
+                                                    </div>
+                                                        <div class="col-lg-3 p-t-20">
                                                             <label htmlFor="exampleFormControlSelect2" className="form-label">Country</label>
                                                             <select
                                                                 id="exampleFormControlSelect2"
@@ -347,7 +438,7 @@ function ListUse() {
                                                             </select>
                                                             {errors.CountryId && <span style={{ color: 'red' }}>{errors.CountryId}</span>}
                                                         </div>
-                                                        <div class="col-lg-4 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
                                                             <label htmlFor="exampleFormControlSelect2" className="form-label">State</label>
                                                             <select
                                                                 id="exampleFormControlSelect2"
@@ -364,7 +455,7 @@ function ListUse() {
                                                             {errors.StateId && <span style={{ color: 'red' }}>{errors.StateId}</span>}
                                                         </div>
 
-                                                        <div class="col-lg-4 p-t-20">
+                                                        <div class="col-lg-3 p-t-20">
                                                             <label htmlFor="exampleFormControlSelect2" className="form-label">District</label>
                                                             <select
                                                                 id="exampleFormControlSelect2"
@@ -381,7 +472,7 @@ function ListUse() {
                                                             {errors.DistrictId && <span style={{ color: 'red' }}>{errors.DistrictId}</span>}
                                                         </div>
 
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-4 p-t-10">
                                                             <label class="form-label" for="add-user-email">Address</label>
                                                             <input type="text" id="add-user-email" class="form-control" placeholder="Address" name='Address'
                                                                 onChange={handleChange}
@@ -389,7 +480,7 @@ function ListUse() {
                                                                  {errors.Address && <span style={{ color: 'red' }}>{errors.Address}</span>}
                                                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                         </div>
-                                                        <div class="col-lg-6 p-t-20">
+                                                        <div class="col-lg-4 p-t-10">
                                                             <label class="form-label" for="add-user-email">City</label>
                                                             <input type="text" id="add-user-email" class="form-control" placeholder="Address" name='City'
                                                                 onChange={handleChange}
@@ -397,12 +488,22 @@ function ListUse() {
                                                                  {errors.City && <span style={{ color: 'red' }}>{errors.City}</span>}
                                                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                         </div>
+                                                        <div class="col-lg-4 p-t-10">
+                                                            <label class="form-label">Upload Image</label>
+                                                            <input
+                                                                type="file"
+                                                                class="form-control"
+                                                                id="inputGroupFile04"
+                                                                aria-describedby="inputGroupFileAddon04"
+                                                                aria-label="Upload"
+                                                                onChange={handleFileChange}
+                                                            />
+                                                            {/*    {errors.file && <div className='errors'>{errors.file}</div>} */}
+
+                                                        </div>
                                                         <div class="mb-3">
                                                             <label class="form-label" for="basic-icon-default-message">Your Introducation & Skills</label>
                                                             <div class="input-group input-group-merge">
-                                                                <span id="basic-icon-default-message2" class="input-group-text"
-                                                                ><i class="bx bx-comment"></i
-                                                                ></span>
                                                                 <textarea
                                                                     id="basic-icon-default-message"
                                                                     class="form-control"
@@ -451,7 +552,7 @@ function ListUse() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

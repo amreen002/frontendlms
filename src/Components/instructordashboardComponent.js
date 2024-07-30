@@ -139,192 +139,64 @@ function InstructorDashboard(token) {
 
                                     </div>
                                 </div>
-                                <div class="row mt--40">
-                                    <div class="col-lg-12">
+                             
+                           
 
-                                        <div class="in-progress-course-wrapper">
-                                            <h5 class="title">In Progress Class</h5>
+                                {/* <div className='row'>
+                                    <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
+                                        <div className='hide-content pt--20'>
+                                            <h2>Hide Content for guest User</h2>
                                         </div>
-
-                                        <div class="single-progress-course">
-                                            <a href="single-course.html" class="thumbnail">
-                                                <img src="assets/images/dashboard/02.jpg" alt="img" />
-                                            </a>
-                                            <div class="information-progress-course">
-                                                <div class="rating-area">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <span>(0)</span>
-                                                </div>
-                                                <a href="single-course.html">
-                                                    <h5 class="title">User Experience The Ultimate Guide to Usability and UX</h5>
-                                                </a>
-                                                <span class="comp">Completed Lessons: 0 of 1 lesson</span>
-                                                <div class="progress-wrapper-lesson-compleate">
-                                                    <div class="progress">
-                                                        <div class="progress-bar wow fadeInLeft bg--primary" role="progressbar" style={{ width: '0%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                        <div className="sociallocker">
+	
+	<div className="sociallocker-content">
+		
+    <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                    <div className="single-course-style-three enroll-course">
+                                                        <a href="/studentmateriales/12" className="thumbnail">
+                                                            <img src="http://localhost:8080/uploads\images\2024-07-09T06-21-53.562Z-
+                                                        testingakash.mp4" alt="dashboard" />
+                                                                <div className="tag-thumb">
+                                                                    <span>CBSC</span>
+                                                                </div>
+                                                        </a>
+                                                        <div className="body-area">
+                                                            <div className="course-top">
+                                                                <div className="price">1231233 <i class="fa-indian-rupee fa-light">
+                                                                </i>
+                                                                </div>
+                                                            </div>
+                                                            <a href="/studentmateriales/12">
+                                                                <h5 className="title">asdf</h5>
+                                                            </a>
+                                                            <div className="leasson-students">
+                                                                <div className="lesson">
+                                                                    <i className="fa-light fa-calendar-lines-pen"></i>
+                                                                    <span>0 Lessons</span>
+                                                                </div>
+                                                                <div className="students">
+                                                                    <i className="fa-light fa-users"></i>
+                                                                    <span>0 Student</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="progress-wrapper-lesson-compleate">
+                                                                <div className="compleate">
+                                                                    <div className="compl">Complete</div>
+                                                                    <div className="end"><span>50%</span></div>
+                                                                </div>
+                                                                <div className="progress">
+                                                                   
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="end">
-                                                        <span>0% Complete</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="single-progress-course">
-                                            <a href="single-course.html" class="thumbnail">
-                                                <img src="assets/images/dashboard/03.jpg" alt="img" />
-                                            </a>
-                                            <div class="information-progress-course">
-                                                <div class="rating-area">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <span>(0)</span>
                                                 </div>
-                                                <a href="single-course.html">
-                                                    <h5 class="title">Front-End Class With Bootstrap 5</h5>
-                                                </a>
-                                                <span class="comp">Completed Lessons: 5 of 7 lesson</span>
-                                                <div class="progress-wrapper-lesson-compleate">
-                                                    <div class="progress">
-                                                        <div class="progress-bar wow fadeInLeft bg--primary" role="progressbar" style={{ width: '80%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                        </div>
-                                                    </div>
-                                                    <div class="end">
-                                                        <span>80% Complete</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="single-progress-course">
-                                            <a href="single-course.html" class="thumbnail">
-                                                <img src="assets/images/dashboard/04.jpg" alt="img" />
-                                            </a>
-                                            <div class="information-progress-course">
-                                                <div class="rating-area">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <span>(0)</span>
-                                                </div>
-                                                <a href="single-course.html">
-                                                    <h5 class="title">PHP Basic to Advance Full Class In English</h5>
-                                                </a>
-                                                <span class="comp">Completed Lessons: 3 of 6 lesson</span>
-                                                <div class="progress-wrapper-lesson-compleate">
-                                                    <div class="progress">
-                                                        <div class="progress-bar wow fadeInLeft bg--primary" role="progressbar" style={{ width: '50%' }} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                                        </div>
-                                                    </div>
-                                                    <div class="end">
-                                                        <span>50% Complete</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
+	</div>
+	<div className="sociallocker-overlay"><i class="fas fa-lock"></i>Unlock content to login with Instructor or Student.</div>
+</div>
                                     </div>
-                                </div>
-                                <div class="row mt--40">
-                                    <div class="col-lg-12">
-
-                                        <div class="in-progress-course-wrapper  title-between-dashboard mb--10">
-                                            <h5 class="title">My Class</h5>
-                                            <a href="#" class="more">View All</a>
-                                        </div>
-
-                                        <div class="my-course-enroll-wrapper-board">
-
-                                            <div class="single-course-inroll-board head">
-                                                <div class="name">
-                                                    <p>My Class</p>
-                                                </div>
-                                                <div class="enroll">
-                                                    <p>Enrolled</p>
-                                                </div>
-                                                <div class="rating">
-                                                    <p>Rating</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="single-course-inroll-board">
-                                                <div class="name">
-                                                    <p>New Class</p>
-                                                </div>
-                                                <div class="enroll">
-                                                    <p>2</p>
-                                                </div>
-                                                <div class="rating">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                </div>
-                                            </div>
-
-                                            <div class="single-course-inroll-board">
-                                                <div class="name">
-                                                    <p>My Class</p>
-                                                </div>
-                                                <div class="enroll">
-                                                    <p>0</p>
-                                                </div>
-                                                <div class="rating">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                </div>
-                                            </div>
-
-                                            <div class="single-course-inroll-board">
-                                                <div class="name">
-                                                    <p>Test New Class</p>
-                                                </div>
-                                                <div class="enroll">
-                                                    <p>2</p>
-                                                </div>
-                                                <div class="rating">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                </div>
-                                            </div>
-
-                                            <div class="single-course-inroll-board">
-                                                <div class="name">
-                                                    <p>New Class</p>
-                                                </div>
-                                                <div class="enroll">
-                                                    <p>2</p>
-                                                </div>
-                                                <div class="rating">
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                    <i class="fa-light fa-star"></i>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>

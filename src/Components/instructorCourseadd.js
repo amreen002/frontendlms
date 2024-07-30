@@ -408,7 +408,7 @@ const InstructorCourseadd = () =>{
                         </div>
                     </div>
                 </div>
-                <div className="col-lg-4 rts-sticky-column-item">
+                <div className="col-lg-4 rts-sticky-column-item cus_course_desnote">
                     <div className="course-upload-tips-wrapper theiaStickySidebar">
                         <h5 className="title">Course Upload Tips</h5>
                         <div className="single-check-wrapper">

@@ -5,6 +5,8 @@ import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import ValidationCourse from '../validation/coursevalidation';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 const { REACT_APP_API_ENDPOINT } = process.env;
 function CoursesP() {
     const { coursesId } = useParams();
@@ -116,37 +118,79 @@ function CoursesP() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                await axios.post(`${REACT_APP_API_ENDPOINT}/addcourses`, data, {
+             const response =   await axios.post(`${REACT_APP_API_ENDPOINT}/addcourses`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
                     }
                 });
-
+                const userdata = response.data
                 window.location.href = "/courses";
-                alert('Class Successfully Create');
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
 
             }
         } catch (error) {
-            alert('Failed to send message.');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
     }
     const handleDelete = async (coursesId) => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                await axios.delete(`${REACT_APP_API_ENDPOINT}/deletecourses/${coursesId}`, {
+            const response =    await axios.delete(`${REACT_APP_API_ENDPOINT}/deletecourses/${coursesId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData(coursesId);
-                alert('Data successfully deleted');
+                const userdata = response.data
+                window.location.href = "/courses";
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
 
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            alert('An error occurred while deleting data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
     }
     const handleUpdate = async (e) => {
@@ -158,18 +202,40 @@ function CoursesP() {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                await axios.patch(`${REACT_APP_API_ENDPOINT}/viewscourses/${coursesId}`, data, {
+           const response =   await axios.patch(`${REACT_APP_API_ENDPOINT}/viewscourses/${coursesId}`, data, {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                         'Content-Type': 'multipart/form-data',
+                          Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData(coursesId)
-                alert("Class updated successfully!");
+                const userdata  = response.data
+                toast.success(userdata.message,{
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    
+                 });
                  window.location.href = "/courses";
             }
         } catch (error) {
             console.error('Error updating user:', error);
-            alert('An error occurred while updating user data');
+            toast.error(error.response.data.message,{
+                position: "top-right",
+                autoClose: true,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                
+             });
         }
 
 
@@ -331,7 +397,7 @@ function CoursesP() {
                                                   
                                                     <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
                                                    
-                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i>Class</span>
+                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i>Class/Course</span>
                                                     </button>
                                                  </div>
                                             </div>
@@ -342,7 +408,7 @@ function CoursesP() {
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label="" width="20px;"></th>
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Role: activate to sort column ascending">Classes</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Role: activate to sort column ascending">Classes / Course</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="250px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
@@ -377,7 +443,7 @@ function CoursesP() {
 
                                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
                                         <div class="offcanvas-header">
-                                            <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add New Class</h5>
+                                            <h5 id="offcanvasAddUserLabel" class="offcanvas-title"> New Class / Course</h5>
                                             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                         </div>
                                         <div class="offcanvas-body mx-0 flex-grow-0">
@@ -385,21 +451,21 @@ function CoursesP() {
 
 
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Class Name</label>
+                                                    <label class="form-label" for="add-user-fullname"> Name</label>
                                                     <input type="text" class="form-control" id="add-user-fullname" placeholder="Class" name='name'
                                                         value={formData.name} aria-label="John Doe" onChange={handleChange} />
                                                         {errors.name && <div className='errors'>{errors.name}</div>}
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Class Price</label>
+                                                    <label class="form-label" for="add-user-fullname"> Price</label>
                                                     <input type="number" class="form-control" id="add-user-fullname" placeholder="Class Price" name='CoursePrice'
                                                         value={formData.CoursePrice} onChange={handleChange} />
                                                          {errors.CoursePrice && <div className='errors'>{errors.CoursePrice}</div>}
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Class Duration (Days)</label>
+                                                    <label class="form-label" for="add-user-fullname"> Duration (Days)</label>
                                                     <input type="number" class="form-control" id="add-user-fullname" placeholder="Class Duration" name='CourseDuration'
                                                         value={formData.CourseDuration} onChange={handleChange} />
                                                          {errors.CourseDuration && <div className='errors'>{errors.CourseDuration}</div>}
@@ -430,7 +496,7 @@ function CoursesP() {
 
                                                 </div>
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">About Class</label>
+                                                    <label class="form-label" for="add-user-fullname">About</label>
                                                     <input type="text" class="form-control" id="add-user-fullname" placeholder="About Class" name='AboutCourse'
                                                         value={formData.AboutCourse} onChange={handleChange} />
                                                          {errors.AboutCourse && <div className='errors'>{errors.AboutCourse}</div>}
@@ -465,20 +531,20 @@ function CoursesP() {
                                                 </div>
                                                 <form id="editUserForm" className="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
                                                     <div class="col-12 fv-plugins-icon-container">
-                                                        <label class="form-label" for="modalEditUserFirstName">Class Name</label>
+                                                        <label class="form-label" for="modalEditUserFirstName">Name</label>
                                                         <input type="text" id="modalEditUserFirstName" name='name' class="form-control" placeholder="Class"
                                                             value={formData.name} onChange={handleChange}
                                                         />
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
 
                                                     <div class="col-12 fv-plugins-icon-container">
-                                                        <label class="form-label" for="add-user-fullname">Class Price</label>
+                                                        <label class="form-label" for="add-user-fullname"> Price</label>
                                                         <input type="number" class="form-control" id="add-user-fullname" placeholder="Class Price" name='CoursePrice'
                                                             value={formData.CoursePrice} onChange={handleChange} />
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                     </div>
                                                     <div class="mb-3 fv-plugins-icon-container">
-                                                        <label class="form-label" for="add-user-fullname">Class Duration (Days)</label>
+                                                        <label class="form-label" for="add-user-fullname"> Duration (Days)</label>
                                                         <input type="number" class="form-control" id="add-user-fullname" placeholder="Class Duration" name='CourseDuration'
                                                             value={formData.CourseDuration} onChange={handleChange} />
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
@@ -507,7 +573,7 @@ function CoursesP() {
 
                                                 </div>
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">About Class</label>
+                                                    <label class="form-label" for="add-user-fullname">About</label>
                                                     <input type="text" class="form-control" id="add-user-fullname" placeholder="About Class" name='AboutCourse'
                                                         value={formData.AboutCourse} onChange={handleChange} />
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
@@ -542,7 +608,7 @@ function CoursesP() {
                 {/* / Layout wrapper  */}
 
             </div >
-
+            <ToastContainer />
         </>
     )
 }

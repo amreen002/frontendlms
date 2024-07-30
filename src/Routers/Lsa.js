@@ -24,22 +24,7 @@ const Lsa = () => {
 <section className='sticy-header logo-size'>
         <Navbarmenu />
       </section> 
-      <div class="breadcrumb-bar">
-              <div class="container">
-                  <div class="row">
-                      <div class="col-md-12 col-12">
-                          <h2 class="breadcrumb-title">Learning Style Assesments</h2>
-                          <nav aria-label="breadcrumb" class="page-breadcrumb">
-                              <ol class="breadcrumb">
-                                  <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                  <li class="breadcrumb-item" aria-current="page">LSA</li>
-                              </ol>
-                          </nav>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
+    
       <section className='pt--110 pb--110  about_one'  >
         <div className='container'>
             <div className='row'>
@@ -47,12 +32,7 @@ const Lsa = () => {
                     <div className='lsa_img'>
                               <figure class="wpb_wrapper vc_figure">
                                   <div class="vc_single_image-wrapper   vc_box_border_grey">
-                                    <img fetchpriority="high" decoding="async" width="635" height="625" 
-                                    src="assets/fontend/images/about/1.png" class="vc_single_image-img attachment-full" alt="" title="into"
-                                     srcset="assets/fontend/images/about/1.png 635w, 
-                                     assets/fontend/images/about/1.png 600w, 
-                                     assets/fontend/images/about/1.png 300w"
-                                      sizes="(max-width: 635px) 100vw, 635px" />
+                                    <img src='assets/fontend/images/about/Banner-Icon-14.png' className='img-fluid' />
 
                                       </div>
                               </figure>
@@ -110,13 +90,8 @@ const Lsa = () => {
                       <div className='col-12 col-xl-7 col-lg-7 col-md-7'>
                           <div className='lsa_img2'>
                               <figure class="wpb_wrapper vc_figure">
-                                  <div class="vc_single_image-wrapper   vc_box_border_grey">
-                                      <img fetchpriority="high" decoding="async" width="635" height="625"
-                                          src="assets/fontend/images/about/2.png" class="vc_single_image-img attachment-full" alt="" title="into"
-                                          srcset="assets/fontend/images/about/2.png 635w, 
-                                     assets/fontend/images/about/2.png 600w, 
-                                     assets/fontend/images/about/2.png 300w"
-                                          sizes="(max-width: 635px) 100vw, 635px" />
+                                  <div class="">
+                                  <img src='assets/fontend/images/about/Banner-Icon-15.png' className='img-fluid' />
 
                                   </div>
                               </figure>
@@ -129,25 +104,18 @@ const Lsa = () => {
         </div>
       </section>
 
-      <section className='py-5  whatlearning'  >
-            <div className='container'>
-                <div className='row'>
-                   
-                    <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
+     
+
+      <section class="py-5 lsa_cus_bg">
+        <div className='container'>
+            <div className='row'>
+            <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
                         <div className={`about_last ${animate3 ? 'bounce-down' : ''}`}>
                             <h3>
                                 What Learning Style Assessment Offers You?
                             </h3>
                         </div>
                     </div>
-                  
-                </div>
-            </div>
-      </section>
-
-      <section class="py-5">
-        <div className='container'>
-            <div className='row'>
                 <div className='col-12 col-xl-4 col-lg-4 col-md-4'>
                     <div className='benift'>
                      

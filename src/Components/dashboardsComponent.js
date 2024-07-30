@@ -553,7 +553,7 @@ function DashBoards(onLogout) {
                                                 </ul>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>                        
                                     {/*             <!--/ Transactions --> */}
                                 </div>
                             </div>

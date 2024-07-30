@@ -112,7 +112,7 @@ function AddQuestion() {
 
                     }
                 });
-                const userData = response.data.quizze;
+                const userData = response.data.quizze.rows;
                 setQuizze(userData)
             }
 
