@@ -8,10 +8,6 @@ import DashboardCard from "./dashboardcardComponent";
 const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 const datatoken = localStorage.getItem('datatoken');
 const coursedatafetch = JSON.parse(datatoken)
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 function InstructorviewquizComponent(token) {
     const [quizze, setQuizze] = useState([]);
     const [question, setQuestion] = useState([]);

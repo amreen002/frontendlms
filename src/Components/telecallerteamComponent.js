@@ -380,10 +380,10 @@ function TelecalTeam() {
                                                             </td>
                                                             <td>
 
-                                                                <input type="text" className="form-control telecallar-team" id="add-user-fullname" placeholder="John Doe" name='roleId' value={roleId}
-                                                                    onChange={(e) => setRoleId(e.target.value)} style={{ display: "none" }} />
+                                                                {selectedItem && selectedItem.id === item.id ? (<input type="text" className="form-control telecallar-team" id="add-user-fullname" placeholder="John Doe" name='roleId' value={roleId}
+                                                                    onChange={(e) => setRoleId(e.target.value)} style={{ display: "none" }} />)
 
-                                                                <span>{item.User && item.User.Role && item.User.Role.Name}</span>
+                                                                    : (<span>{item.User && item.User.Role && item.User.Role.Name}</span>)}
 
                                                             </td>
                                                             <td> {selectedItem && selectedItem.id === item.id ? (<input type="text" id="add-user-contact" disabled="false" className="form-control telecallar-team" placeholder="+91 (609) 988-44-11" aria-label="john.doe@example.com" name="phoneNumber"
