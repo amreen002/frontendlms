@@ -74,7 +74,7 @@ function TelecallerUse() {
                     }
                 });
 
-                setTabledataUser(response.data.users);
+                setTabledataUser(response.data.users.rows);
             }// Updated state variable
         } catch (err) {
             console.log(err.response);
@@ -97,7 +97,7 @@ function TelecallerUse() {
 
             if (token) {
                 if (window.confirm('Are you sure you want to allocate the Telecaller Department Team Member?')) {
-                    await axios.patch(`${REACT_APP_API_ENDPOINT}/viewssaleteam/${saleteamId}`, { telecallerPersonName: newValue, roleId: roleId }, {
+                    await axios.patch(`${REACT_APP_API_ENDPOINT}/viewssaleteam/${saleteamId}`, { telecallerPersonName: newValue }, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -316,9 +316,9 @@ function TelecallerUse() {
                                                                             checked={telecallerPersonNames[item.id] === "Allotted"}
                                                                             onChange={(e) => handleUpdate(e, item.id)}
                                                                         />
-                                                                        <label className="form-check-label" htmlFor={`telecallerPersonName-${item.id}`}>
+                                                                        <span>
                                                                             {telecallerPersonNames[item.id]}
-                                                                        </label>
+                                                                        </span>
                                                                     </div>
                                                                 )}
                                                             </td>

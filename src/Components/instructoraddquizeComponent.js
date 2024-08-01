@@ -14,6 +14,8 @@ const animatedComponents = makeAnimated();
 const datatoken = localStorage.getItem('datatoken');
 const coursedatafetch = JSON.parse(datatoken)
 function InstructoreaddquizeComponent(token) {
+    const datatoken = localStorage.getItem('datatoken');
+    const coursedatafetch = JSON.parse(datatoken)
     const [table, setTable] = useState("");
     const [course, setCourse] = useState([]);
     const [coursesCount, setCoursesCount] = useState(null);
@@ -90,7 +92,7 @@ function InstructoreaddquizeComponent(token) {
 
     // Format options for react-select
     const options = batch.map(option => ({
-      
+
         value: option.id,
         label: option.Title,
     }));
@@ -240,17 +242,17 @@ function InstructoreaddquizeComponent(token) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-    
+
         try {
           
     
             const token = localStorage.getItem('token');
-    
+
             if (!token) {
                 alert('Token not found. Please log in again.');
                 return;
             }
-    
+
             const response = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/quizze`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -312,7 +314,7 @@ function InstructoreaddquizeComponent(token) {
              });
         }
     };
-    
+
 
 
     return (
@@ -321,15 +323,15 @@ function InstructoreaddquizeComponent(token) {
                 <Navbarmenu />
             </section>
 
-            <DashboardCard/>
+            <DashboardCard />
 
             <div class="dashboard--area-main pt--100 pt_sm--50">
                 <div class="container">
                     <div class="row g-5">
                         <Sidebar />
-                        <div class="col-lg-9">
-                        <div class="right-sidebar-dashboard" style={{ backgroundColor: '#fff' }}>
-                                <h5 class="title"> Manage Quiz</h5>
+                        <div className="col-lg-9">
+                            <div className="right-sidebar-dashboard" style={{ backgroundColor: '#fff' }}>
+                                <h5 className="title">Manage Quiz</h5>
                                 <form className='row' onSubmit={handleSubmit}>
                                 {coursedatafetch.Role.Name === "Guest/Viewer" ? (
                                         <div className="sociallocker">
@@ -492,10 +494,9 @@ function InstructoreaddquizeComponent(token) {
                                     }
 
                                 </form>
-
-
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

@@ -460,7 +460,7 @@ function ConselorDepartmentUse() {
                                                                                     </tr>
                                                                                 )
                                                                             }
-                                                                            return null
+                                                                            else{return null}
                                                                         })}
                                                                     </tbody>
                                                                 </table>
@@ -490,14 +490,13 @@ function ConselorDepartmentUse() {
                                     </div>
                                     <div class="card-datatable table-responsive">
                                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
-                                            {/*      {console.log(search)}
                                             <input
                                                 class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0"
                                                 type="search"
                                                 value={search}
                                                 onChange={(e) => setSearch(e.target.value)}
 
-                                            /> */}
+                                            /> 
                                         </label></div><div class="dt-buttons btn-group flex-wrap"> <div class="btn-group"><button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><i class="bx bx-export me-1"></i>Export</span></button></div></div></div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>

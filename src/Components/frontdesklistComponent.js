@@ -320,7 +320,7 @@ function FrontListUse() {
                                                 <tbody>
                                                     {table.map((item, index) => (
                                                         <tr key={item.id}>
-                                                            <td class="sorting_1">{index + 1}</td>
+                                                            <td className="sorting_1">{index + 1}</td>
                                                             <td>{item.enquiryId}</td>
                                                             <td>{item.date}</td>
                                                             <td>{item.name}</td>

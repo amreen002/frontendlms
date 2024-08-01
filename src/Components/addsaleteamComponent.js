@@ -10,6 +10,7 @@ function SaleTeamUse() {
     const { saleteamId } = useParams();
     const [date, setDate] = useState("");
     const [name, setName] = useState("");
+    const [roleId, setroleId] = useState("");
     const [age, setAge] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
@@ -18,6 +19,7 @@ function SaleTeamUse() {
     const [remark, setRemark] = useState("");
     const [userData, setUserData] = useState({});
     const navigate = useNavigate();
+    const [dataUser, setTabledataUser] = useState([]);
     useEffect(() => {
         fetchData1(saleteamId);
     }, [saleteamId]);
@@ -56,6 +58,7 @@ function SaleTeamUse() {
     }
     useEffect(() => {
         fetchData();
+        fetchData2()
     }, []);
 
 
@@ -75,15 +78,33 @@ function SaleTeamUse() {
             console.log(err.response);
         }
     }
+
+    
+    const fetchData2 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/users?LeadGetAllowated=true`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                setTabledataUser(response.data.users.rows);
+            }// Updated state variable
+        } catch (err) {
+            console.log(err.response);
+        }
+    }
     const [formData, setFormData] = useState({
         date: '',
         name: '',
-        age: '',
         phoneNumber: '',
         email: '',
         workingStatus: '',
         leadPlatform: '',
-        remark: ''
+        remark: '',
+        roleId: '',
 
     })
     const handleChange = (e) => {
@@ -104,7 +125,7 @@ function SaleTeamUse() {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                window.location.href="/addsaleteam"
+                window.location.href = "/addsaleteam"
                 alert('Lead Is Create Successfully');
             }
         } catch (error) {
@@ -123,7 +144,7 @@ function SaleTeamUse() {
                 });
                 fetchData();
                 alert('Lead Successfully Deleted');
-           
+
             }
         } catch (error) {
             console.error('Error deleting data:', error);
@@ -133,7 +154,7 @@ function SaleTeamUse() {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            const updatedUserData = { date, name, age, phoneNumber, email, workingStatus, leadPlatform,remark };
+            const updatedUserData = { date, name, age, phoneNumber, email, workingStatus, leadPlatform, remark };
             const token = localStorage.getItem('token');
 
             if (token) {
@@ -143,7 +164,7 @@ function SaleTeamUse() {
                     }
                 });
                 fetchData(saleteamId);
-                window.location.href="/addsaleteam"
+                window.location.href = "/addsaleteam"
                 alert("Lead Is Updated Successfully!");
             }
         } catch (error) {
@@ -274,17 +295,29 @@ function SaleTeamUse() {
                                     </div>
                                     <div class="card-datatable table-responsive">
                                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
-                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div><div class="dt-buttons btn-group flex-wrap"> <div class="btn-group"><button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><i class="bx bx-export me-1"></i>Export</span></button></div> <button class="btn btn-secondary add-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser"><span><i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New Lead</span></span></button> </div></div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
+                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div>
+                                            <div class="btn-group d-flex flex-row">
+                                                <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex"
+                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
+                                                    aria-expanded="false">
+                                                    <span><i class="bx bx-export me-1"></i>Export</span>
+                                                </button>
+
+                                                <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+
+                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i>Lead</span>
+                                                </button>
+                                            </div>
+                                        </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="115px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="176px;" aria-label="Role: activate to sort column ascending">Full Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="115px;" aria-label="Role: activate to sort column ascending">Age</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="118px;" aria-label="Plan: activate to sort column ascending">Contact </th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Billing: activate to sort column ascending">Email</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Status: activate to sort column ascending">Working Status</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Status: activate to sort column ascending">Lead Platform</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Full Name</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Plan: activate to sort column ascending">Contact </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Billing: activate to sort column ascending">Email</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Working Status</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Lead Platform</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="118px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
@@ -297,7 +330,6 @@ function SaleTeamUse() {
                                                             </td>
                                                             <td>{item.id}</td>
                                                             <td>{item.name}</td>
-                                                            <td>{item.age}</td>
                                                             <td>{item.phoneNumber}</td>
                                                             <td>{item.email}</td>
                                                             <td>{item.workingStatus}</td>
@@ -323,66 +355,99 @@ function SaleTeamUse() {
 
                                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
                                         <div class="offcanvas-header">
-                                            <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add New Lead</h5>
+                                            <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Enquery Information</h5>
                                             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                         </div>
-                                        <div class="offcanvas-body mx-0 flex-grow-0">
-                                            <form class="add-new-user pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" onSubmit={handleSubmit} novalidate="novalidate">
+                                        <div class="offcanvas-body mx-0 flex-grow-0 row">
+                                           <div class="col-md-4">
+                                           <p id="offcanvasAddUserLabel" class="offcanvas-title mb-2">Upload Via</p>
+                                           </div> 
+                                            <div class="col-md-4 form-check">
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" placeholder="Email" />
+                                                <span>Email</span>
+                                            </div>
+                                            <div class="col-md-4 form-check">
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" placeholder="Mobile" />
+                                                <span>Mobile</span>
+                                            </div> 
+
+                                            <form class=" add-new-user pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" onSubmit={handleSubmit} novalidate="novalidate">
+
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label for="flatpickr-datetime" class="form-label">Date</label>
-                                                    <input type="date" class="form-control" placeholder="YYYY-MM-DD HH:MM" id="flatpickr-datetime" name='date' onChange={handleChange}
+
+                                                    <input type="date" class="form-control enquery-form" placeholder="Condidate Date*" id="flatpickr-datetime" name='date' onChange={handleChange}
                                                         value={formData.date} />
                                                 </div>
 
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Full Name</label>
-                                                    <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='name'
+                                                <div class="mb-3  fv-plugins-icon-container">
+
+                                                    <input type="text" class="form-control enquery-form" id="add-user-fullname" placeholder="Condidate Name*" name='name'
                                                         onChange={handleChange}
-                                                        value={formData.name} aria-label="John Doe" />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Age</label>
-                                                    <input type="number" class="form-control" id="add-user-fullname" placeholder="John Doe" name='age'
-                                                        onChange={handleChange}
-                                                        value={formData.age} aria-label="John Doe" />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="add-user-contact">Contact</label>
-                                                    <input type="text" id="add-user-contact" class="form-control phone-mask" placeholder="+91 (609) 988-44-11"  name="phoneNumber"
+                                                        value={formData.name} />
+                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                </div>
+
+                                                <div class="mb-3   fv-plugins-icon-container">
+
+                                                    <input type="text" id="add-user-contact" class="form-control phone-mask enquery-form" placeholder="Condidate Mobile Number*" name="phoneNumber"
                                                         onChange={handleChange}
                                                         value={formData.phoneNumber} />
                                                 </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Email</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="john.doe@example.com"  name='email'
+                                                <div class="mb-3  fv-plugins-icon-container">
+                                                    <input type="text" id="add-user-email" class="form-control enquery-form" placeholder="Condidate Email Id*" name='email'
                                                         onChange={handleChange}
                                                         value={formData.email} />
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Working Status</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="Employe" aria-label="Employe" name='workingStatus'
-                                                        onChange={handleChange}
-                                                        value={formData.workingStatus} />
+                                                <div class="mb-3    fv-plugins-icon-container">
+
+                                                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={formData.workingStatus} onChange={handleChange}>
+                                                        <option value="">Select Specialistion*</option>
+                                                        <option value="Employee">Employee</option>
+                                                        <option value="Student">Student</option>
+                                                        <option value="Entrepreneur">Entrepreneur</option>
+                                                    </select>
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
                                                 <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Lead Platform</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="Call" aria-label="Call" name='leadPlatform'
+
+                                                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Forms Interested in*' name='leadPlatform'
                                                         onChange={handleChange}
-                                                        value={formData.leadPlatform} />
+                                                        value={formData.leadPlatform}>
+                                                        <option value="">Choose Forms Interested in*</option>
+                                                        <option value="Employee">Interested</option>
+                                                        <option value="Student">Not Interested</option>
+
+                                                    </select>
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Remark</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="remark" aria-label="remark" name='remark'
+
+
+                                                <div class="mb-3  fv-plugins-icon-container">
+
+                                                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' value={formData.roleId} onChange={handleChange}>
+                                                        <option value="">Assign to Counsellor*</option>
+                                                        {dataUser.map(option => (
+                                                            <option key={option.id} value={option.id}>{option.name}</option>
+                                                        ))}
+
+
+                                                    </select>
+                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                </div>
+                                                <div class="mb-3  fv-plugins-icon-container">
+
+                                                    <input type="text" id="add-user-email" class="form-control enquery-form" placeholder="Remark*" aria-label="remark" name='remark'
                                                         onChange={handleChange}
                                                         value={formData.remark} />
                                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
-                                                <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
-                                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-                                                <input type="hidden" /></form>
+                                                <div class="mb-3 fv-plugins-icon-container d-flex">
+                                                    <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+                                                    <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                                                    <input type="hidden" />
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
