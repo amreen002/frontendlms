@@ -4,12 +4,17 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+// import { FaPlus } from 'react-icons/fa';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import Draggable from '../Components/draggableComponent';
 const { REACT_APP_API_ENDPOINT } = process.env;
 function SaleTeamUse() {
     const [table, setTable] = useState([]);
     const { saleteamId } = useParams();
     const [date, setDate] = useState("");
     const [name, setName] = useState("");
+    const [roleId, setroleId] = useState("");
     const [age, setAge] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
@@ -18,6 +23,31 @@ function SaleTeamUse() {
     const [remark, setRemark] = useState("");
     const [userData, setUserData] = useState({});
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({});
+    const [items, setItems] = useState([]);
+    const [nextId, setNextId] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sliderActive, setSliderActive] = useState(false);
+    const [dataUser, setTabledataUser] = useState([]);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const inputs = [
+        { id: 'date', label: 'Date*' },
+        { id: 'remark', label: 'Remark*' },
+        { id: 'roleId', label: 'Assign to Counsellor*' },
+        { id: 'workingStatus', label: 'Select Specialisation*' },
+        { id: 'leadPlatform', label: 'Lead Platform*' },
+        { id: 'age', label: 'Age*' },
+        { id: 'countryid', label: 'Country*' },
+        { id: 'stateid', label: 'State*' },
+        { id: 'courseid', label: 'Course*' },
+        { id: 'cityid', label: 'City*' },
+        { id: 'address', label: 'Address*' },
+        { id: 'area', label: 'Area*' },
+        { id: 'area', label: 'Area*' },
+    ];
+
+
+
     useEffect(() => {
         fetchData1(saleteamId);
     }, [saleteamId]);
@@ -56,8 +86,8 @@ function SaleTeamUse() {
     }
     useEffect(() => {
         fetchData();
+        fetchData2()
     }, []);
-
 
     const fetchData = async () => {
         try {
@@ -75,36 +105,37 @@ function SaleTeamUse() {
             console.log(err.response);
         }
     }
-    const [formData, setFormData] = useState({
-        date: '',
-        name: '',
-        age: '',
-        phoneNumber: '',
-        email: '',
-        workingStatus: '',
-        leadPlatform: '',
-        remark: ''
-
-    })
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-
-    }
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const fetchData2 = async () => {
         try {
             const token = localStorage.getItem('token');
-
             if (token) {
-                await axios.post(`${REACT_APP_API_ENDPOINT}/addsaleteam`, formData, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/users?LeadGetAllowated=true`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                window.location.href="/addsaleteam"
+
+                setTabledataUser(response.data.users.rows);
+            }// Updated state variable
+        } catch (err) {
+            console.log(err.response);
+        }
+    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const dataToSubmit = {
+            ...formData, // Ensure formData has plain strings
+        };
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                await axios.post(`${REACT_APP_API_ENDPOINT}/addsaleteam`, dataToSubmit, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                window.location.href = "/addsaleteam"
                 alert('Lead Is Create Successfully');
             }
         } catch (error) {
@@ -123,7 +154,7 @@ function SaleTeamUse() {
                 });
                 fetchData();
                 alert('Lead Successfully Deleted');
-           
+
             }
         } catch (error) {
             console.error('Error deleting data:', error);
@@ -133,7 +164,7 @@ function SaleTeamUse() {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            const updatedUserData = { date, name, age, phoneNumber, email, workingStatus, leadPlatform,remark };
+            const updatedUserData = { date, name, age, phoneNumber, email, workingStatus, leadPlatform, remark };
             const token = localStorage.getItem('token');
 
             if (token) {
@@ -143,7 +174,7 @@ function SaleTeamUse() {
                     }
                 });
                 fetchData(saleteamId);
-                window.location.href="/addsaleteam"
+                window.location.href = "/addsaleteam"
                 alert("Lead Is Updated Successfully!");
             }
         } catch (error) {
@@ -154,6 +185,205 @@ function SaleTeamUse() {
         // Clear input fields after update
 
     };
+
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        if (active && over && active.id !== over.id) {
+            setItems((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
+
+    const handleChange = (e, id) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+
+
+    const addInput = (type) => {
+        const id = `input-${type}`;
+        if (items.some(item => item.id === id)) {
+            handleRemove(id);
+            return;
+        }
+
+        const newItem = {
+            id,
+            component: renderInput(type, id),
+        };
+
+        setItems((items) => [...items, newItem]);
+    };
+
+
+
+    const renderInput = (type, id) => {
+        switch (type) {
+            case 'date':
+                return (
+                    <input
+                        type="date"
+                        className="form-control enquery-form"
+                        placeholder="Candidate Date*"
+                        name="date"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'name':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Candidate Name*"
+                        name="name"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'workingStatus':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select Specialistion*</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Student">Student</option>
+                        <option value="Entrepreneur">Entrepreneur</option>
+                    </select>
+                );
+            case 'roleId':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Assign to Counsellor*</option>
+                        {dataUser.map(option => (
+                            <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                    </select>
+                );
+            case 'remark':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Remark*"
+                        name="remark"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'leadPlatform':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Forms Interested in*' name='leadPlatform'
+                        onChange={(e) => handleChange(e, id)}>
+                        <option value="">Choose Forms Interested in*</option>
+                        <option value="Employee">Interested</option>
+                        <option value="Student">Not Interested</option>
+                    </select>
+                )
+            case 'age':
+                return (
+                    <input
+                        type="number"
+                        className="form-control enquery-form"
+                        placeholder="Age*"
+                        name="age"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'stateid':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="State*"
+                        name="stateid"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'countryid':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Country*"
+                        name="countryid"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'cityid':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="City*"
+                        name="cityid"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'courseid':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Select Course / Class*"
+                        name="courseid"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'address':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Address*"
+                        name="address"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'area':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Area*"
+                        name="area"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'leadPlatform':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Lead Platform*"
+                        name="leadPlatform"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+
+    const toggleDropdown = (type) => {
+        setIsExpanded(type);
+    };
+
+    const filteredInputs = inputs.filter(input =>
+        input.label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleRemove = (id) => {
+        setItems((items) => items.filter((item) => item.id !== id));
+        setFormData((prev) => {
+            const newFormData = { ...prev };
+            delete newFormData[id];
+            return newFormData;
+        });
+    };
+
+
+
     return (
         <>
             {/*     <!-- Layout wrapper --> */}
@@ -274,17 +504,29 @@ function SaleTeamUse() {
                                     </div>
                                     <div class="card-datatable table-responsive">
                                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
-                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div><div class="dt-buttons btn-group flex-wrap"> <div class="btn-group"><button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><i class="bx bx-export me-1"></i>Export</span></button></div> <button class="btn btn-secondary add-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser"><span><i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New Lead</span></span></button> </div></div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
+                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div>
+                                            <div class="btn-group d-flex flex-row">
+                                                <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex"
+                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
+                                                    aria-expanded="false">
+                                                    <span><i class="bx bx-export me-1"></i>Export</span>
+                                                </button>
+
+                                                <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+
+                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i>Lead</span>
+                                                </button>
+                                            </div>
+                                        </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="115px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="176px;" aria-label="Role: activate to sort column ascending">Full Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="115px;" aria-label="Role: activate to sort column ascending">Age</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="118px;" aria-label="Plan: activate to sort column ascending">Contact </th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Billing: activate to sort column ascending">Email</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Status: activate to sort column ascending">Working Status</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Status: activate to sort column ascending">Lead Platform</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Full Name</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Plan: activate to sort column ascending">Contact </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Billing: activate to sort column ascending">Email</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Working Status</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Lead Platform</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="118px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
@@ -297,7 +539,6 @@ function SaleTeamUse() {
                                                             </td>
                                                             <td>{item.id}</td>
                                                             <td>{item.name}</td>
-                                                            <td>{item.age}</td>
                                                             <td>{item.phoneNumber}</td>
                                                             <td>{item.email}</td>
                                                             <td>{item.workingStatus}</td>
@@ -321,68 +562,145 @@ function SaleTeamUse() {
                                             <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
                                     </div>
 
-                                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
-                                        <div class="offcanvas-header">
-                                            <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add New Lead</h5>
-                                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                        </div>
-                                        <div class="offcanvas-body mx-0 flex-grow-0">
-                                            <form class="add-new-user pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" onSubmit={handleSubmit} novalidate="novalidate">
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label for="flatpickr-datetime" class="form-label">Date</label>
-                                                    <input type="date" class="form-control" placeholder="YYYY-MM-DD HH:MM" id="flatpickr-datetime" name='date' onChange={handleChange}
-                                                        value={formData.date} />
+                                    <div className="offcanvas offcanvas-end w-50" tabIndex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
+                                        <div className="row">
+                                            <div className="col-md-12">
+                                                <div className="offcanvas-header">
+                                                    <h5 id="offcanvasAddUserLabel" className="offcanvas-title">Enquiry Information</h5>
+                                                    <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                                </div>
+                                            </div>
+                                            <div className="offcanvas-body mx-0 flex-grow-0 row de-flex">
+                                                <div className="col-md-4">
+                                                    <p id="offcanvasAddUserLabel" className="offcanvas-title mb-2">Upload Via</p>
+                                                </div>
+                                                <div className="col-md-4 form-check">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        onClick={() => toggleDropdown('email')}
+                                                        name="flexRadioDefault"
+                                                        id="flexRadioDefault1"
+                                                        placeholder="Email"
+                                                    />
+                                                    <span>Email</span>
+                                                </div>
+                                                <div className="col-md-4 form-check">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        onClick={() => toggleDropdown('mobile')}
+                                                        name="flexRadioDefault"
+                                                        id="flexRadioDefault1"
+                                                        placeholder="Mobile"
+                                                    />
+                                                    <span>Mobile</span>
                                                 </div>
 
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Full Name</label>
-                                                    <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='name'
-                                                        onChange={handleChange}
-                                                        value={formData.name} aria-label="John Doe" />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-fullname">Age</label>
-                                                    <input type="number" class="form-control" id="add-user-fullname" placeholder="John Doe" name='age'
-                                                        onChange={handleChange}
-                                                        value={formData.age} aria-label="John Doe" />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="add-user-contact">Contact</label>
-                                                    <input type="text" id="add-user-contact" class="form-control phone-mask" placeholder="+91 (609) 988-44-11"  name="phoneNumber"
-                                                        onChange={handleChange}
-                                                        value={formData.phoneNumber} />
+                                                <div className="col-md-6 question-update-lead">
+                                                    <div className={`slider ${sliderActive ? 'active' : ''}`}>
+                                                        <div className="input-fields-container-lead mx-0 flex-grow-0">
+                                                            <div className='row de-flex'>
+                                                                <div className='lead col-md-12'>
+                                                                    <p className="offcanvas-title-lead mt-4 mb-4">Add Input Fields</p>
+                                                                </div>
+                                                                <div className='lead col-md-12'><input
+                                                                    type="text"
+                                                                    className="form-control mb-3"
+                                                                    placeholder="Search fields..."
+                                                                    value={searchTerm}
+                                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                                />
+                                                                </div>
+                                                                <div className="input-fields-container">
+                                                                    <table className="table">
+                                                                        <tbody>
+
+                                                                            {filteredInputs.map(input => (
+                                                                                <tr key={input.id} className='row de-flex'>
+                                                                                    <td className="lead col-md-2">
+                                                                                        <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
+                                                                                    </td>
+                                                                                    <td className='lead col-md-10'>
+                                                                                        <span>{input.label}</span>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            ))}
+
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Email</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="john.doe@example.com"  name='email'
-                                                        onChange={handleChange}
-                                                        value={formData.email} />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                <div className="col-md-6">
+                                                    <form className="add-new-user pt-4" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
+                                                        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                                            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                                                                <ul className="list widget_dragable" id="dragItemBox">
+                                                                    {items.map((item) => (
+                                                                        <Draggable
+                                                                            key={item.id}
+                                                                            id={item.id}
+                                                                            component={
+                                                                                <li className="draggable_column_item">
+                                                                                    {item.component}
+                                                                                    <button type="button" className="remove_draggable" onClick={() => handleRemove(item.id)}>×</button>
+                                                                                </li>
+                                                                            }
+                                                                        />
+                                                                    ))}
+                                                                </ul>
+                                                            </SortableContext>
+                                                        </DndContext>
+                                                        <div className="mb-1 fv-plugins-icon-container">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control enquery-form"
+                                                                id="add-user-fullname"
+                                                                placeholder="Candidate Name*"
+                                                                name="name"
+                                                                onChange={(e) => handleChange(e, 'name')}
+
+                                                            />
+                                                            <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                        </div>
+                                                        {isExpanded === 'mobile' && (
+                                                            <div className="mb-1 fv-plugins-icon-container">
+                                                                <input
+                                                                    type="text"
+                                                                    id="add-user-contact"
+                                                                    className="form-control phone-mask enquery-form"
+                                                                    placeholder="Candidate Mobile Number*"
+                                                                    name="phoneNumber"
+                                                                    onChange={(e) => handleChange(e, 'phoneNumber')}
+
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {isExpanded === 'email' && (
+                                                            <div className="mb-1 fv-plugins-icon-container">
+                                                                <input
+                                                                    type="text"
+                                                                    id="add-user-email"
+                                                                    className="form-control enquery-form"
+                                                                    placeholder="Candidate Email Id*"
+                                                                    name="email"
+                                                                    onChange={(e) => handleChange(e, 'email')}
+
+                                                                />
+                                                                <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-3 fv-plugins-icon-container d-flex">
+                                                            <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+                                                            <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Working Status</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="Employe" aria-label="Employe" name='workingStatus'
-                                                        onChange={handleChange}
-                                                        value={formData.workingStatus} />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Lead Platform</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="Call" aria-label="Call" name='leadPlatform'
-                                                        onChange={handleChange}
-                                                        value={formData.leadPlatform} />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                </div>
-                                                <div class="mb-3 fv-plugins-icon-container">
-                                                    <label class="form-label" for="add-user-email">Remark</label>
-                                                    <input type="text" id="add-user-email" class="form-control" placeholder="remark" aria-label="remark" name='remark'
-                                                        onChange={handleChange}
-                                                        value={formData.remark} />
-                                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                </div>
-                                                <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
-                                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-                                                <input type="hidden" /></form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

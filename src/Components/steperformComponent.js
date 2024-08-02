@@ -4,8 +4,9 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import { Button, Form } from 'react-bootstrap';
-import { DndContext, closestCorners } from "@dnd-kit/core";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import Draggable from '../Components/draggableComponent';
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 function SteperformComponent() {
@@ -34,18 +35,21 @@ function SteperformComponent() {
     const getTaskPos = id => tasks.findIndex(
         task => task.id == id
     )
-
-    const handleDragEnd = event => {
-        const { active, over } = event
-
-        if (active.id === over.id) return;
-        setTasks(tasks => {
-            const originalPos = getTaskPos(active.id)
-            const newPos = getTaskPos(over.id)
-
-            return arrayMove(tasks, originalPos, newPos)
-        })
-    }
+    const [newIndexId, setNewIndexId] = useState(null);
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        if (active && over && active.id !== over.id) {
+            setTasks((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
+                console.log(newIndex)
+                setNewIndexId(items[newIndex].id)
+                return arrayMove(items, oldIndex, newIndex);
+               
+            });
+        
+        }
+    };
 
     return (
         <>
@@ -69,7 +73,7 @@ function SteperformComponent() {
 
                                 <div class="row g-4 mb-4">
                                     <div class="col-sm-4 col-xl-4">
-                                        <div class="card">
+                                        <div class="card crd_detil">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-start justify-content-between">
                                                     <div class="content-left">
@@ -108,7 +112,7 @@ function SteperformComponent() {
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-2">
-                                        <div class="card">
+                                        <div class="card crd_scor">
                                             <div class="card-body card_body">
                                                 <div class=" align-items-start justify-content-evenly lead_sore text-center">
                                                     <p className="mb--0 ">3</p><p>Lead Score</p>
@@ -124,7 +128,7 @@ function SteperformComponent() {
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-3">
-                                        <div class="card">
+                                        <div class="card crd_stat">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-start justify-content-between">
                                                     <div class="content-left">
@@ -152,7 +156,7 @@ function SteperformComponent() {
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-3">
-                                        <div class="card">
+                                        <div class="card card_telephony">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-start justify-content-between">
                                                     <div class="content-left">
@@ -274,10 +278,12 @@ function SteperformComponent() {
                                                             <div className="row">
                                                                 <div className="col-12 col-md-5 col-xl-5 col-lg-5">
                                                                     <div className=" card_details ">
-                                                                        <h2>Re-assing Lead</h2>
-                                                                        <div className="mt-5">
-                                                                            <form>
+                                                                    <h2>Re-assing Lead</h2>
+                                                                   
+                                                                        <div className="mt-5"> 
+                                                                            <form id={setNewIndexId}>
                                                                                 <div>
+                                                                                
                                                                                     <div className=' mt-5'>
                                                                                         <label className='pb-2'>Head Owner(s) - Assigned from</label>
                                                                                         <select>
@@ -285,7 +291,7 @@ function SteperformComponent() {
                                                                                             <option>Option 2</option>
                                                                                             <option>Option 3</option>
                                                                                             <option>Option 3</option>
-                                                                                        </select>
+                                                                                            </select>
                                                                                     </div>
                                                                                     <div className='mt-5'>
                                                                                         <label className='pb-2'>Head Owner(s)  - Assigned to</label>
@@ -300,9 +306,13 @@ function SteperformComponent() {
                                                                                         <label className='pb-2'>Re-assignment Remark</label>
                                                                                         <input className='inputts' type='text' placeholder='Re-assignment Remark' name="TotalQuestions" />
                                                                                     </div>
+                                                                                    <div className="col-12 col-md-2 col-xl-2 col-lg-2 mt-3">
+                                                                                    <button className="btn btn-primary">Submit</button>
+                                                                                    </div>
                                                                                 </div>
                                                                             </form>
                                                                         </div>
+                                                                  
                                                                     </div>
                                                                     <div className="col-12 col-md-2 col-xl-2 col-lg-2 d-flex mt-3">
                                                                         <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
@@ -310,10 +320,15 @@ function SteperformComponent() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-12 col-md-7 col-xl-7 col-lg-7">
-                                                                    <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+                                                                    <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
                                                                        
                                                                         <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
                                                                             {tasks.map((tasks) => (
+                                                                                 <Draggable
+                                                                                 key={tasks.id}
+                                                                                 id={tasks.id}
+                                                                                 
+                                                                                 component={
                                                                                 <div key={tasks.id}>
                                                                                     <div className="long_card py-3 mt-2">
                                                                                         <div className="row">
@@ -341,7 +356,8 @@ function SteperformComponent() {
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
+                                                                                </div>}
+                                                                                />
                                                                             ))}
                                                                         </SortableContext>
                                                                     </DndContext>
