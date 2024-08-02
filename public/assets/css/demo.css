@@ -580,20 +580,19 @@ textarea {
 }
 
 /* your-styles.css */
-
-
-
-
 .input-fields-container-lead {
-  max-height: 500px; /* Adjust this value as needed */
+  max-height: 699px; /* Adjust this value as needed */
   overflow-x: hidden; /* Hides horizontal overflow */
   overflow-y: auto; /* Adds vertical scrolling if content exceeds height */
+  padding-right: 40px;
 }
 
 
 .lead {
   display: flex;
   align-items: center;
+/*  padding-right: 23px; */
+
 }
 
 .lead input[type="checkbox"] {
@@ -664,10 +663,15 @@ textarea {
 .widget_dragable li:hover::after, #non_dragable li:hover::after {
   display: none;
 }
+.widget_dragable ,.list ul li {
+  list-style-type: none;
+}
+
 #non_dragable li {
   pointer-events: none !important;
   cursor: auto !important;
 }
+
 .columns_dragble ul.list li {
   width: 100%;
   font-size: 12px;
@@ -683,4 +687,11 @@ textarea {
   list-style-type: none;
   margin: 0 0 10px 10px;
   padding: 0;
+}
+.lead-form{
+ padding-left: 33px;
+ top: 6px;
+ opacity: 0.3;
+ background-image: url(../img/drag-icon.png);
+ background-repeat: no-repeat;
 }

@@ -97,7 +97,7 @@ function TelecallerUse() {
 
             if (token) {
                 if (window.confirm('Are you sure you want to allocate the Telecaller Department Team Member?')) {
-                    await axios.patch(`${REACT_APP_API_ENDPOINT}/viewssaleteam/${saleteamId}`, { telecallerPersonName: newValue }, {
+                    await axios.patch(`${REACT_APP_API_ENDPOINT}/viewssaleteam/${saleteamId}`, { telecallerPersonName: newValue ,roleId:roleId}, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }

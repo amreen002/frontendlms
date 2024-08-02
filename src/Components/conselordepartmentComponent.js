@@ -39,6 +39,7 @@ function ConselorDepartmentUse() {
     const [CounselingStatus, setCounselingStatus] = ('')
 
     const [selectedItem, setSelectedItem] = useState([]);
+
     useEffect(() => {
         fetchData2(search)
     }, [search]);
@@ -380,7 +381,7 @@ function ConselorDepartmentUse() {
                                                     <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
 
-                                                <div className="card">
+                                               {/*  <div className="card">
 
                                                     <div className="card-datatable table-responsive">
                                                         <div id="DataTables_Table_0_wrapper" className="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
@@ -406,8 +407,8 @@ function ConselorDepartmentUse() {
                                                                     </thead>
                                                                     <tbody>
                                                                         {table.map((item) => {
-                                                                            if (search) {
-                                                                                return (
+                                                                       
+                                                                         
                                                                                     <tr key={item.id}>
 
                                                                                         <td className="sorting_1">
@@ -447,7 +448,7 @@ function ConselorDepartmentUse() {
 
                                                                                                     <div class="col-12 text-center">
                                                                                                         <button type="submit" onClick={handleSubmitWrapper} class="btn btn-primary me-sm-3 me-1">Submit</button>
-                                                                                                    
+
                                                                                                     </div>
                                                                                                 </div>
 
@@ -458,9 +459,7 @@ function ConselorDepartmentUse() {
 
 
                                                                                     </tr>
-                                                                                )
-                                                                            }
-                                                                            else{return null}
+                                                                             
                                                                         })}
                                                                     </tbody>
                                                                 </table>
@@ -468,7 +467,7 @@ function ConselorDepartmentUse() {
                                                             <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
                                                     </div>
 
-                                                </div>
+                                                </div> */}
 
 
 
@@ -479,7 +478,7 @@ function ConselorDepartmentUse() {
                                     </div>
                                 </div>
 
-                                <div class="card">
+                               <div class="card">
                                     <div class="card-header border-bottom">
                                         <h5 class="card-title">Search Filter</h5>
                                         <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
@@ -496,7 +495,7 @@ function ConselorDepartmentUse() {
                                                 value={search}
                                                 onChange={(e) => setSearch(e.target.value)}
 
-                                            /> 
+                                            />
                                         </label></div><div class="dt-buttons btn-group flex-wrap"> <div class="btn-group"><button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><i class="bx bx-export me-1"></i>Export</span></button></div></div></div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
@@ -515,23 +514,19 @@ function ConselorDepartmentUse() {
                                                 <tbody>
 
                                                     {counselordepartment.map((item) => {
-                                                        if (search) {
-                                                            return null
-                                                        } else {
+                                                        <tr key={item.id}>
+                                                            <td className="sorting_1">
+                                                            </td>
+                                                            <td>{item.id}</td>
+                                                            <td>{item.name}</td>
+                                                            <td>{item.age}</td>
+                                                            <td>{item.phoneNumber}</td>
+                                                            <td>{item.email}</td>
+                                                            <td>{item.workingStatus}</td>
+                                                            <td>{item.enquiryId}</td>
+                                                            <td>{item.CounselingStatus}</td>
+                                                        </tr>
 
-                                                            return (<tr key={item.id}>
-                                                                <td className="sorting_1">
-                                                                </td>
-                                                                <td>{item.id}</td>
-                                                                <td>{item.name}</td>
-                                                                <td>{item.age}</td>
-                                                                <td>{item.phoneNumber}</td>
-                                                                <td>{item.email}</td>
-                                                                <td>{item.workingStatus}</td>
-                                                                <td>{item.enquiryId}</td>
-                                                                <td>{item.CounselingStatus}</td>
-                                                            </tr>)
-                                                        }
                                                     })}
                                                 </tbody>
                                             </table>
@@ -539,7 +534,7 @@ function ConselorDepartmentUse() {
                                     </div>
 
 
-                                </div>
+                                </div> 
 
                             </div>
                             {/*  <!-- Footer --> */}

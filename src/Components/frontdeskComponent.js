@@ -137,7 +137,7 @@ function FrontUse() {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listcourses`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/courses`, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
