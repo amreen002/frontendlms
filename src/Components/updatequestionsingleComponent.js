@@ -33,6 +33,9 @@ function MultiplequestionComponent(token) {
     const [QuizzeFindOne, setQuizzeFindOne] = useState('');
     const [StudentsFindAll, setStudentsFindAll] = useState([]);
     const [Instructor, setInstructor] = useState('');
+    const [disabledIds, setDisabledIds] = useState({});
+
+    // In your render method, check if the ID is disable
 
     const toggleDropdown = (serviceName) => {
         setIsExpanded(isExpanded === serviceName ? '' : serviceName);
@@ -173,10 +176,13 @@ function MultiplequestionComponent(token) {
                 setCategoryId(userData.CategoryId);
 
                 const initialStudentState = {};
+                const initialDisabledState = {};
                 userData.Students.map(student => {
                     initialStudentState[student.id] = true ;
+                    initialDisabledState[student.id] = true; // Set initial disabled state
                 });
                 setStudentId(initialStudentState)
+                setDisabledIds(initialDisabledState); // Set disabled state
                 let initialAnswerState = {};
 
                 if (Array.isArray(userData.Answer)) {
@@ -213,13 +219,29 @@ function MultiplequestionComponent(token) {
             console.error('Error fetching students:', error);
         }
     };
+    const handleCheckboxChange = (e, id) => {
+        const { checked } = e.target;
 
-    const handleChangestudent = (id) => {
-        setStudentId(prevState => ({
-            ...prevState,
-            [id]: !prevState[id]
-        }));
+        // Update studentId state
+        setStudentId((prevState) => ({ ...prevState, [id]: checked }));
+
+        // Toggle the disabled state for the specific ID
+        setDisabledIds((prevDisabledIds) => {
+            const newDisabledIds = { ...prevDisabledIds };
+            if (checked) {
+                delete newDisabledIds[id]; // Enable the ID if checkbox is checked
+            } else {
+                newDisabledIds[id] = true; // Disable the ID if checkbox is not checked
+            }
+            return newDisabledIds;
+        });
     };
+
+    const isDisabled = (id) => disabledIds[id];
+
+    
+    // Function to check if an ID is disabled
+    
 
 
     const handleUpdate = async (e) => {
@@ -362,23 +384,23 @@ function MultiplequestionComponent(token) {
                                                         {dropdownOpen && (
                                                             <div className="dropdown-menu show w-100">
                                                                 {StudentsFindAll.map((student) => (
-                                                                    <div key={student.id} className="dropdown-item d-flex align-items-center">
-                                                                        <input
+                                                                    <div key={student.id} className='row d-flex'>
+                                                                        <div className='col-md-2 question-update'><input
                                                                             type="checkbox"
-                                                                            className=" me-2"
                                                                             id={`dropdown_student_${student.id}`}
                                                                             checked={!!studentId[student.id]}
-                                                                            onChange={() => handleChangestudent(student.id)}
-                                                                            disabled={!!studentId[student.id]} 
-                                                                    
+                                                                            onChange={(e) => handleCheckboxChange(e, student.id)}
+                                                                            disabled={isDisabled(student.id) && studentId[student.id]}
                                                                         />
-                                                                        <label className="form-check-label" htmlFor={`dropdown_student_${student.id}`}>
-                                                                            {student.Name}
-                                                                        </label>
+                                                                        </div>
+                                                                        <div className='col-md-10 question-update'>
+                                                                        <span>{student.Name}</span>
+                                                                        </div>
                                                                     </div>
                                                                 ))}
                                                             </div>
                                                         )}
+
                                                     </div>
                                                 
                                                     
