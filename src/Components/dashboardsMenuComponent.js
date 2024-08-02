@@ -37,13 +37,13 @@ function DashBoardMenu(onLogout) {
     //End
     return (
 
-        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu">
             <div class="app-brand demo">
                 <Link to="/dashboard" class="app-brand-link">
                     <span class="app-brand-logo demo">
                     </span>
-                    <span class="app-brand-text demo menu-text fw-bolder ms-2"><div class="avatar" style={{ width: "9.375rem", height: " 4.375rem" }}>
-                        <img src="../assets/img/TGSC Logo.svg" alt class="w-px-70 h-20px " />
+                    <span class="app-brand-text demo menu-text fw-bolder ms-2"><div class=" text-center">
+                        <img src="../assets/img/logo.png" alt class="ml--50"  width={"43%"} />
                     </div></span>
                 </Link>
 
@@ -57,7 +57,7 @@ function DashBoardMenu(onLogout) {
             <ul class="menu-inner py-1">
                 {/*    <!-- Dashboard --> */}
                 <li class="menu-item active">
-                <Link to="/dashboard" class="menu-link">
+                <Link to="/dashboard" class="menu-link dash">
                         <i class="menu-icon tf-icons bx bx-home-circle"></i>
                         <div data-i18n="Analytics">Dashboard</div>
                     </Link>
