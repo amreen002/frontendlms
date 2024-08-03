@@ -5,7 +5,7 @@ import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { DndContext, closestCenter } from '@dnd-kit/core';
-import { FaPlus } from 'react-icons/fa';
+// import { FaPlus } from 'react-icons/fa';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import Draggable from '../Components/draggableComponent';
 const { REACT_APP_API_ENDPOINT } = process.env;

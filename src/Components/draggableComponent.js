@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { FaTimes } from 'react-icons/fa';
+// import { FaTimes } from 'react-icons/fa';
 
 const Draggable = ({ id, component, onRemove }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });

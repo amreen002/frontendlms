@@ -310,7 +310,7 @@ function TelecalTeam() {
                                             <div class="col-md-4 user_status"><select id="FilterTransaction" class="form-select text-capitalize"><option value=""> Select Status </option><option value="Pending" class="text-capitalize">Pending</option><option value="Active" class="text-capitalize">Active</option><option value="Inactive" class="text-capitalize">Inactive</option></select></div>
                                         </div>
                                     </div>
-                                    <div class="card-datatable table-responsive">
+                                    <div class="card">    <div class="card-datatable table-responsive">
                                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
 
                                             <input
@@ -467,7 +467,7 @@ function TelecalTeam() {
                                         </div>
                                     </div>
                                 </div>
-                              
+                                </div>
                             </div>
                             {/*  <!-- Footer --> */}
 
