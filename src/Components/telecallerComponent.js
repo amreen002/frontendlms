@@ -4,7 +4,7 @@ import Footer from './footerComponent';
 import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
+const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 function TelecallerUse() {
     const [table, setTable] = useState([]);
     const [dataUser, setTabledataUser] = useState([]);
@@ -97,7 +97,7 @@ function TelecallerUse() {
 
             if (token) {
                 if (window.confirm('Are you sure you want to allocate the Telecaller Department Team Member?')) {
-                    await axios.patch(`${REACT_APP_API_ENDPOINT}/viewssaleteam/${saleteamId}`, { telecallerPersonName: newValue }, {
+                    await axios.patch(`${REACT_APP_API_ENDPOINT}/viewssaleteam/${saleteamId}`, { telecallerPersonName: newValue, roleId: roleId }, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }

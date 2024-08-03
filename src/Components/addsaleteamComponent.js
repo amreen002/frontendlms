@@ -29,21 +29,31 @@ function SaleTeamUse() {
     const [searchTerm, setSearchTerm] = useState('');
     const [sliderActive, setSliderActive] = useState(false);
     const [dataUser, setTabledataUser] = useState([]);
+    const [countryTable, setCountryTable] = useState([]);
+    const [courses, setCourses] = useState([])
+    const [state, setstate] = useState([])
+    const [city, setcity] = useState([])
+    const [batch, setbatchs] = useState([])
+    const [userDataFinOne, setUserDataFindOne] = useState({});
     const [isExpanded, setIsExpanded] = useState(false);
+
     const inputs = [
         { id: 'date', label: 'Date*' },
         { id: 'remark', label: 'Remark*' },
-        { id: 'roleId', label: 'Assign to Counsellor*' },
         { id: 'workingStatus', label: 'Select Specialisation*' },
-        { id: 'leadPlatform', label: 'Lead Platform*' },
+        { id: 'status', label: 'Choose Forms Interested in*' },
         { id: 'age', label: 'Age*' },
-        { id: 'countryid', label: 'Country*' },
-        { id: 'stateid', label: 'State*' },
-        { id: 'courseid', label: 'Course*' },
-        { id: 'cityid', label: 'City*' },
-        { id: 'address', label: 'Address*' },
-        { id: 'area', label: 'Area*' },
-        { id: 'area', label: 'Area*' },
+        { id: 'CountryId', label: 'Country*' },
+        { id: 'StateId', label: 'State*' },
+        { id: 'courseId', label: 'Course*' },
+        { id: 'DistrictId', label: 'City*' },
+        { id: 'Address', label: 'Address*' },
+        { id: 'Area', label: 'Area*' },
+        { id: 'PostalCode', label: 'Postal Code*' },
+        { id: 'AddressType', label: 'Address Type*' },
+        { id: 'batchId', label: 'Select Webinar Topic*' },
+        { id: 'username', label: 'User Name*' },
+        { id: 'leadPlatform', label: 'Select Lead Platform*' },
     ];
 
 
@@ -51,6 +61,8 @@ function SaleTeamUse() {
     useEffect(() => {
         fetchData1(saleteamId);
     }, [saleteamId]);
+
+
 
     const fetchData1 = async (saleteamId) => {
         try {
@@ -87,6 +99,12 @@ function SaleTeamUse() {
     useEffect(() => {
         fetchData();
         fetchData2()
+        fetchData3()
+        fetchData4()
+        fetchData5()
+        fetchData6()
+        fetchData7()
+        fetchData8()
     }, []);
 
     const fetchData = async () => {
@@ -116,6 +134,118 @@ function SaleTeamUse() {
                 });
 
                 setTabledataUser(response.data.users.rows);
+            }// Updated state variable
+        } catch (err) {
+            console.log(err.response);
+        }
+    }
+    const fetchData3 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listcountry`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userData = response.data.country;
+                setCountryTable(userData)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    const fetchData4 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listcourses`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userDatas = response.data.courses;
+                setCourses(userDatas)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    const fetchData5 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/state`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userDatas = response.data.state;
+                setstate(userDatas)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    const fetchData6 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/batches`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userDatas = response.data.batchs;
+                setbatchs(userDatas)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    const fetchData7 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/city`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userDatas = response.data.city;
+                setcity(userDatas)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const fetchData8 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/userwisedata`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setUserDataFindOne(response.data);
             }// Updated state variable
         } catch (err) {
             console.log(err.response);
@@ -202,8 +332,6 @@ function SaleTeamUse() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-
-
     const addInput = (type) => {
         const id = `input-${type}`;
         if (items.some(item => item.id === id)) {
@@ -238,8 +366,28 @@ function SaleTeamUse() {
                     <input
                         type="text"
                         className="form-control enquery-form"
-                        placeholder="Candidate Name*"
+                        placeholder="Candidate Frist Name*"
                         name="name"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'lastname':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Candidate LastName*"
+                        name="lastname"
+                        onChange={(e) => handleChange(e, id)}
+                    />
+                );
+            case 'username':
+                return (
+                    <input
+                        type="text"
+                        className="form-control enquery-form"
+                        placeholder="Candidate User Name*"
+                        name="username"
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
@@ -252,15 +400,6 @@ function SaleTeamUse() {
                         <option value="Entrepreneur">Entrepreneur</option>
                     </select>
                 );
-            case 'roleId':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Assign to Counsellor*</option>
-                        {dataUser.map(option => (
-                            <option key={option.id} value={option.id}>{option.name}</option>
-                        ))}
-                    </select>
-                );
             case 'remark':
                 return (
                     <input
@@ -271,13 +410,13 @@ function SaleTeamUse() {
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
-            case 'leadPlatform':
+            case 'status':
                 return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Forms Interested in*' name='leadPlatform'
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Forms Interested in*' name='status'
                         onChange={(e) => handleChange(e, id)}>
                         <option value="">Choose Forms Interested in*</option>
-                        <option value="Employee">Interested</option>
-                        <option value="Student">Not Interested</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Not Interested">Not Interested</option>
                     </select>
                 )
             case 'age':
@@ -290,75 +429,99 @@ function SaleTeamUse() {
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
-            case 'stateid':
+            case 'StateId':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='StateId' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select State*</option>
+                        {state.map(option => (
+                            <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                    </select>
+                );
+            case 'CountryId':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='CountryId' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select Country*</option>
+                        {countryTable.map(option => (
+                            <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                    </select>
+                );
+            case 'DistrictId':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='DistrictId' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select City*</option>
+                        {city.map(option => (
+                            <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                    </select>
+                );
+            case 'courseId':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='courseId' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select Course/Class*</option>
+                        {courses.map(option => (
+                            <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                    </select>
+                );
+            case 'batchId':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='batchId' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select Webinar Topic*</option>
+                        {batch.map(option => (
+                            <option key={option.id} value={option.id}>{option.Title}</option>
+                        ))}
+                    </select>
+                );
+            case 'AddressType':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='AddressType' onChange={(e) => handleChange(e, id)}>
+                        <option value="">Select Address Type*</option>
+                        <option value="Current Address">Current Address</option>
+                        <option value="Permanent Address">Permanent Address</option>
+                        <option value="Residential Address">Residential Address</option>
+                    </select>
+                );
+            case 'PostalCode':
                 return (
                     <input
-                        type="text"
+                        type="number"
                         className="form-control enquery-form"
-                        placeholder="State*"
-                        name="stateid"
+                        placeholder="Postal Code*"
+                        name="PostalCode"
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
-            case 'countryid':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Country*"
-                        name="countryid"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'cityid':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="City*"
-                        name="cityid"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'courseid':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Select Course / Class*"
-                        name="courseid"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'address':
+            case 'Address':
                 return (
                     <input
                         type="text"
                         className="form-control enquery-form"
                         placeholder="Address*"
-                        name="address"
+                        name="Address"
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
-            case 'area':
+            case 'Area':
                 return (
                     <input
                         type="text"
                         className="form-control enquery-form"
                         placeholder="Area*"
-                        name="area"
+                        name="Area"
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
             case 'leadPlatform':
                 return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Lead Platform*"
-                        name="leadPlatform"
-                        onChange={(e) => handleChange(e, id)}
-                    />
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' onChange={(e) => handleChange(e, id)}>
+                    <option value="">Select Specialistion*</option>
+                    <option value="Google">Google</option>
+                    <option value="Linkdin">Linkdin</option>
+                    <option value="Indeen">Indeen</option>
+                    <option value="Directly">Directly Communication</option>
+                </select>
                 );
             default:
                 return null;
@@ -646,8 +809,9 @@ function SaleTeamUse() {
                                                                             id={item.id}
                                                                             component={
                                                                                 <li className="draggable_column_item">
+
                                                                                     {item.component}
-                                                                                    <button type="button" className="remove_draggable" onClick={() => handleRemove(item.id)}>×</button>
+
                                                                                 </li>
                                                                             }
                                                                         />
@@ -655,20 +819,41 @@ function SaleTeamUse() {
                                                                 </ul>
                                                             </SortableContext>
                                                         </DndContext>
-                                                        <div className="mb-1 fv-plugins-icon-container">
+                                                        <div className="mb-1 fv-plugins-icon-container lead-form">
                                                             <input
                                                                 type="text"
                                                                 className="form-control enquery-form"
                                                                 id="add-user-fullname"
-                                                                placeholder="Candidate Name*"
+                                                                placeholder="Candidate Frist Name*"
                                                                 name="name"
                                                                 onChange={(e) => handleChange(e, 'name')}
 
                                                             />
                                                             <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                         </div>
-                                                        {isExpanded === 'mobile' && (
-                                                            <div className="mb-1 fv-plugins-icon-container">
+                                                        <div className="mb-1 fv-plugins-icon-container lead-form">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control enquery-form"
+                                                                id="add-user-fullname"
+                                                                placeholder="Candidate Last Name*"
+                                                                name="lastname"
+                                                                onChange={(e) => handleChange(e, 'lastname')}
+
+                                                            />
+                                                            <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                        </div>
+
+
+                                                        <div className="mb-1 fv-plugins-icon-container lead-form"><select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' onChange={(e) => handleChange(e, 'roleId')}>
+                                                            <option value="">Assign to Owner*</option>
+                                                            <option value={userDataFinOne.id}>{userDataFinOne.name}</option>
+                                                        </select>
+                                                            <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                        </div>
+
+                                                        {isExpanded === 'mobile' ? (
+                                                            <div className="mb-1 fv-plugins-icon-container lead-form">
                                                                 <input
                                                                     type="text"
                                                                     id="add-user-contact"
@@ -679,9 +864,8 @@ function SaleTeamUse() {
 
                                                                 />
                                                             </div>
-                                                        )}
-                                                        {isExpanded === 'email' && (
-                                                            <div className="mb-1 fv-plugins-icon-container">
+                                                        ):(
+                                                            <div className="mb-1 fv-plugins-icon-container lead-form">
                                                                 <input
                                                                     type="text"
                                                                     id="add-user-email"

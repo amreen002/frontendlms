@@ -112,82 +112,31 @@ function DashBoardMenu(onLogout) {
                     </li>
                 )}
 
-                {/* Render  menu Front Desk */}
-                {table.Role && table.Role.Name === 'Front Desk' ||table.Role && table.Role.Name === 'Super Admin' && (
-                    <li className={`menu-item ${activeService === 'Front Desk' ? 'active' : ''} show_project_web`}>
-                        <a href="#" onClick={() => toggleDropdown('dropdownfrontdesk')} className="menu-link  menu-toggle" id="dropdownMenuButton">
-                            <i class='menu-icon  bx bx-credit-card-front'></i>
-                            <div data-i18n="Layouts">Front Desk</div>
-                        </a>
-                        {/* Step 4: Conditionally render dropdown based on state */}
-                        {activeService === 'dropdownfrontdesk' && (
-                            <ul className="" aria-labelledby="dropdownMenuButton">
-                                <li className="menu-item">
-                                    <Link to="/frontdesk" className="menu-link">
-                                        <i className='menu-icon bx bx-list-ul'></i>
-                                        <div data-i18n="Without menu">Lead List</div>
-                                    </Link>
-                                </li>
-                                <li className="menu-item">
-                                    <Link to="/frontdesklist" className="menu-link">
-                                        <i className='menu-icon bx bx-list-ul'></i>
-                                        <div data-i18n="Without menu">Enquery List</div>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-                )}
-
-
-                {/* Render  menu Counselor Department */}
-                {table.Role && table.Role.Name === 'Counselor Department' ||table.Role && table.Role.Name === 'Super Admin' && (
-                    <li className={`menu-item ${activeService === 'Counselor Department' ? 'active' : ''} show_project_web`}>
-                        <a href="#" onClick={() => toggleDropdown('dropdowncounselodepartmentsss')} className="menu-link  menu-toggle" id="dropdownMenuButton">
-                            <i class='menu-icon bx bx-credit-card-front'></i>
-                            <div data-i18n="Layouts">Counselor Department</div>
-                        </a>
-                        {/* Step 4: Conditionally render dropdown based on state */}
-                        {activeService === 'dropdowncounselodepartmentsss' && (
-                            <ul className="" aria-labelledby="dropdownMenuButton">
-                                <li className="menu-item">
-                                    <Link to="/counselordepartment" className="menu-link">
-                                        <button className="btn btn-sm btn-icon">
-                                            <i className='menu-icon bx bx-list-ul'></i>
-                                            <div data-i18n="Without menu">Enquery Detail</div>
-                                        </button>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-                )}
-                {/* Render Users menu based on user role */}
-                {['Super Admin', 'Admin', 'Telecaller Department'].includes(table.Role && table.Role.Name) && (
-                    <li className={`menu-item ${activeService === 'Super Admin' || activeService === 'Admin' || activeService === 'Telecaller Department' ? 'active' : ''} show_project_web`}>
-                        <a href="#" onClick={() => toggleDropdown('dropdownalluser')} className="menu-link menu-toggle" id="dropdownMenuButton">
-                            <i className="menu-icon tf-icons bx bx-user"></i>
-                            <div data-i18n="Layouts">Users</div>
-                        </a>
-
-                        {/* Step 4: Conditionally render dropdown based on state */}
-                        {activeService === 'dropdownalluser' && (
-                            <ul className="" aria-labelledby="dropdownMenuButton">
-                                {/* Dropdown content */}
-                                <li className="menu-item">
-                                    <Link to="/userlist" className="menu-link">
-                                        <i className='menu-icon bx bx-list-ul'></i>
-                                        <div data-i18n="Without navbar">Users List</div>
-                                    </Link>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-                )}
-
                 {/* Render Lead menu for Sale Department */}
-                {table.Role && table.Role.Name === 'Sale Department'|| table.Role && table.Role.Name === 'Super Admin' && (
-                    <li className={`menu-item ${activeService === 'Sale Department' ? 'active' : ''} show_project_web`}>
+                {['Super Admin', 'Admin','Counselor Department'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
+                        <a href="#" onClick={() => toggleDropdown('dropdownmangedlead')} className="menu-link menu-toggle" id="dropdownMenuButton">
+                            <i className="menu-icon tf-icons bx bx-layout"></i>
+                            <div data-i18n="Layouts">Managed Leads </div>
+                        </a>
+                        {/* Step 4: Conditionally render dropdown based on state */}
+                        {activeService === 'dropdownmangedlead' && (
+                            <ul className="" aria-labelledby="dropdownMenuButton">
+                                <li className="menu-item">
+                                    <Link to="/mangedlead" className="menu-link">
+                                        <i className='menu-icon bx bx-list-ul'></i>
+                                        <div data-i18n="Without menu">Leads</div>
+                                    </Link>
+                                </li>
+
+                            </ul>
+                        )}
+                    </li>
+                )}
+
+                   {/* Render Lead menu for Sale Department */}
+                   {['Super Admin', 'Admin','Counselor Department'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
                         <a href="#" onClick={() => toggleDropdown('dropdownsaledepartment')} className="menu-link menu-toggle" id="dropdownMenuButton">
                             <i className="menu-icon tf-icons bx bx-layout"></i>
                             <div data-i18n="Layouts">Leads</div>
@@ -213,10 +162,9 @@ function DashBoardMenu(onLogout) {
                         )}
                     </li>
                 )}
-
                 {/* Render menu for Telecaller Department */}
-                {table.Role && table.Role.Name === 'Telecaller Department'|| table.Role && table.Role.Name === 'Super Admin' && (
-                    <li className={`menu-item ${activeService === 'Telecaller Department' ? 'active' : ''} show_project_web`}>
+                {['Super Admin','Admin'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
                         <a href="#" onClick={() => toggleDropdown('dropdowntelecallerdepartment')} className="menu-link menu-toggle " id="dropdownMenuButton">
                             <i className="menu-icon tf-icons bx bx-layout "></i>
                             <div data-i18n="Layouts">Telecaller Department</div>
@@ -236,8 +184,8 @@ function DashBoardMenu(onLogout) {
                 )}
 
                 {/* Render menu for Telecaller Team */}
-                {table.Role && table.Role.Name === 'Telecaller Team'|| table.Role && table.Role.Name === 'Super Admin' && (
-                    <li className={`menu-item ${activeService === 'Telecaller Team' ? 'active' : ''} show_project_web`}>
+                {['Super Admin', 'Admin','Counselor Department'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
                         <a href="#" onClick={() => toggleDropdown('dropdowntelecallerteam')} className="menu-link  menu-toggle" id="dropdownMenuButton">
                             <i className="menu-icon tf-icons bx bx-check-shield"></i>
                             <div data-i18n="Layouts">Telecaller Team</div>
@@ -257,9 +205,81 @@ function DashBoardMenu(onLogout) {
                         )}
                     </li>
                 )}
+                {/* Render  menu Front Desk */}
+                {['Super Admin', 'Admin','Counselor Department'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
+                        <a href="#" onClick={() => toggleDropdown('dropdownfrontdesk')} className="menu-link  menu-toggle" id="dropdownMenuButton">
+                            <i class='menu-icon  bx bx-credit-card-front'></i>
+                            <div data-i18n="Layouts">Front Desk</div>
+                        </a>
+                        {/* Step 4: Conditionally render dropdown based on state */}
+                        {activeService === 'dropdownfrontdesk' && (
+                            <ul className="" aria-labelledby="dropdownMenuButton">
+                                <li className="menu-item">
+                                    <Link to="/frontdesk" className="menu-link">
+                                        <i className='menu-icon bx bx-list-ul'></i>
+                                        <div data-i18n="Without menu">Lead List</div>
+                                    </Link>
+                                </li>
+                                <li className="menu-item">
+                                    <Link to="/frontdesklist" className="menu-link">
+                                        <i className='menu-icon bx bx-list-ul'></i>
+                                        <div data-i18n="Without menu">Enquery List</div>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+                )}
+
+                {/* Render  menu Counselor Department */}
+                {['Super Admin', 'Counselor Department'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
+                        <a href="#" onClick={() => toggleDropdown('dropdowncounselodepartmentsss')} className="menu-link  menu-toggle" id="dropdownMenuButton">
+                            <i class='menu-icon bx bx-credit-card-front'></i>
+                            <div data-i18n="Layouts">Counselor Department</div>
+                        </a>
+                        {/* Step 4: Conditionally render dropdown based on state */}
+                        {activeService === 'dropdowncounselodepartmentsss' && (
+                            <ul className="" aria-labelledby="dropdownMenuButton">
+                                <li className="menu-item">
+                                    <Link to="/counselordepartment" className="menu-link">
+                                        <button className="btn btn-sm btn-icon">
+                                            <i className='menu-icon bx bx-list-ul'></i>
+                                            <div data-i18n="Without menu">Enquery Detail</div>
+                                        </button>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+                )}
+                {/* Render Users menu based on user role */}
+                {['Super Admin', 'Admin'].includes(table.Role && table.Role.Name) && (
+                    <li className={`menu-item ${activeService === table.Role && table.Role.Name ? 'active' : ''} show_project_web`}>
+                        <a href="#" onClick={() => toggleDropdown('dropdownalluser')} className="menu-link menu-toggle" id="dropdownMenuButton">
+                            <i className="menu-icon tf-icons bx bx-user"></i>
+                            <div data-i18n="Layouts">Users</div>
+                        </a>
+
+                        {/* Step 4: Conditionally render dropdown based on state */}
+                        {activeService === 'dropdownalluser' && (
+                            <ul className="" aria-labelledby="dropdownMenuButton">
+                                {/* Dropdown content */}
+                                <li className="menu-item">
+                                    <Link to="/userlist" className="menu-link">
+                                        <i className='menu-icon bx bx-list-ul'></i>
+                                        <div data-i18n="Without navbar">Users List</div>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+                )}
+
                 {/* Render  menu Role */}
                 {['Super Admin', 'Administrator'].includes(table.Role && table.Role.Name) && (
-                    <li className={`menu-item  ${activeService === 'Administrator' ? 'active' : ''} show_project_web`}>
+                    <li className={`menu-item  ${activeService === table.Role && table.Role.Name? 'active' : ''} show_project_web`}>
                         <a href="#" onClick={() => toggleDropdown('dropdowninstructor')} className="menu-link  menu-toggle " id="dropdownMenuButton">
                             <i className='menu-icon bx bx-user bx-spain'></i>
                             <div data-i18n="Layouts">Faculty</div>
@@ -441,7 +461,7 @@ function DashBoardMenu(onLogout) {
                                 </li>
                             </ul>
                         )}
-                       {/*  <a href="#" onClick={() => toggleDropdown('dropdownquize')} className="menu-link  menu-toggle" id="dropdownMenuButton">
+                        {/*  <a href="#" onClick={() => toggleDropdown('dropdownquize')} className="menu-link  menu-toggle" id="dropdownMenuButton">
                             <i className="menu-icon tf-icons bx bxs-envelope"></i>
                             <div data-i18n="Layouts">Assignments Activity</div>
                         </a>

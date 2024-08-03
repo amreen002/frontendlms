@@ -413,7 +413,7 @@ function App() {
             path="/announcementdetails"
             element={<AnnouncementdetailRouter />} />
              <Route
-            path="/steperform"
+            path="/mangedlead"
             element={<SteperformPage/>} />
           <Route
             path="/quizetresult/:studentquizeId"

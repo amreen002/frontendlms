@@ -7,7 +7,7 @@ import DashBoardMenus from './dashboardsMenuComponent';
 import ValidationaddStudent from '../validation/addstudentvalidation'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
-const { REACT_APP_API_ENDPOINT ,REACT_APP_API_IMG} = process.env;
+const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 function StudentUse() {
     const [table, setTable] = useState([]);
     const { studentsId } = useParams();
@@ -87,7 +87,7 @@ function StudentUse() {
 
     const handleFileChange = (event) => {
         setSelectedFiles(event.target.files);
-    };  
+    };
 
     useEffect(() => {
         fetchData();
@@ -108,7 +108,7 @@ function StudentUse() {
                 });
 
                 setTable(response.data.students.rows);
-                setTotalPages(response.data.students.totalPage ||1)
+                setTotalPages(response.data.students.totalPage || 1)
             }// Updated state variable
         } catch (err) {
             console.log(err.response);
@@ -179,14 +179,14 @@ function StudentUse() {
         try {
             const token = localStorage.getItem('token');
             console.log('Fetching data for student ID:', studentsId);
-    
+
             if (token) {
                 const response = await axios.get(`${REACT_APP_API_ENDPOINT}/liststudents/${studentsId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-    
+
                 if (response.data && response.data.students) {
                     const userData = response.data.students;
                     setFindOneInstructor(userData);
@@ -214,7 +214,7 @@ function StudentUse() {
             console.error('Error fetching data:', error);
         }
     };
-    const [errors, setErrors]   = useState({})
+    const [errors, setErrors] = useState({})
 
     const formData = {
         Name,
@@ -267,20 +267,20 @@ function StudentUse() {
             data.append(key, formData[key]);
         }
         try {
-          
+
             const token = localStorage.getItem('token');
-          
+
             if (token) {
 
-             const   response = await axios.post(`${REACT_APP_API_ENDPOINT}/addstudents`, data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`
-                }
+                const response = await axios.post(`${REACT_APP_API_ENDPOINT}/addstudents`, data, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 window.location.href = "/students";
                 const userdata = response.data
-                toast.success(userdata.message,{
+                toast.success(userdata.message, {
                     position: "top-right",
                     autoClose: true,
                     hideProgressBar: false,
@@ -289,12 +289,12 @@ function StudentUse() {
                     draggable: true,
                     progress: undefined,
                     theme: "colored",
-                    
-                 });
+
+                });
 
             }
         } catch (error) {
-            toast.error(error.response.data.message,{
+            toast.error(error.response.data.message, {
                 position: "top-right",
                 autoClose: true,
                 hideProgressBar: false,
@@ -303,8 +303,8 @@ function StudentUse() {
                 draggable: true,
                 progress: undefined,
                 theme: "colored",
-                
-             });
+
+            });
 
         }
     };
@@ -314,14 +314,14 @@ function StudentUse() {
             const token = localStorage.getItem('token');
 
             if (token) {
-              const response =  await axios.delete(`${REACT_APP_API_ENDPOINT}/deletestudents/${studentsId}`, {
+                const response = await axios.delete(`${REACT_APP_API_ENDPOINT}/deletestudents/${studentsId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 fetchData();
                 const userdata = response.data
-                toast.success(userdata.message,{
+                toast.success(userdata.message, {
                     position: "top-right",
                     autoClose: true,
                     hideProgressBar: false,
@@ -330,13 +330,13 @@ function StudentUse() {
                     draggable: true,
                     progress: undefined,
                     theme: "colored",
-                    
-                 });
+
+                });
 
             }
         } catch (error) {
             console.error('Error deleting data:', error);
-            toast.error(error.response.data.message,{
+            toast.error(error.response.data.message, {
                 position: "top-right",
                 autoClose: true,
                 hideProgressBar: false,
@@ -345,8 +345,8 @@ function StudentUse() {
                 draggable: true,
                 progress: undefined,
                 theme: "colored",
-                
-             });
+
+            });
 
         }
     };
@@ -362,16 +362,16 @@ function StudentUse() {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-               const response = await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsstudents/${studentsId}`, data, {
-                   headers: {
-                       'Content-Type': 'multipart/form-data',
-                       Authorization: `Bearer ${token}`
-                   }
+                const response = await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsstudents/${studentsId}`, data, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 fetchData3();
                 window.location.href = "/students"
                 const userdata = response.data
-                toast.success(userdata.message,{
+                toast.success(userdata.message, {
                     position: "top-right",
                     autoClose: true,
                     hideProgressBar: false,
@@ -380,13 +380,13 @@ function StudentUse() {
                     draggable: true,
                     progress: undefined,
                     theme: "colored",
-                    
-                 });
+
+                });
 
             }
         } catch (error) {
             console.error('Error updating:', error);
-            toast.error(error.response.data.message,{
+            toast.error(error.response.data.message, {
                 position: "top-right",
                 autoClose: true,
                 hideProgressBar: false,
@@ -395,13 +395,13 @@ function StudentUse() {
                 draggable: true,
                 progress: undefined,
                 theme: "colored",
-                
-             });
+
+            });
 
         }
 
         // Clear input fields after update
-       
+
 
     };
 
@@ -542,24 +542,24 @@ function StudentUse() {
                                                     </label>
                                                 </div>
                                             </div>
-                                            </div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
-                                            <input type="search" class="form-control" placeholder="Search.." 
-                                            aria-controls="DataTables_Table_0" /></label>
-                                            </div>
+                                        </div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
+                                            <input type="search" class="form-control" placeholder="Search.."
+                                                aria-controls="DataTables_Table_0" /></label>
+                                        </div>
                                             <div class="btn-group d-flex flex-row">
-                                                    <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex" 
-                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" 
+                                                <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex"
+                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
                                                     aria-expanded="false">
                                                     <span><i class="bx bx-export me-1"></i>Export</span>
-                                                    </button>
-                                                    <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+                                                </button>
+                                                <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
                                                     <span><i class="bx bx-plus me-0 me-sm-1"></i>Student</span>
-                                                    </button>
-                                                 </div>
-                                             </div>
-                                             </div>
-                                             </div>
-                                            
+                                                </button>
+                                            </div>
+                                        </div>
+                                            </div>
+                                        </div>
+
                                             <table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
@@ -571,7 +571,7 @@ function StudentUse() {
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Instructor</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Course</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Bacth</th>
-                                                      {/*   <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Billing: activate to sort column ascending">Date</th>
+                                                        {/*   <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Billing: activate to sort column ascending">Date</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="400px;" aria-label="Status: activate to sort column ascending">Address</th> */}
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="145px;" aria-label="Actions">Actions</th>
 
@@ -587,11 +587,11 @@ function StudentUse() {
                                                             <td>{item.Name + " " + item.LastName}</td>
                                                             <td>{item.Email}</td>
                                                             <td>{item.PhoneNumber}</td>
-                                                          
+
                                                             <td>{item.Batch && item.Batch.Teacher && item.Batch.Teacher.Name}</td>
                                                             <td>{item.Course && item.Course.name}</td>
                                                             <td>{item.Batch && item.Batch.Title}</td>
-                                                           {/*  <td>{item.Date}</td>
+                                                            {/*  <td>{item.Date}</td>
                                                             <td>{item.Address && item.Address.Address}</td> */}
                                                             <td>
 
@@ -720,23 +720,23 @@ function StudentUse() {
                                                         <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='Name'
                                                             onChange={handleChange}
                                                             value={Name} aria-label="John Doe" />
-                                                            {errors.Name && <div className='errors'>{errors.Name}</div>}
+                                                        {errors.Name && <div className='errors'>{errors.Name}</div>}
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                        </div>
+                                                    </div>
                                                     <div class="col-lg-6">
                                                         <label class="form-label" for="add-user-fullname"> Last Name</label>
                                                         <input type="text" class="form-control" id="add-user-fullname" placeholder="John Doe" name='LastName'
                                                             onChange={handleChange}
                                                             value={LastName} aria-label="John Doe" />
-                                                             {errors.LastName && <div className='errors'>{errors.LastName}</div>}
+                                                        {errors.LastName && <div className='errors'>{errors.LastName}</div>}
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                        </div>
+                                                    </div>
                                                     <div class="mb-3">
                                                         <label class="form-label" for="add-user-email"> Email</label>
                                                         <input type="text" id="add-user-email" class="form-control" placeholder="john.doe@example.com" name='Email'
                                                             onChange={handleChange}
                                                             value={Email} />
-                                                             {errors.Email && <div className='errors'>{errors.Email}</div>}
+                                                        {errors.Email && <div className='errors'>{errors.Email}</div>}
 
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
                                                     <div class="col-lg-6 ">
@@ -758,7 +758,7 @@ function StudentUse() {
                                                         <input type="text" id="add-user" class="form-control" placeholder="User@123" name="Username"
                                                             onChange={handleChange}
                                                             value={Username} />
-                                                             {errors.Username && <div className='errors'>{errors.Username}</div>}
+                                                        {errors.Username && <div className='errors'>{errors.Username}</div>}
                                                     </div>
                                                     <div class="col-md-6 paswrd">
 
@@ -771,16 +771,16 @@ function StudentUse() {
                                                             id="basic-default-password12"
                                                             placeholder="Abc@123"
                                                         /> <i className={`far ${show ? 'fa-eye' : 'fa-eye-slash'}`} onClick={handleshow}></i>
-                                                        
-                                                         {errors.Password && <div className='errors'>{errors.Password}</div>}
-                                                       
+
+                                                        {errors.Password && <div className='errors'>{errors.Password}</div>}
+
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label" for="add-user-contact"> Date</label>
                                                         <input type="date" id="add-user-contact" class="form-control phone-mask" placeholder="Date" name="Date"
                                                             onChange={handleChange}
                                                             value={Date} />
-                                                             {errors.Date && <div className='errors'>{errors.Date}</div>}
+                                                        {errors.Date && <div className='errors'>{errors.Date}</div>}
                                                     </div>
                                                     <div class="col-lg-6 col-md-6 ">
                                                         <label for="exampleFormControlSelect2" class="form-label"> Class / Course</label>
@@ -857,7 +857,7 @@ function StudentUse() {
                                                         <input type="text" id="add-user-email" class="form-control" placeholder="City" name='City'
                                                             onChange={handleChange}
                                                             value={City} />
-                                                             {errors.City && <div className='errors'>{errors.City}</div>}
+                                                        {errors.City && <div className='errors'>{errors.City}</div>}
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                     </div>
 
@@ -866,7 +866,7 @@ function StudentUse() {
                                                         <input type="text" id="add-user-email" class="form-control" placeholder="Address" name='Address'
                                                             onChange={handleChange}
                                                             value={Address} />
-                                                             {errors.Address && <div className='errors'>{errors.Address}</div>}
+                                                        {errors.Address && <div className='errors'>{errors.Address}</div>}
                                                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                     </div>
                                                     <div class="mb-3 fv-plugins-icon-container">
@@ -877,7 +877,7 @@ function StudentUse() {
                                                             id="inputGroupFile04"
                                                             aria-describedby="inputGroupFileAddon04"
                                                             aria-label="Upload"
-                                                             onChange={handleFileChange}
+                                                            onChange={handleFileChange}
                                                         />
                                                         {/*    {errors.file && <div className='errors'>{errors.file}</div>} */}
 
@@ -915,7 +915,7 @@ function StudentUse() {
                                                 {/*  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button> */}
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 <div class="text-center mb-4">
-                                                    <h3 style={{marginTop:'-40px'}}>Student Information</h3>
+                                                    <h3 style={{ marginTop: '-40px' }}>Student Information</h3>
 
                                                 </div>
                                                 <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
@@ -957,7 +957,7 @@ function StudentUse() {
                                                             onChange={(e) => setDate(e.target.value)}
                                                             value={Date} />
                                                     </div>
-                                             
+
                                                     <div class="col-12 col-md-6 fv-plugins-icon-container">
                                                         <label htmlFor="exampleFormControlSelect2" className="form-label"> Country</label>
                                                         <select
@@ -1047,7 +1047,7 @@ function StudentUse() {
                                                             id="inputGroupFile04"
                                                             aria-describedby="inputGroupFileAddon04"
                                                             aria-label="Upload"
-                                                             onChange={handleFileChange}
+                                                            onChange={handleFileChange}
                                                         />
                                                         {/*    {errors.file && <div className='errors'>{errors.file}</div>} */}
 
