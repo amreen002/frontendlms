@@ -659,15 +659,35 @@ function SaleTeamUse() {
                                 <div class="card">
                                     <div class="card-header border-bottom custom_searchbar">
                                         <h5 class="card-title">Search Filter</h5>
-                                        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
-                                            <div class="col-md-4 user_role"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
+                                        <div class="d-flex justify-content-between align-items-center row  gap-3 gap-md-0 cus_srchbox">
+                                            <div class="col-md-4 user_roleu"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
                                             <div class="col-md-4 user_plan"><select id="UserPlan" class="form-select text-capitalize"><option value=""> Select Plan </option><option value="Basic">Basic</option><option value="Company">Company</option><option value="Enterprise">Enterprise</option><option value="Team">Team</option></select></div>
                                             <div class="col-md-4 user_status"><select id="FilterTransaction" class="form-select text-capitalize"><option value=""> Select Status </option><option value="Pending" class="text-capitalize">Pending</option><option value="Active" class="text-capitalize">Active</option><option value="Inactive" class="text-capitalize">Inactive</option></select></div>
                                         </div>
                                     </div>
                                     <div class="card-datatable table-responsive">
-                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
-                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div>
+                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                            <div class="row mx-2">
+                                            <div class="col-md-2">
+                                                <div class="me-3">
+                                                <div class="dataTables_length" id="DataTables_Table_0_length">
+                                                <label>
+                                                    <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select mt--5">
+                                                        <option value="10">10</option>
+                                                        <option value="25">25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                        </select>
+                                                        </label>
+                                                        </div>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-md-10">
+                                                            <div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex 
+                                                            align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"  >
+                                                                <div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
+                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label>
+                                            </div>
                                             <div class="btn-group d-flex flex-row">
                                                 <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex"
                                                     tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
@@ -726,11 +746,37 @@ function SaleTeamUse() {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div class="row mx-2"><div class="col-sm-12 col-md-6">
+                                            <div class="row mx-2">
+                                                <div class="col-sm-12 col-md-6">
                                                 <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
                                                  aria-live="polite">Showing 1 to 10 of 50 entries</div>
-                                                 </div><div class="col-sm-12 col-md-6">
-                                                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+
+<div class="col-sm-12 col-md-6">
+                                                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                        <ul class="pagination">
+                                                            <li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous">
+                                                                <a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" 
+                                                                tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active">
+                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" 
+                                                                    tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item ">
+                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" 
+                                                                        class="page-link">2</a></li><li class="paginate_button page-item ">
+                                                                            <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" 
+                                                                            class="page-link">3</a></li><li class="paginate_button page-item ">
+                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" 
+                                                                                tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item ">
+                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4"
+                                                                                     tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item 
+                                                                                     next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0"
+                                                                                      role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a>
+                                                                                      </li>
+                                                                                      </ul>
+                                                                                      </div>
+                                                     </div>
+                                                 </div>
+                                                 
+                                             </div>
+                                          </div>
                                     </div>
 
                                     <div className="offcanvas offcanvas-end w-50" tabIndex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">

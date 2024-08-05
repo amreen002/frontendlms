@@ -157,9 +157,14 @@ h5#offcanvasAddUserLabel {
   padding: 12px 15px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  margin-bottom: 0px;
 }
 .custom_searchbar {
   padding: 0px 0px;
+}
+
+.cus_srchbox {
+  padding: 14px 20px;
 }
 /**/
 
