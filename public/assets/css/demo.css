@@ -854,3 +854,7 @@ textarea {
   visibility: visible;
   transform: translateX(0);
 }
+/* amreen icon lead */
+.lead-li-icon{
+  font-size: 19px;
+}

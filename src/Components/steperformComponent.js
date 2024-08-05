@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
@@ -7,12 +8,14 @@ import DashBoardMenus from './dashboardsMenuComponent';
 import { Button, Form } from 'react-bootstrap';
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import ThankYouCard from '../Components/thankyouComponent'; // Adjust the import path as needed
 import Draggable from '../Components/draggableComponent';
-import { FaCheckCircle, FaTimesCircle, FaLock, FaEnvelope } from 'react-icons/fa'; // Import necessary icons
-
+import { FaLock, FaEnvelope, FaWhatsapp, FaGoogle, FaLinkedin, FaBriefcase, FaCircle } from 'react-icons/fa'; // Import necessary icons
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 const { REACT_APP_API_ENDPOINT, REACT_APP_API_IMG } = process.env;
 function SteperformComponent() {
+    const datatoken = localStorage.getItem('datatoken');
+    const coursedatafetch = JSON.parse(datatoken)
     const { saleteamId } = useParams();
     const [step, setStep] = useState(1);
     const [table, setTable] = useState([]);
@@ -35,17 +38,75 @@ function SteperformComponent() {
     const [remark, setRemark] = useState('')
     const [createdAt, setCreatedAt] = useState('');
     const [visitDate, setVisitDate] = useState('')
+    const [gender, setGender] = useState('');
+    const [Education, setEducation] = useState('')
+    const [coursesId, setCoursesId] = useState('')
+    const [AddressType, setAddressType] = useState('')
+    const [PostalCode, setPostalCode] = useState('')
+    const [Address, setAddress] = useState('')
+    const [City, setCity] = useState('')
+    const [DistrictId, setDistrictId] = useState('')
+    const [StateId, setStateId] = useState('')
+    const [CountryId, setCountryId] = useState('')
+    const [CounselingDepartmentAllotted, setCounselingDepartmentAllotted] = useState('')
+    const [CounselorName, setCounselorName] = useState('')
+    const [CounselorRoomNo, setCounselorRoomNo] = useState('')
+    const [Area, setArea] = useState('')
     const [userData, setUserData] = useState({});
     const [formVisible, setFormVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [saleTeamData, setSaleTeamData] = useState([]);
+    const [teamData, setTeamData] = useState([]);
     const [TelecallerCheckbox, setTelecallerCheckbox] = useState(false);
     const [createdItems, setCreatedItems] = useState({});
     const [showOtpInput, setShowOtpInput] = useState({ email: false, mobile: false });
     const [otp, setOtp] = useState({ email: '', mobile: '' });
     const [otpVerified, setOtpVerified] = useState({ email: false, mobile: false });
+    const [coursesTable, setCoursesTable] = useState([]);
+    const [countryTable, setCountryTable] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState('');
+    const [selectedState, setSelectedState] = useState('');
+    const [frontdesk, setFront] = useState([]);
+    const { frontdeskId } = useParams();
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
+    const handleCountryChange = (e) => {
+        const selectedCountryId = parseInt(e.target.value);
+        const selectedCountry = countryTable.find(country => country.id === selectedCountryId);
+        setCountryId(selectedCountryId);
+        setSelectedCountry(selectedCountry);
+        setStateId(''); // Reset state and district selections
+        setSelectedState('');
+        setDistrictId('');
+    };
 
 
+    const handleStateChange = (e) => {
+        const selectedStateId = parseInt(e.target.value);
+        const selectedState = selectedCountry ? selectedCountry.Staties.find(state => state.id === selectedStateId) : '';
+        setStateId(selectedStateId);
+        setSelectedState(selectedState);
+        setDistrictId(''); // Reset district selection
+    };
+    const isToday = (date) => {
+        const today = new Date();
+        return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+    };
+    const leadIcon = (lead) => {
+        if (isToday(new Date(lead.createdAt))) {
+            return lead.TelecallerCheckbox ? (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-c" style={{ color: "green" }}></i>
+            ) : (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-t" style={{ color: "#FF9800" }}></i>
+            );
+        } else {
+            return lead.TelecallerCheckbox ? (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-c" style={{ color: "green" }}></i>
+            ) : (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-o" style={{ color: "#007BFF" }}></i>
+            );
+        }
+    };
     const [telecallerPersonNames, setTelecallerPersonNames] = useState(() => {
         const savedNames = JSON.parse(localStorage.getItem('telecallerPersonNames'));
         return savedNames !== null ? savedNames : {};
@@ -56,6 +117,11 @@ function SteperformComponent() {
         fetchData();
         fetchData2()
         fetchData3()
+        fetchData4()
+        fetchData5()
+        fetchData6()
+        fetchData7()
+        fetchData8()
     }, []);
 
 
@@ -63,18 +129,29 @@ function SteperformComponent() {
         fetchData4(saleteamId);
     }, [saleteamId]);
 
-    const fetchData0 = async () => {
+    useEffect(() => {
+        fetchData9(frontdeskId);
+    }, [frontdeskId]);
+
+    useEffect(() => {
+        fetchData0(page);
+        fetchData5(page);
+        fetchData8(page)
+    }, [page]);
+
+    const fetchData0 = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
 
             if (token) {
-                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/usertelecallerteam`, {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/usertelecallerteam?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
 
                     }
                 });
-                const userData = response.data.usertelecallerteam;
+                const userData = response.data.usertelecallerteam.rows;
+                setTotalPages(response.data.usertelecallerteam.totalPage || 1); // Ensure totalPages has a default value
                 setSaleTeamData(userData)
                 setDate(userData.date)
                 setName(userData.name);
@@ -176,6 +253,172 @@ function SteperformComponent() {
         }
     }
 
+    const fetchData5 = async (page = 1) => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listtelecallerteam?page=${page}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userData = response.data.telecallerdepartment.rows;
+                setTotalPages(response.data.telecallerdepartment.totalPage || 1); // Ensure totalPages has a default value
+                setTeamData(userData)
+                setDate(userData.date)
+                setName(userData.name);
+                setPhoneNumber(userData.phoneNumber);
+                setEmail(userData.email);
+                setAge(userData.age);
+                setWorkingStatus(userData.workingStatus);
+                setRemark(userData.remark);
+                setVisitDate(userData.visitDate);
+                setRoleId(userData.roleId)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const fetchData6 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/courses`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userData = response.data.courses;
+                setCoursesTable(userData)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const fetchData7 = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listcountry`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+                const userData = response.data.country;
+                setCountryTable(userData)
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const fetchData8 = async (page = 1) => {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listfrontdesk?page=${page}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setFront(response.data.frontdesk.rows);
+                setTotalPages(response.data.frontdesk.totalPage || 1); // Ensure totalPages has a default value
+            }
+        } catch (err) {
+            console.log(err.response);
+        }
+    }
+    const fetchData9 = async (frontdeskId) => {
+        try {
+            if (!frontdeskId) {
+                console.log("frontdeskId is undefined");
+                return;
+            }
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listfrontdesk/${frontdeskId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const userData = response.data.frontdesk;
+                setUserData(userData)
+                setGender(userData.gender)
+                setEducation(userData.Education);
+                setCoursesId(userData.coursesId);
+                setAddressType(userData.Address.AddressType);
+                setPostalCode(userData.Address.PostalCode);
+                setAddress(userData.Address.Address);
+                setCity(userData.Address.City);
+                setArea(userData.Address.Area);
+                setDistrictId(userData.Address.DistrictId);
+                setStateId(userData.Address.StateId);
+                setCountryId(userData.Address.CountryId);
+                setCounselingDepartmentAllotted(userData.CounselingDepartmentAllotted);
+                setCounselorName(userData.CounselorName);
+                setCounselorRoomNo(userData.CounselorRoomNo);
+                setRemark(userData.remark)
+
+            }
+        } catch (err) {
+            console.log(err.response);
+        }
+    }
+
+
+    const handleSubmit2 = async (e) => {
+        e.preventDefault();
+        try {
+            let formData = { name, workingStatus, phoneNumber, email, age, date, remark, visitDate, roleId, gender, Education, coursesId, AddressType, PostalCode, Address, DistrictId, City, StateId, CountryId, Area, CounselingDepartmentAllotted, CounselorName, CounselorRoomNo }
+            const token = localStorage.getItem('token');
+            if (token) {
+                await axios.post(`${REACT_APP_API_ENDPOINT}/addfrontdesk`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+
+                    }
+                });
+
+                alert("Enquiry Created SuccessFully");
+            }
+
+
+            const promises = Object.entries(createdItems).map(([telecallerteamId, isChecked]) => {
+                const updatedUserData = { TelecallerCheckbox: isChecked };
+                return axios.patch(`${REACT_APP_API_ENDPOINT}/updatetelecallerteam/${telecallerteamId}`, updatedUserData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+            });
+
+            await Promise.all(promises);
+            handleNext()
+            fetchData6()
+            // Clear local changes after successful update
+            setCreatedItems({});
+        } catch (error) {
+            console.log(error)
+            alert('Failed to send message.');
+        }
+    }
+
+
     useEffect(() => {
         localStorage.setItem('telecallerPersonNames', JSON.stringify(telecallerPersonNames));
     }, [telecallerPersonNames]);
@@ -250,7 +493,6 @@ function SteperformComponent() {
                         }
                     });
                     alert('Lead Forwarded To Front Desk');
-                    window.location.href = "/telecallerteam";
                 } else {
                     // Do nothing!
                     console.log('Lead Forword Not To Front Desk');
@@ -270,6 +512,7 @@ function SteperformComponent() {
 
             await Promise.all(promises);
             fetchData4();
+            handleNext()
             // Clear local changes after successful update
             setCreatedItems({});
         } catch (error) {
@@ -278,7 +521,7 @@ function SteperformComponent() {
     }
 
 
-    const handleUpdate = async (e, saleteamId) => {
+    const handleUpdate2 = async (e, saleteamId) => {
         e.preventDefault();
         const { checked } = e.target;
         const newValue = checked ? 'Allotted' : 'Allotted';
@@ -309,6 +552,28 @@ function SteperformComponent() {
         }
     };
 
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const updatedUserData = { remark, gender, Education, coursesId, AddressType, PostalCode, Address, DistrictId, City, StateId, CountryId, Area, CounselingDepartmentAllotted, CounselorName, CounselorRoomNo };
+            const token = localStorage.getItem('token');
+
+            if (token) {
+                await axios.patch(`${REACT_APP_API_ENDPOINT}/viewsfrontdesk/${frontdeskId}`, updatedUserData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                fetchData(frontdeskId);
+                alert("updated successfully!");
+            }
+        } catch (error) {
+            console.error('Error updating:', error);
+            alert('An error occurred while updating');
+        }
+
+    };
+
     const handleNext = () => {
         setStep((prevStep) => prevStep + 1);
     };
@@ -329,7 +594,11 @@ function SteperformComponent() {
 
         }
     };
-
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    };
     return (
         <>
             <div class="layout-wrapper layout-content-navbar">
@@ -462,7 +731,7 @@ function SteperformComponent() {
 
 
                                 <div className="">
-                                    <div className="container">
+                                    <div className="container-fluid">
                                         <div className="row">
                                             <div className="col-12 col-md-1 col-xl-1 col-lg-1">
                                                 <div className="stepper-steps">
@@ -470,273 +739,720 @@ function SteperformComponent() {
                                                     <div className={`line ${step > 1 ? 'active' : ''}`}></div>
                                                     <div className={`step step_line ${step === 2 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 2 ? 'active disply' : 'displys'}`}>2</span></div>
                                                     <div className={`line ${step > 2 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 3 ? 'active' : ''}`}> 3</div>
+                                                    <div className={`step step_line ${step === 3 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 3 ? 'active disply' : 'displys'}`}>3</span></div>
                                                     <div className={`line ${step > 3 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 4 ? 'active' : ''}`}> 4</div>
+                                                    <div className={`step step_line ${step === 4 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 4 ? 'active disply' : 'displys'}`}>4</span></div>
                                                     <div className={`line ${step > 4 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 5 ? 'active' : ''}`}>5</div>
-                                                    <div className={`line ${step > 5 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 6 ? 'active' : ''}`}>6</div>
-                                                    <div className={`line ${step > 6 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 7 ? 'active' : ''}`}>7</div>
-
-
+                                                    <div className={`step step_line ${step === 5 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 5 ? 'active disply' : 'displys'}`}>5</span></div>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-md-11 col-xl-11 col-lg-11 ">
-                                                <Form className="stepper-form ">
-                                                    {step === 1 && (
-                                                        <div className="step-content">
-                                                            <div className="container">
-                                                                <div className="row">
-                                                                    {/*              <!-- Lead Details Card --> */}
-                                                                    <div className="col-12 col-md-6 col-xl-5 mt-3">
-                                                                        <div className="card card-lead-details shadow-sm">
-                                                                            <div className="card-body">
-                                                                                <h2 className="card-title-lead">Lead Details</h2>
-                                                                                <div className="card-status-lead d-flex align-items-center mb-3">
-                                                                                    <i className="bx bx-check-double menu-icon-lead tf-icons me-2"></i>
-                                                                                    <span className="status-text-lead">Verified Lead</span>
-                                                                                </div>
-                                                                                <div className="card-profile-lead d-flex align-items-center mb-3">
-                                                                                    <div className="avatar-lead">
-                                                                                        <i className="bx bx-user bx-lg"></i>
-                                                                                    </div>
-                                                                                    <div className="profile-info-lead ms-3">
-                                                                                        <p className="mb-0 fw-bold">Super Admin</p>
-                                                                                        <p className="text-muted">superadmin@gmail.com</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <p className="card-descriptionlead mb-4">
-                                                                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
-                                                                                </p>
-                                                                                <div className="row">
-                                                                                    <div className="col-12 col-md-6 mb-3">
-                                                                                        <div className="d-flex flex-column lead-info">
-                                                                                            <div className="info-item mb-2">
-                                                                                                <i className="bx bx-calendar info-icon"></i>
-                                                                                                <span className="info-text">01/11/2023</span>
-                                                                                            </div>
-                                                                                            <div className="info-item mb-2">
-                                                                                                <i className="bx bx-briefcase info-icon"></i>
-                                                                                                <span className="info-text">Employee</span>
-                                                                                            </div>
+                                                {step === 1 && (
+                                                    <div className="step-content">
+                                                        <div className="container">
+                                                            <div className="row">
+                                                                {/*              <!-- Lead Details Card --> */}
+                                                                <div className="col-12 col-md-12 col-xl-12 mt-3">
+                                                                    <div className="card card-lead-details shadow-sm">
+                                                                        <div className="table-responsive">
+                                                                            <table className="table table-hover">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th scope="col" width="50px">Lead</th>
+                                                                                        <th scope="col" width="300px" >Name</th>
+                                                                                        <th scope="col" width="300px">Email</th>
+                                                                                        <th scope="col" width="300px">Assign to Users</th>
+                                                                                        <th scope="col" width="150px">Specialistion</th>
+                                                                                        <th scope="col" width="150px">Contact</th>
+                                                                                        <th scope="col" width="100px">Platform</th>
 
-                                                                                        </div>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {saleTeamData.map((lead) => (
+                                                                                        <tr key={lead.id}>
+                                                                                            <td>
+                                                                                                {leadIcon(lead)}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{lead.name}</p>
+                                                                                            </td>
+                                                                                            <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{lead.email}</span></td>
+                                                                                            <td>{lead.User && lead.User.Role && lead.User.Role.Name}</td>
+                                                                                            <td>
+                                                                                                <div className="d-flex align-items-center">
+                                                                                                    <i className="bx bx-briefcase me-2"></i>
+                                                                                                    <span>{lead.workingStatus}</span>
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div className="d-flex align-items-center">
+                                                                                                    <a href={`https://wa.me/${lead.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                                        <FaWhatsapp className="lead-li-icon me-2 " color="#25D366" /> {/* WhatsApp icon */}
+                                                                                                    </a>
+                                                                                                    <a href={`tel:${lead.phoneNumber}`}>
+                                                                                                        <span className="fw-bold">{lead.phoneNumber}</span>
+                                                                                                    </a>
+
+
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div className="align-items-center">
+                                                                                                    {lead.leadPlatform == "Google" ? (
+                                                                                                        <a href={`https://www.google.com/search?q=${lead.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                                                            <FaGoogle color="#4285F4" /> {/* Google icon */}
+                                                                                                        </a>
+                                                                                                    ) : lead.leadPlatform == "Linkdin" ? (
+                                                                                                        <a href={`https://www.linkedin.com/search/results/all/?keywords=${lead.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                                                            <FaLinkedin color="#0077B5" /> {/* LinkedIn icon */}
+                                                                                                        </a>
+                                                                                                    ) : lead.leadPlatform == "Indeed" ? (
+                                                                                                        <a href={`https://www.indeed.com/q-${lead.leadPlatform}-jobs.html`} target="_blank" rel="noopener noreferrer">
+                                                                                                            <i class="fa-sharp fa-solid fa-info" style={{ color: "#2557a7" }}></i>
+                                                                                                            {/*   <FaBriefcase className="me-2" color="#FAFAFA" /> {/* Indeed icon */}
+                                                                                                        </a>
+                                                                                                    ) : (<i className="bx bx-briefcase"></i>)
+
+                                                                                                    }
+
+
+
+
+                                                                                                </div>
+                                                                                            </td>
+
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div className="row mx-2">
+                                                                                <div className="col-sm-12 col-md-6">
+                                                                                    <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                                        Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
                                                                                     </div>
-                                                                                    <div className="col-12 col-md-6 mb-3">
-                                                                                        <div className="d-flex flex-column lead-info">
-                                                                                            <div className="info-item mb-2">
-                                                                                                <i className="bx bx-phone info-icon"></i>
-                                                                                                <span className="info-text">9876543210</span>
-                                                                                            </div>
-                                                                                            <div className="info-item">
-                                                                                                <i className="bx bx-group info-icon"></i>
-                                                                                                <span className="info-text">Lead Platform</span>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="col-12 col-md-4 text-end">
-                                                                                        <Button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                                </div>
+                                                                                <div className="col-sm-12 col-md-6">
+                                                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                                        <ul className="pagination">
+                                                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                                            </li>
+                                                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                                                </li>
+                                                                                            ))}
+                                                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                                            </li>
+                                                                                        </ul>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    {/*   <!-- Empty Space (Optional) --> */}
-                                                                    <div className="col-12 col-md-6 col-xl-7 mt-3">
-                                                                        {/*    <!-- Additional content or empty space --> */}
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-12 col-md-2 text-end mt-3">
+                                                            <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
+                                                        </div>
+                                                    </div>
+
+
+                                                )}
+                                                {step === 2 && (
+                                                    <><div className="step-content">
+                                                        <div className="row">
+                                                            <div className="col-12 col-md-5 col-xl-5 col-lg-5">
+                                                                <div className="card-details p-4 bg-light shadow-sm rounded">
+                                                                    <h2 className="mb-4">Re-assign Lead</h2>
+                                                                    <h4 className="mb-4">{selectedTask && selectedTask.name}</h4>
+                                                                    {selectedTask && (
+                                                                        <form id={selectedTask.id}>
+                                                                            <div className="mb-4">
+                                                                                <label className="form-label">Head Owner(s) - Assigned from</label>
+                                                                                <select className="form-select">
+                                                                                    <option value={dataUserss.id}>{dataUserss.name}</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="mb-4">
+                                                                                <label className="form-label">Head Owner(s) - Assigned to</label>
+                                                                                <select
+                                                                                    id={`roleSelect-${selectedTask.id}`}
+                                                                                    className="form-select"
+                                                                                    value={roleId}
+                                                                                    onChange={(e) => setRoleId(e.target.value)}
+                                                                                >
+                                                                                    <option value="">-Select Assigned to-</option>
+                                                                                    {dataUser.map(option => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+                                                                            {telecallerPersonNames[selectedTask.id] !== null && (
+                                                                                <div className="mb-4">
+                                                                                    <input
+                                                                                        className="form-check-input"
+                                                                                        type="checkbox"
+                                                                                        id={`telecallerPersonName-${selectedTask.id}`}
+                                                                                        name="telecallerPersonNames"
+                                                                                        checked={telecallerPersonNames[selectedTask.id] === "Allotted"}
+                                                                                        onChange={(e) => handleUpdate(e, selectedTask.id)}
+                                                                                    />
+                                                                                    <span>
+                                                                                        {telecallerPersonNames[selectedTask.id] ? telecallerPersonNames[selectedTask.id] : "Re-assignment Remark"}
+                                                                                    </span>
+                                                                                </div>
+                                                                            )}
+                                                                            <div className="justify-content-between mt-4">
+                                                                                <div className="row d-flex">
+                                                                                    <div className="col-md-6">
+                                                                                        <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
+                                                                                    </div>
+                                                                                    <div className="col-md-6">
+                                                                                        <Button variant="primary" onClick={handleNext}>Next</Button>
+                                                                                    </div>
+                                                                                </div>
+
+
+                                                                            </div>
+                                                                        </form>
+                                                                    )}
+                                                                    <div className="col-12 col-md-3 text-end">
+                                                                        <button variant="primary" onClick={handleNext}>Skip <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
+                                                                    </div>
+                                                                </div>
+
+
+                                                                <div>
+                                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                        <ul className="pagination">
+                                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                            </li>
+                                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                                </li>
+                                                                            ))}
+                                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                            </li>
+                                                                        </ul>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                    )}
+                                                            <div className="col-12 col-md-7 col-xl-7 col-lg-7">
+                                                                <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
 
-                                                    {step === 2 && (
-                                                        <div className="step-content">
-                                                            <div className="row">
-                                                                <div className="col-12 col-md-5 col-xl-5 col-lg-5">
-                                                                    <div className="card-details p-4 bg-light shadow-sm rounded">
-                                                                        <h2 className="mb-4">Re-assign Lead</h2>
-                                                                        <h4 className="mb-4">{selectedTask && selectedTask.name}</h4>
-                                                                        {selectedTask && (
-                                                                            <form id={selectedTask.id}>
-                                                                                <div className="mb-4">
-                                                                                    <label className="form-label">Head Owner(s) - Assigned from</label>
-                                                                                    <select className="form-select">
-                                                                                        <option value={dataUserss.id}>{dataUserss.name}</option>
-                                                                                    </select>
-                                                                                </div>
-                                                                                <div className="mb-4">
-                                                                                    <label className="form-label">Head Owner(s) - Assigned to</label>
-                                                                                    <select
-                                                                                        id={`roleSelect-${selectedTask.id}`}
-                                                                                        className="form-select"
-                                                                                        value={roleId}
-                                                                                        onChange={(e) => setRoleId(e.target.value)}
-                                                                                    >
-                                                                                        <option value="">-Select Assigned to-</option>
-                                                                                        {dataUser.map(option => (
-                                                                                            <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                        ))}
-                                                                                    </select>
-                                                                                </div>
-                                                                                {telecallerPersonNames[selectedTask.id] !== null && (
-                                                                                    <div className="mb-4">
-                                                                                        <input
-                                                                                            className="form-check-input"
-                                                                                            type="checkbox"
-                                                                                            id={`telecallerPersonName-${selectedTask.id}`}
-                                                                                            name="telecallerPersonNames"
-                                                                                            checked={telecallerPersonNames[selectedTask.id] === "Allotted"}
-                                                                                            onChange={(e) => handleUpdate(e, selectedTask.id)}
-                                                                                        />
-                                                                                        <span>
-                                                                                            {telecallerPersonNames[selectedTask.id] ? telecallerPersonNames[selectedTask.id] : "Re-assignment Remark"}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                )}
-                                                                                <div className="justify-content-between mt-4">
-                                                                                    <div className="row d-flex">
-                                                                                        <div className="col-md-6">
-                                                                                            <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
-                                                                                        </div>
-                                                                                        <div className="col-md-6">
-                                                                                            <Button variant="primary" onClick={handleNext}>Next</Button>
-                                                                                        </div>
-                                                                                    </div>
+                                                                    <SortableContext items={saleTeamData} strategy={verticalListSortingStrategy}>
+                                                                        {saleTeamData.map((tasks) => (
+                                                                            <Draggable
+                                                                                key={tasks.id}
+                                                                                id={tasks.id}
 
-
-                                                                                </div>
-                                                                            </form>
-                                                                        )}
-                                                                        <div className="col-12 col-md-3 text-end">
-                                                                            <button variant="primary" onClick={handleNext}>Skip <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="col-12 col-md-7 col-xl-7 col-lg-7">
-                                                                    <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-
-                                                                        <SortableContext items={table} strategy={verticalListSortingStrategy}>
-                                                                            {table.map((tasks) => (
-                                                                                <Draggable
-                                                                                    key={tasks.id}
-                                                                                    id={tasks.id}
-
-                                                                                    component={
-                                                                                        <div key={tasks.id}>
-                                                                                            <div className="long_card py-3 mt-2">
-                                                                                                <div className="row">
-                                                                                                    <div className="col-12 col-xl-2 col-lg-2 col-md-2 date_col">
-                                                                                                        <div className="">
-                                                                                                            <p className="dates">{tasks.date}</p>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div className="col-12 col-xl-8 col-lg-8 col-md-8">
-                                                                                                        <div>
-                                                                                                            <p className="namee">{tasks.name}</p>
-                                                                                                            <div>
-                                                                                                                <span>{tasks.email}</span>
-                                                                                                                <span className="ml--10">{tasks.phoneNumber}</span>
-                                                                                                            </div>
-                                                                                                            <div>
-                                                                                                                <span>{tasks.workingStatus}</span>
-                                                                                                                <span className="ml--10">{tasks.leadPlatform}</span>
-                                                                                                            </div>
-                                                                                                            <p className="mt-3">{tasks.remark}</p>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div className="col-12 col-xl-2 col-lg-2 col-md-2 date_col">
-                                                                                                        <button className="btn btn-primary">Next</button>
+                                                                                component={
+                                                                                    <div key={tasks.id}>
+                                                                                        <div className="long_card py-3 mt-2">
+                                                                                            <div className="row">
+                                                                                                <div className="col-12 col-xl-2 col-lg-2 col-md-2 date_col">
+                                                                                                    <div className="">
+                                                                                                        <p className="dates">{leadIcon(tasks)}</p>
                                                                                                     </div>
                                                                                                 </div>
+                                                                                                <div className="col-12 col-xl-8 col-lg-8 col-md-8">
+                                                                                                    <div>
+                                                                                                        <p className="namee">{tasks.name}</p>
+                                                                                                        <div>
+                                                                                                            <span>{tasks.email}</span>
+                                                                                                            <span className="ml--10">{tasks.phoneNumber}</span>
+                                                                                                        </div>
+                                                                                                        <div>
+                                                                                                            <span>{tasks.workingStatus}</span>
+                                                                                                            <span className="ml--10">{tasks.leadPlatform}</span>
+                                                                                                        </div>
+                                                                                                        <p className="mt-3">{tasks.remark}</p>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="col-12 col-xl-2 col-lg-2 col-md-2 date_col">
+                                                                                                    <button className="btn btn-primary">Next</button>
+                                                                                                </div>
                                                                                             </div>
-                                                                                        </div>}
-                                                                                />
-                                                                            ))}
-                                                                        </SortableContext>
-                                                                    </DndContext>
-                                                                </div>
+                                                                                        </div>
 
-
+                                                                                    </div>}
+                                                                            />
+                                                                        ))}
+                                                                    </SortableContext>
+                                                                </DndContext>
                                                             </div>
 
 
                                                         </div>
-                                                    )}
 
-                                                    {step === 3 && (
-                                                        <div className="step-content">
+
+                                                    </div>
+
+                                                    </>
+                                                )}
+                                                {step === 3 && (
+                                                    <div className="row">
+                                                        {/*              <!-- Lead Details Card --> */}
+                                                        <div className="col-12 col-md-12 col-xl-12 mt-3">
                                                             <div className="card">
+                                                                <div className="card-header">
+                                                                    <h5 className="card-title">Lead Details</h5>
+                                                                </div>
                                                                 <div className="card-datatable table-responsive">
-                                                                    <table className="datatables-users table border-top">
+                                                                    <table className="datatables-users table table-striped border-top">
                                                                         <thead>
                                                                             <tr>
-                                                                                <th width="150px">S.NO</th>
-                                                                                <th width="250px">Enquiry Forward</th>
-                                                                                <th width="300px">Full Name</th>
-                                                                                <th width="350px">Telecaller Person Name</th>
-                                                                                <th width="190px;">Contact</th>
-                                                                                <th width="200px;">Email</th>
-
-
+                                                                                <th scope="col">S.NO</th>
+                                                                                <th scope="col">Update Lead</th>
+                                                                                <th scope="col">Enquiry Forward</th>
+                                                                                <th scope="col">Full Name</th>
+                                                                                <th scope="col">Assign to Users</th>
+                                                                                <th scope="col">Contact</th>
+                                                                                <th scope="col">Email</th>
+                                                                                <th scope="col">Platform</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
                                                                             {saleTeamData.map((item, index) => (
                                                                                 <tr key={item.id}>
-                                                                                    <td>{index + 1}</td>
-                                                                                    <td>
 
+                                                                                    <td>{index + 1}</td>
+                                                                                    <td>{leadIcon(item)}</td>
+                                                                                    {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
+                                                                                        <td>
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                checked={createdItems[item.id] !== undefined ? createdItems[item.id] : item.TelecallerCheckbox}
+                                                                                                onChange={(e) => handleCheckboxChange(e, item)}
+                                                                                                disabled={item.TelecallerCheckbox}
+                                                                                                data-bs-toggle="offcanvas"
+                                                                                                data-bs-target="#editTeam"
+                                                                                            />
+                                                                                        </td>
+                                                                                    ) : (
+                                                                                        <td>
+                                                                                            <input
+                                                                                                type="checkbox"
+                                                                                                disabled
+                                                                                                data-bs-toggle="offcanvas"
+                                                                                                data-bs-target="#editTeam"
+                                                                                            />
+                                                                                        </td>
+                                                                                    )}
+
+                                                                                    <td>
+                                                                                        <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{item.name}</p>
+                                                                                    </td>
+                                                                                    <td>{item.User && item.User.Role && item.User.Role.Name}</td>
+                                                                                    <td>
+                                                                                        <div className="d-flex align-items-center">
+                                                                                            <a href={`https://wa.me/${item.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                                <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
+                                                                                            </a>
+                                                                                            <a href={`tel:${item.phoneNumber}`}>
+                                                                                                <span className="fw-bold">{item.phoneNumber}</span>
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{item.email}</span></td>
+                                                                                    <td>
+                                                                                        <div className="d-flex align-items-center">
+                                                                                            {item.leadPlatform == "Google" ? (
+                                                                                                <a href={`https://www.google.com/search?q=${item.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                                                    <FaGoogle className="me-2" color="#4285F4" /> {/* Google icon */}
+                                                                                                </a>
+                                                                                            ) : item.leadPlatform == "Linkdin" ? (
+                                                                                                <a href={`https://www.linkedin.com/search/results/all/?keywords=${item.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                                                    <FaLinkedin className="me-2" color="#0077B5" /> {/* LinkedIn icon */}
+                                                                                                </a>
+                                                                                            ) : item.leadPlatform == "Indeed" ? (
+                                                                                                <a href={`https://www.indeed.com/q-${item.leadPlatform}-jobs.html`} target="_blank" rel="noopener noreferrer">
+                                                                                                    <i class="fa-sharp fa-solid fa-info" style={{ color: "#2557a7" }}></i>
+                                                                                                    {/*   <FaBriefcase className="me-2" color="#FAFAFA" /> {/* Indeed icon */}
+                                                                                                </a>
+                                                                                            ) : (<i className="bx bx-briefcase me-2"></i>)
+
+                                                                                            }
+
+
+                                                                                            <span>{item.leadPlatform}</span>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            ))}
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <div className="row mx-2">
+                                                                        <div className="col-sm-12 col-md-6">
+                                                                            <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                                Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="col-sm-12 col-md-6">
+                                                                            <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                                <ul className="pagination">
+                                                                                    <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                                    </li>
+                                                                                    {[...Array(totalPages).keys()].map(p => (
+                                                                                        <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                                            <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                                        </li>
+                                                                                    ))}
+                                                                                    <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {/* Offcanvas Component */}
+                                                        <div
+                                                            className="offcanvas offcanvas-end"
+                                                            tabIndex="-1"
+                                                            id="editTeam"
+                                                            aria-labelledby="offcanvasExampleLabel"
+                                                            style={{ display: formVisible ? 'block' : 'none' }}
+                                                        >
+                                                            <div className="offcanvas-header">
+                                                                <h5 className="offcanvas-title" id="offcanvasExampleLabel">Team</h5>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn-close"
+                                                                    aria-label="Close"
+                                                                    onClick={() => setFormVisible(false)}
+                                                                ></button>
+                                                            </div>
+                                                            <div className="offcanvas-body">
+                                                                {selectedItem && (
+                                                                    <form onSubmit={handleSubmit}>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="edit-name" className="form-label">Full Name</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                className="form-control"
+                                                                                id="edit-name"
+                                                                                value={selectedItem?.name || ''}
+                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value })}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="edit-age" className="form-label">Age</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                className="form-control"
+                                                                                id="edit-age"
+                                                                                value={selectedItem?.age || ''}
+                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, age: e.target.value })}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <input
+                                                                                type="hidden"
+                                                                                className="form-control telecallar-team"
+                                                                                id="add-user-fullname"
+                                                                                name='roleId'
+                                                                                value={selectedItem?.roleId || ''}
+                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, roleId: e.target.value })}
+                                                                                style={{ display: "none" }}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="edit-phone" className="form-label">Contact</label>
+                                                                            <div className="d-flex align-items-center">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="edit-phone"
+                                                                                    value={selectedItem?.phoneNumber || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, phoneNumber: e.target.value })}
+                                                                                />
+                                                                                <Button
+                                                                                    variant="outline-secondary"
+                                                                                    className="ml-2"
+                                                                                    onClick={() => setShowOtpInput({ ...showOtpInput, mobile: !showOtpInput.mobile })}
+                                                                                >
+                                                                                    <FaLock /> {showOtpInput.mobile ? 'Cancel' : 'Verify'}
+                                                                                </Button>
+                                                                            </div>
+                                                                            {showOtpInput.mobile && (
+                                                                                <div className="mt-2">
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        placeholder="Enter OTP"
+                                                                                        value={otp.mobile}
+                                                                                        onChange={(e) => setOtp({ ...otp, mobile: e.target.value })}
+                                                                                    />
+                                                                                    <Button
+                                                                                        variant="primary"
+                                                                                        className="mt-2"
+                                                                                        onClick={() => handleOtpVerification('mobile')}
+                                                                                    >
+                                                                                        Verify OTP
+                                                                                    </Button>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="edit-email" className="form-label">Email</label>
+                                                                            <div className="d-flex align-items-center">
+                                                                                <input
+                                                                                    type="email"
+                                                                                    className="form-control"
+                                                                                    id="edit-email"
+                                                                                    value={selectedItem?.email || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, email: e.target.value })}
+                                                                                />
+                                                                                <Button
+                                                                                    variant="outline-secondary"
+                                                                                    className="ml-2"
+                                                                                    onClick={() => setShowOtpInput({ ...showOtpInput, email: !showOtpInput.email })}
+                                                                                >
+                                                                                    <FaEnvelope /> {showOtpInput.email ? 'Cancel' : 'Verify'}
+                                                                                </Button>
+                                                                            </div>
+                                                                            {showOtpInput.email && (
+                                                                                <div className="mt-2">
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        placeholder="Enter OTP"
+                                                                                        value={otp.email}
+                                                                                        onChange={(e) => setOtp({ ...otp, email: e.target.value })}
+                                                                                    />
+                                                                                    <Button
+                                                                                        variant="primary"
+                                                                                        className="mt-2"
+                                                                                        onClick={() => handleOtpVerification('email')}
+                                                                                    >
+                                                                                        Verify OTP
+                                                                                    </Button>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="edit-working-status" className="form-label">Select Specialistion</label>
+                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={selectedItem?.workingStatus || ''}
+                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, workingStatus: e.target.value })}>
+                                                                                <option value="">Select Specialistion*</option>
+                                                                                <option value="Employee">Employee</option>
+                                                                                <option value="Student">Student</option>
+                                                                                <option value="Entrepreneur">Entrepreneur</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="edit-lead-platform" className="form-label">Lead Platform</label>
+                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' value={selectedItem?.leadPlatform || ''}
+                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, leadPlatform: e.target.value })}>
+                                                                                <option value="">Select Specialistion*</option>
+                                                                                <option value="Google">Google</option>
+                                                                                <option value="Linkdin">Linkdin</option>
+                                                                                <option value="Indeen">Indeen</option>
+                                                                                <option value="Directly">Directly Communication</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="flatpickr-datetime" className="form-label">Visiting Date</label>
+                                                                            <input
+                                                                                type="date"
+                                                                                className="form-control"
+                                                                                id="flatpickr-datetime"
+                                                                                name='visitDate'
+                                                                                defaultValue={visitDate}
+                                                                                onChange={(e) => setVisitDate(e.target.value)}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="exampleFormControlSelect2" className="form-label">Status</label>
+                                                                            <select
+                                                                                id="exampleFormControlSelect2"
+                                                                                className="form-select"
+                                                                                name="status"
+                                                                                value={status}
+                                                                                onChange={(e) => setStatus(e.target.value)}
+                                                                            >
+                                                                                <option value="">----Choose one----</option>
+                                                                                <option value="1st Call">1st Call</option>
+                                                                                <option value="2nd Call">2nd Call</option>
+                                                                                <option value="3rd Call">3rd Call</option>
+                                                                                <option value="4th Call">4th Call</option>
+                                                                                <option value="Not Responding (N/R)">Not Responding (N/R)</option>
+                                                                                <option value="Other">Other</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor="modalEditTaxID" className="form-label">Remark</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                id="modalEditTaxID"
+                                                                                name="remark"
+                                                                                onChange={(e) => setRemark(e.target.value)}
+                                                                                defaultValue={remark}
+                                                                                className="form-control"
+                                                                                placeholder="Remark"
+                                                                            />
+                                                                        </div>
+                                                                        <Button type="submit" className="btn btn-primary">Save</Button>
+                                                                    </form>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="justify-content-between mt-4">
+                                                            <div className="row d-flex">
+                                                                <div className="col-md-2">
+                                                                    <Button variant="secondary" onClick={handlePrevious}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
+                                                                </div>
+                                                                <div className="col-md-2">
+                                                                    <Button variant="primary" onClick={handleNext}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                )}
+                                                {step === 4 && (
+                                                    <div className="step-content">
+                                                        <div className="card">
+                                                            <div className="card-datatable table-responsive">
+                                                                <table className="datatables-users table border-top">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="150px">S.NO</th>
+                                                                            <th width="200px">Update Lead</th>
+                                                                            <th width="250px">Enquiry Forward</th>
+                                                                            <th width="300px">Full Name</th>
+                                                                            <th width="350px">Assign to Users</th>
+                                                                            <th width="190px;">Contact</th>
+                                                                            <th width="200px;">Email</th>
+
+
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {teamData.map((item, index) => (
+                                                                            <tr key={item.id}>
+                                                                                <td>{index + 1}</td>
+                                                                                <td>
+                                                                                    {leadIcon(item)}
+                                                                                </td>
+                                                                                {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
+                                                                                    <td>
                                                                                         <input
                                                                                             type="checkbox"
                                                                                             checked={createdItems[item.id] !== undefined ? createdItems[item.id] : item.TelecallerCheckbox}
                                                                                             onChange={(e) => handleCheckboxChange(e, item)}
                                                                                             disabled={item.TelecallerCheckbox}
-                                                                                            data-bs-toggle="offcanvas" data-bs-target="#editTeam"
-
+                                                                                            data-bs-toggle="offcanvas"
+                                                                                            data-bs-target="#editTeam"
                                                                                         />
                                                                                     </td>
+                                                                                ) : (
+                                                                                    <td>
+                                                                                        <input
+                                                                                            type="checkbox"
+                                                                                            checked={item.TelecallerCheckbox} // Reflect the checkbox state for other users
+                                                                                            disabled // Always disabled for other users
+                                                                                            data-bs-toggle="offcanvas"
+                                                                                            data-bs-target="#editTeam"
+                                                                                        />
+                                                                                    </td>
+                                                                                )}
 
-                                                                                    <td>{item.name}</td>
+                                                                                <td>
+                                                                                    <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{item.name}</p>
+                                                                                </td>
+                                                                                <td>{item.User && item.User.Role && item.User.Role.Name}</td>
+                                                                                <td>
+                                                                                    <div className="d-flex align-items-center">
+                                                                                        <a href={`https://wa.me/${item.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                            <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
+                                                                                        </a>
+                                                                                        <a href={`tel:${item.phoneNumber}`}>
+                                                                                            <span className="fw-bold">{item.phoneNumber}</span>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{item.email}</span></td>
 
-                                                                                    <td>{item.User && item.User.Role && item.User.Role.Name}</td>
-                                                                                    <td>{item.phoneNumber}</td>
-                                                                                    <td>{item.email}</td>
-
-                                                                                </tr>
-                                                                            ))}
-                                                                        </tbody>
-                                                                    </table>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                                <div className="row mx-2">
+                                                                    <div className="col-sm-12 col-md-6">
+                                                                        <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                            Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-sm-12 col-md-6">
+                                                                        <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                            <ul className="pagination">
+                                                                                <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                                </li>
+                                                                                {[...Array(totalPages).keys()].map(p => (
+                                                                                    <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                                    </li>
+                                                                                ))}
+                                                                                <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-12 col-md-3 text-md-start">
-                                                                <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
-                                                            </div>
-                                                            {/* Offcanvas Component */}
-                                                            <div
-                                                                className="offcanvas offcanvas-end w-40"
-                                                                tabindex="-1"
-                                                                id="editTeam"
-                                                                aria-labelledby="offcanvasExampleLabel"
-                                                                style={{ display: formVisible ? 'block' : 'none' }}
-                                                            >
-                                                                <div className="offcanvas-header">
-                                                                    <h5 className="offcanvas-title" id="offcanvasExampleLabel">Edit Team</h5>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn-close"
-                                                                        aria-label="Close"
-                                                                        onClick={() => setFormVisible(false)}
-                                                                    ></button>
+                                                        </div>
+                                                        <div className="justify-content-between mt-4">
+                                                            <div className="row d-flex">
+                                                                <div className="col-md-2">
+                                                                    <Button variant="secondary" onClick={handlePrevious}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
                                                                 </div>
-                                                                <div className="offcanvas-body">
-                                                                    {selectedItem && (
-                                                                        <form onSubmit={handleSubmit}>
-                                                                            <div className="mb-3">
+                                                                <div className="col-md-2">
+                                                                    <Button variant="primary" onClick={handleNext}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+                                                        {/* Offcanvas Component */}
+                                                        <div
+                                                            className="offcanvas offcanvas-end w-50"
+                                                            tabIndex="-1"
+                                                            id="editTeam"
+                                                            aria-labelledby="offcanvasExampleLabel"
+                                                            style={{ display: formVisible ? 'block' : 'none' }}
+                                                        >
+                                                            <div className="offcanvas-header">
+                                                                <h5 className="offcanvas-title" id="offcanvasExampleLabel">Edit Team</h5>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn-close"
+                                                                    aria-label="Close"
+                                                                    onClick={() => setFormVisible(false)}
+                                                                ></button>
+                                                            </div>
+                                                            <div className="offcanvas-body">
+                                                                {selectedItem && (
+                                                                    <form onSubmit={handleSubmit}>
+                                                                        <div className="row">
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="edit-name" className="form-label">Full Name</label>
                                                                                 <input
                                                                                     type="text"
@@ -746,7 +1462,7 @@ function SteperformComponent() {
                                                                                     onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value })}
                                                                                 />
                                                                             </div>
-                                                                            <div className="mb-3">
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="edit-age" className="form-label">Age</label>
                                                                                 <input
                                                                                     type="number"
@@ -756,112 +1472,48 @@ function SteperformComponent() {
                                                                                     onChange={(e) => setSelectedItem({ ...selectedItem, age: e.target.value })}
                                                                                 />
                                                                             </div>
-                                                                            <div className="mb-3">
-                                                                                <input
-                                                                                    type="hidden"
-                                                                                    className="form-control telecallar-team"
-                                                                                    id="add-user-fullname"
-                                                                                    name='roleId'
-                                                                                    value={selectedItem?.roleId || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, roleId: e.target.value })}
-                                                                                    style={{ display: "none" }}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="mb-3">
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="edit-phone" className="form-label">Contact</label>
-                                                                                <div className="d-flex align-items-center">
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        className="form-control"
-                                                                                        id="edit-phone"
-                                                                                        value={selectedItem?.phoneNumber || ''}
-                                                                                        onChange={(e) => setSelectedItem({ ...selectedItem, phoneNumber: e.target.value })}
-                                                                                    />
-                                                                                    <Button
-                                                                                        variant="outline-secondary"
-                                                                                        className="ml-2"
-                                                                                        onClick={() => setShowOtpInput({ ...showOtpInput, mobile: !showOtpInput.mobile })}
-                                                                                    >
-                                                                                        <FaLock /> {showOtpInput.mobile ? 'Cancel' : 'Verify'}
-                                                                                    </Button>
-                                                                                </div>
-                                                                                {showOtpInput.mobile && (
-                                                                                    <div className="mt-2">
-                                                                                        <input
-                                                                                            type="text"
-                                                                                            className="form-control"
-                                                                                            placeholder="Enter OTP"
-                                                                                            value={otp.mobile}
-                                                                                            onChange={(e) => setOtp({ ...otp, mobile: e.target.value })}
-                                                                                        />
-                                                                                        <Button
-                                                                                            variant="primary"
-                                                                                            className="mt-2"
-                                                                                            onClick={() => handleOtpVerification('mobile')}
-                                                                                        >
-                                                                                            Verify OTP
-                                                                                        </Button>
-                                                                                    </div>
-                                                                                )}
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="edit-phone"
+                                                                                    value={selectedItem?.phoneNumber || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, phoneNumber: e.target.value })}
+                                                                                />
                                                                             </div>
-                                                                            <div className="mb-3">
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="edit-email" className="form-label">Email</label>
-                                                                                <div className="d-flex align-items-center">
-                                                                                    <input
-                                                                                        type="email"
-                                                                                        className="form-control"
-                                                                                        id="edit-email"
-                                                                                        value={selectedItem?.email || ''}
-                                                                                        onChange={(e) => setSelectedItem({ ...selectedItem, email: e.target.value })}
-                                                                                    />
-                                                                                    <Button
-                                                                                        variant="outline-secondary"
-                                                                                        className="ml-2"
-                                                                                        onClick={() => setShowOtpInput({ ...showOtpInput, email: !showOtpInput.email })}
-                                                                                    >
-                                                                                        <FaEnvelope /> {showOtpInput.email ? 'Cancel' : 'Verify'}
-                                                                                    </Button>
-                                                                                </div>
-                                                                                {showOtpInput.email && (
-                                                                                    <div className="mt-2">
-                                                                                        <input
-                                                                                            type="text"
-                                                                                            className="form-control"
-                                                                                            placeholder="Enter OTP"
-                                                                                            value={otp.email}
-                                                                                            onChange={(e) => setOtp({ ...otp, email: e.target.value })}
-                                                                                        />
-                                                                                        <Button
-                                                                                            variant="primary"
-                                                                                            className="mt-2"
-                                                                                            onClick={() => handleOtpVerification('email')}
-                                                                                        >
-                                                                                            Verify OTP
-                                                                                        </Button>
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                            <div className="mb-3">
-                                                                                <label htmlFor="edit-working-status" className="form-label">Working Status</label>
                                                                                 <input
-                                                                                    type="text"
+                                                                                    type="email"
                                                                                     className="form-control"
-                                                                                    id="edit-working-status"
-                                                                                    value={selectedItem?.workingStatus || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, workingStatus: e.target.value })}
+                                                                                    id="edit-email"
+                                                                                    value={selectedItem?.email || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, email: e.target.value })}
                                                                                 />
                                                                             </div>
-                                                                            <div className="mb-3">
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="edit-working-status" className="form-label">Select Specialistion</label>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={selectedItem?.workingStatus || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, workingStatus: e.target.value })}>
+                                                                                    <option value="">Select Specialistion*</option>
+                                                                                    <option value="Employee">Employee</option>
+                                                                                    <option value="Student">Student</option>
+                                                                                    <option value="Entrepreneur">Entrepreneur</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="edit-lead-platform" className="form-label">Lead Platform</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    id="edit-lead-platform"
-                                                                                    value={selectedItem?.leadPlatform || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, leadPlatform: e.target.value })}
-                                                                                />
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' value={selectedItem?.leadPlatform || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, leadPlatform: e.target.value })}>
+                                                                                    <option value="">Select Specialistion*</option>
+                                                                                    <option value="Google">Google</option>
+                                                                                    <option value="Linkdin">Linkdin</option>
+                                                                                    <option value="Indeen">Indeen</option>
+                                                                                    <option value="Directly">Directly Communication</option>
+                                                                                </select>
                                                                             </div>
-                                                                            <div className="mb-3">
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="flatpickr-datetime" className="form-label">Visiting Date</label>
                                                                                 <input
                                                                                     type="date"
@@ -872,14 +1524,14 @@ function SteperformComponent() {
                                                                                     onChange={(e) => setVisitDate(e.target.value)}
                                                                                 />
                                                                             </div>
-                                                                            <div className="mb-3">
+                                                                            <div className="col-md-4 mb-3">
                                                                                 <label htmlFor="exampleFormControlSelect2" className="form-label">Status</label>
                                                                                 <select
                                                                                     id="exampleFormControlSelect2"
                                                                                     className="form-select"
                                                                                     name="status"
-                                                                                    value={status}
-                                                                                    onChange={(e) => setStatus(e.target.value)}
+                                                                                    value={selectedItem?.status || ''}
+                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, status: e.target.value })}
                                                                                 >
                                                                                     <option value="">----Choose one----</option>
                                                                                     <option value="1st Call">1st Call</option>
@@ -890,65 +1542,533 @@ function SteperformComponent() {
                                                                                     <option value="Other">Other</option>
                                                                                 </select>
                                                                             </div>
-                                                                            <div className="mb-3">
-                                                                                <label htmlFor="modalEditTaxID" className="form-label">Remark</label>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Gender</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    placeholder="gender"
+                                                                                    name='gender'
+                                                                                    defaultValue={gender}
+                                                                                    onChange={(e) => setGender(e.target.value)}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Female">Female</option>
+                                                                                    <option value="Male">Male</option>
+                                                                                    <option value="Other">Other</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Education</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="Education"
+                                                                                    defaultValue={Education}
+                                                                                    onChange={(e) => setEducation(e.target.value)}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Education">Education</option>
+                                                                                    <option value="School">School</option>
+                                                                                    <option value="Graduation">Graduation</option>
+                                                                                    <option value="Master">Master</option>
+                                                                                    <option value="Any other Skill">Any other Skill</option>
+                                                                                    <option value="Other">Other</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-6 mb-3">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Courses Look For</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="coursesId"
+                                                                                    defaultValue={coursesId}
+                                                                                    onChange={(e) => setCoursesId(e.target.value)}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    {coursesTable.map((option) => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Address Type</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="AddressType"
+                                                                                    defaultValue={AddressType}
+                                                                                    onChange={(e) => setAddressType(e.target.value)}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Current Address">Current Address</option>
+                                                                                    <option value="Residential Address">Residential Address</option>
+                                                                                    <option value="Office Address">Office Address</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label className="form-label" htmlFor="add-user-email">Address</label>
                                                                                 <input
                                                                                     type="text"
-                                                                                    id="modalEditTaxID"
-                                                                                    name="remark"
-                                                                                    onChange={(e) => setRemark(e.target.value)}
-                                                                                    defaultValue={remark}
+                                                                                    id="add-user-email"
                                                                                     className="form-control"
-                                                                                    placeholder="Remark"
+                                                                                    placeholder="Address"
+                                                                                    aria-label="Address"
+                                                                                    name='Address'
+                                                                                    onChange={(e) => setAddress(e.target.value)}
+                                                                                    value={Address}
                                                                                 />
                                                                             </div>
-                                                                            <Button type="submit" className="btn btn-primary">Save</Button>
-                                                                        </form>
-                                                                    )}
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label className="form-label" htmlFor="add-user-email">Postal Code</label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    id="add-user-email"
+                                                                                    className="form-control"
+                                                                                    placeholder="PostalCode"
+                                                                                    aria-label="PostalCode"
+                                                                                    name='PostalCode'
+                                                                                    onChange={(e) => setPostalCode(e.target.value)}
+                                                                                    value={PostalCode}
+                                                                                />
+                                                                            </div>
+                                                                            {/*        <div className="col-md-6 mb-3">
+                                                                                <label className="form-label" htmlFor="exampleFormControlSelect2">Country</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    placeholder="CountryId"
+                                                                                    name='CountryId'
+                                                                                    onChange={handleCountryChange}
+                                                                                    value={CountryId}
+                                                                                >
+                                                                                    <option value=''>Select Country</option>
+                                                                                    {countryTable.map((option) => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div> */}
+                                                                            {/*    <div className="col-md-6 mb-3">
+                                                                                <label className="form-label" htmlFor="exampleFormControlSelect2">State</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    placeholder="StateId"
+                                                                                    name='StateId'
+                                                                                    onChange={handleStateChange}
+                                                                                    value={StateId}
+                                                                                >
+                                                                                    <option value=''>Select State</option>
+                                                                                    {selectedCountry.map((option) => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-6 mb-3">
+                                                                                <label className="form-label" htmlFor="exampleFormControlSelect2">District</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    placeholder="DistrictId"
+                                                                                    name='DistrictId'
+                                                                                    onChange={(e) => setDistrictId(e.target.value)}
+                                                                                    value={DistrictId}
+                                                                                >
+                                                                                    <option value=''>Select District</option>
+                                                                                    {selectedState.map((option) => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div> */}
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label className="form-label" htmlFor="add-user-email">City</label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    id="add-user-email"
+                                                                                    className="form-control"
+                                                                                    placeholder="City"
+                                                                                    aria-label="City"
+                                                                                    name='City'
+                                                                                    onChange={(e) => setCity(e.target.value)}
+                                                                                    value={City}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label className="form-label" htmlFor="add-user-email">Area</label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    id="add-user-email"
+                                                                                    className="form-control"
+                                                                                    placeholder="Area"
+                                                                                    aria-label="Area"
+                                                                                    name='Area'
+                                                                                    onChange={(e) => setArea(e.target.value)}
+                                                                                    value={Area}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Counseling Department Allotted</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="CounselingDepartmentAllotted"
+                                                                                    defaultValue={CounselingDepartmentAllotted}
+                                                                                    onChange={(e) => setCounselingDepartmentAllotted(e.target.value)}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Education">Education</option>
+                                                                                    <option value="School">School</option>
+                                                                                    <option value="Graduation">Graduation</option>
+                                                                                    <option value="Master">Master</option>
+                                                                                    <option value="Any other Skill">Any other Skill</option>
+                                                                                    <option value="Other">Other</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="edit-counselor-name" className="form-label">Counselor Name</label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="edit-counselor-name"
+                                                                                    value={CounselorName || ''}
+                                                                                    onChange={(e) => setCounselorName(e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="col-md-4 mb-3">
+                                                                                <label htmlFor="edit-counselor-room-no" className="form-label">Counselor Room No</label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="edit-counselor-room-no"
+                                                                                    value={CounselorRoomNo || ''}
+                                                                                    onChange={(e) => setCounselorRoomNo(e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="col-md-12 mb-3">
+                                                                                <label htmlFor="edit-remark" className="form-label">Remarks</label>
+                                                                                <textarea
+                                                                                    className="form-control"
+                                                                                    id="edit-remark"
+                                                                                    rows="3"
+                                                                                    value={remark || ''}
+                                                                                    onChange={(e) => setRemark(e.target.value)}
+                                                                                ></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="d-flex justify-content-end">
+                                                                            <Button
+                                                                                variant="secondary"
+                                                                                className="me-2"
+                                                                                onClick={() => setFormVisible(false)}
+                                                                            >
+                                                                                Close
+                                                                            </Button>
+                                                                            <Button variant="primary" type="submit">
+                                                                                Save changes
+                                                                            </Button>
+                                                                        </div>
+                                                                    </form>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {step === 5 && (
+                                                    <div className="step-content">
+                                                        <div className="container">
+                                                            <div className="row">
+                                                                {/*              <!-- Lead Details Card --> */}
+                                                                <div className="col-12 col-md-12 col-xl-12 mt-3">
+                                                                    <div className="card card-lead-details shadow-sm">
+                                                                        <div className="table-responsive">
+                                                                            <table className="table table-hover">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th scope="col">Update Lead</th>
+                                                                                        <th scope="col">Enquiry Id</th>
+                                                                                        <th scope="col">Name</th>
+                                                                                        <th scope="col">Email</th>
+                                                                                        <th scope="col">Assign to User</th>
+                                                                                        <th scope="col">Visiting Date</th>
+                                                                                        <th scope="col">Contact</th>
+                                                                                        <th scope="col">Platform</th>
+                                                                                        <th scope="col">Edit</th>
+
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {frontdesk.map((lead) => (
+                                                                                        <tr key={lead.id}>
+                                                                                            <td>
+                                                                                                {leadIcon(lead)}
+                                                                                            </td>
+                                                                                            <td><i class="fa-solid fa-id-badge me-1" style={{ color: "#f01010e7" }}></i><span>{lead.enquiryId}</span></td>
+
+                                                                                            <td>
+                                                                                                <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{lead.name}</p>
+                                                                                            </td>
+                                                                                            <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{lead.email}</span></td>
+                                                                                            <td>{lead.User && lead.User.Role && lead.User.Role.Name}</td>
+                                                                                            <td>
+                                                                                                <div className="d-flex align-items-center">
+                                                                                                    <i className="bx bx-calendar me-2"></i>
+                                                                                                    <span className="">{lead.visitDate}</span>
+                                                                                                </div>
+                                                                                            </td>
+
+                                                                                            <td>
+                                                                                                <div className="d-flex align-items-center">
+                                                                                                    <a href={`https://wa.me/${lead.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                                        <FaWhatsapp className="lead-li-icon me-1 " color="#25D366" /> {/* WhatsApp icon */}
+                                                                                                    </a>
+                                                                                                    <a href={`tel:${lead.phoneNumber}`}>
+                                                                                                        <span className="fw-bold">{lead.phoneNumber}</span>
+                                                                                                    </a>
+
+
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div className="d-flex align-items-center">
+                                                                                                    {lead.leadPlatform == "Google" ? (
+                                                                                                        <a href={`https://www.google.com/search?q=${lead.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                                                            <FaGoogle className="me-1" color="#4285F4" /> {/* Google icon */}
+                                                                                                        </a>
+                                                                                                    ) : lead.leadPlatform == "Linkdin" ? (
+                                                                                                        <a href={`https://www.linkedin.com/search/results/all/?keywords=${lead.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                                                            <FaLinkedin className="me-1" color="#0077B5" /> {/* LinkedIn icon */}
+                                                                                                        </a>
+                                                                                                    ) : lead.leadPlatform == "Indeed" ? (
+                                                                                                        <a href={`https://www.indeed.com/q-${lead.leadPlatform}-jobs.html`} target="_blank" rel="noopener noreferrer">
+                                                                                                            <i class="fa-sharp fa-solid fa-info" style={{ color: "#2557a7" }}></i>
+                                                                                                            {/*   <FaBriefcase className="me-2" color="#FAFAFA" /> {/* Indeed icon */}
+                                                                                                        </a>
+                                                                                                    ) : (<i className="bx bx-briefcase me-1"></i>)
+
+                                                                                                    }
+
+                                                                                                    <span>{lead.leadPlatform}</span>
+
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td><div classNmae="d-inline-block text-nowrap">
+                                                                                                <Link to={`/mangedlead/${lead.id}`} className="navbar-brand" >  <button className="btn btn-sm btn-icon" data-bs-target="#editUserss" data-bs-toggle="modal">
+                                                                                                    <i class="bx bx-edit"></i>
+                                                                                                </button>
+                                                                                                </Link>
+                                                                                            </div></td>
+
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div className="row mx-2">
+                                                                                <div className="col-sm-12 col-md-6">
+                                                                                    <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                                        Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-sm-12 col-md-6">
+                                                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                                        <ul className="pagination">
+                                                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                                            </li>
+                                                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                                                </li>
+                                                                                            ))}
+                                                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        {/*            <!-- telecalteam Modal table --> */}
+                                                        <div class="modal fade" id="editUserss" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg modal-simple modal-edit-user">
+                                                                <div class="modal-content p-3 p-md-5">
+                                                                    <div class="modal-body">
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        <div class="text-center mb-4">
+                                                                            <h3>Information</h3>
+
+                                                                        </div>
+                                                                        <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
+
+
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label for="exampleFormControlSelect2" class="form-label">Gender</label>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" placeholder="gender" name='gender'
+                                                                                    value={gender} onChange={(e) => setGender(e.target.value)}>
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Female">Female</option>
+                                                                                    <option value="Male">Male</option>
+                                                                                    <option value="Other">Other</option>
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label for="exampleFormControlSelect2" class="form-label">Education</label>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" name="Education" value={Education} onChange={(e) => setEducation(e.target.value)}>
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Education">Education</option>
+                                                                                    <option value="School">School</option>
+                                                                                    <option value="Graduation">Graduation</option>
+                                                                                    <option value="Master">Master</option>
+                                                                                    <option value="Any other Skill">Any other Skill</option>
+                                                                                    <option value="Other">Other</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label for="exampleFormControlSelect2" class="form-label">Courses Look For</label>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" name="coursesId" value={coursesId} onChange={(e) => setCoursesId(e.target.value)}>
+                                                                                    <option value="">Select</option>
+                                                                                    {coursesTable.map((option) => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label for="exampleFormControlSelect2" class="form-label">Address Type</label>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" name="AddressType" value={AddressType} onChange={(e) => setAddressType(e.target.value)}>
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Current Address">Current Address</option>
+                                                                                    <option value="Residential Address">Residential Address</option>
+                                                                                    <option value="Office Address">Office Address</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label class="form-label" for="add-user-email">Address</label>
+                                                                                <input type="text" id="add-user-email" class="form-control" placeholder="Address" aria-label="Address" name='Address'
+                                                                                    onChange={(e) => setAddress(e.target.value)}
+                                                                                    value={Address} />
+                                                                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label class="form-label" for="add-user-email">Postal Code</label>
+                                                                                <input type="text" id="add-user-email" class="form-control" placeholder="PostalCode" aria-label="PostalCode" name='PostalCode'
+                                                                                    onChange={(e) => setPostalCode(e.target.value)}
+                                                                                    value={PostalCode} />
+                                                                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                            </div>
+
+                                                                            <div className="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Country</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="CountryId"
+                                                                                    value={CountryId}
+                                                                                    onChange={handleCountryChange}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    {countryTable.map(option => (
+                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div className="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">State</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="StateId"
+                                                                                    value={StateId}
+                                                                                    onChange={handleStateChange}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    {selectedCountry && selectedCountry.Staties.map(state => (
+                                                                                        <option key={state.id} value={state.id}>{state.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div className="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">District</label>
+                                                                                <select
+                                                                                    id="exampleFormControlSelect2"
+                                                                                    className="select2 form-select"
+                                                                                    name="DistrictId"
+                                                                                    value={DistrictId}
+                                                                                    onChange={(e) => setDistrictId(e.target.value)}
+                                                                                >
+                                                                                    <option value="">Select</option>
+                                                                                    {selectedState && selectedState.Cities.map(city => (
+                                                                                        <option key={city.id} value={city.id}>{city.name}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+
+
+
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label class="form-label" for="add-user-email">City</label>
+                                                                                <input type="text" id="add-user-email" class="form-control" placeholder="City" aria-label="City" name='City'
+                                                                                    onChange={(e) => setCity(e.target.value)}
+                                                                                    value={City} />
+                                                                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                            </div>
+
+
+
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label class="form-label" for="add-user-email">Area</label>
+                                                                                <input type="text" id="add-user-email" class="form-control" placeholder="Area" aria-label="Area" name='Area'
+                                                                                    onChange={(e) => setArea(e.target.value)}
+                                                                                    value={Area} />
+                                                                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label for="exampleFormControlSelect2" class="form-label">Counseling Department Allotted</label>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" name="CounselingDepartmentAllotted" value={CounselingDepartmentAllotted} onChange={(e) => setCounselingDepartmentAllotted(e.target.value)}>
+                                                                                    <option value="">Select</option>
+                                                                                    <option value="Counselor Department">Counselor Department</option>
+
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label class="form-label" for="add-user-email">Counselor Name</label>
+                                                                                <input type="text" id="add-user-email" class="form-control" placeholder="CounselorName" aria-label="CounselorName" name='CounselorName'
+                                                                                    onChange={(e) => setCounselorName(e.target.value)}
+                                                                                    value={CounselorName} />
+                                                                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                                                <label class="form-label" for="add-user-email">Counselor Room No.</label>
+                                                                                <input type="text" id="add-user-email" class="form-control" placeholder="CounselorRoomNo" aria-label="CounselorRoomNo" name='CounselorRoomNo'
+                                                                                    onChange={(e) => setCounselorRoomNo(e.target.value)}
+                                                                                    value={CounselorRoomNo} />
+                                                                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                            </div>
+
+
+                                                                            <div class="col-12 text-center">
+                                                                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
+                                                                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                                            </div>
+                                                                            <input type="hidden" /></form>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    )}
-                                                    {step === 4 && (
-                                                        <div className="step-content">
-                                                            <Form.Group controlId="formBasicPassword">
-                                                                <Form.Label>Password</Form.Label>
-                                                                <Form.Control type="password" placeholder="Password" />
-                                                            </Form.Group>
-                                                            <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
-                                                            <Button variant="primary" onClick={handleNext}>Next</Button>
+                                                        <div className="col-12 col-md-2 text-end mt-3">
+                                                            <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
                                                         </div>
-                                                    )}
-                                                    {step === 5 && (
-                                                        <div className="step-content">
-                                                            <Form.Group controlId="formBasicPassword">
-                                                                <Form.Label>Password</Form.Label>
-                                                                <Form.Control type="password" placeholder="Password" />
-                                                            </Form.Group>
-                                                            <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
-                                                            <Button variant="primary" onClick={handleNext}>Next</Button>
-                                                        </div>
-                                                    )}
-                                                    {step === 6 && (
-                                                        <div className="step-content">
-                                                            <Form.Group controlId="formBasicPassword">
-                                                                <Form.Label>Password</Form.Label>
-                                                                <Form.Control type="password" placeholder="Password" />
-                                                            </Form.Group>
-                                                            <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
-                                                            <Button variant="primary" onClick={handleNext}>Next</Button>
-                                                        </div>
-                                                    )}
-                                                    {step === 7 && (
-                                                        <div className="step-content">
-                                                            <Form.Group controlId="formBasicCheck">
-                                                                <Form.Check type="checkbox" label="Agree to terms and conditions" />
-                                                            </Form.Group>
-                                                            <Button variant="secondary" onClick={handlePrevious}>Previous</Button>
-                                                            <Button variant="primary" /* onClick={handleSubmit} */>Submit</Button>
-                                                        </div>
-                                                    )}
-                                                </Form>
+                                                    </div>
+
+                                                )}
+                                                {step === 6 && (<ThankYouCard handleNext={handleNext} />)}
                                             </div>
                                         </div>
                                     </div>

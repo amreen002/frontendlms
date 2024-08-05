@@ -381,7 +381,7 @@ function ConselorDepartmentUse() {
                                                     <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                 </div>
 
-                                               {/*  <div className="card">
+                                                {/*  <div className="card">
 
                                                     <div className="card-datatable table-responsive">
                                                         <div id="DataTables_Table_0_wrapper" className="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2"><div class="me-3"><div class="dataTables_length" id="DataTables_Table_0_length"><label><select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label></div></div></div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
@@ -478,7 +478,7 @@ function ConselorDepartmentUse() {
                                     </div>
                                 </div>
 
-                               <div class="card">
+                                <div class="card">
                                     <div class="card-header border-bottom">
                                         <h5 class="card-title">Search Filter</h5>
                                         <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
@@ -534,7 +534,7 @@ function ConselorDepartmentUse() {
                                     </div>
 
 
-                                </div> 
+                                </div>
 
                             </div>
                             {/*  <!-- Footer --> */}

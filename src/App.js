@@ -78,6 +78,7 @@ import UpdateModelRouter from './Routers/updatemodelRouter.js';
 import UpdateContentRouter from './Routers/updatecontentRouter.js';
 import UpdatequestionsRouter from './Routers/updatequestionsingleRouter.js'
 import SteperformPage from './Routers/steperformRouter.js'
+
 const { REACT_APP_API_ENDPOINT } = process.env;
 // -----app-----------------------
 function App() {
@@ -414,6 +415,9 @@ function App() {
             element={<AnnouncementdetailRouter />} />
              <Route
             path="/mangedlead"
+            element={<SteperformPage/>} />
+                <Route
+            path="/mangedlead/:frontdeskId"
             element={<SteperformPage/>} />
           <Route
             path="/quizetresult/:studentquizeId"

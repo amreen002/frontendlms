@@ -77,7 +77,7 @@ function FrontListUse() {
             console.log(err.response);
         }
     }
-    const fetchData1 = async () => {
+    const fetchData1 = async (frontdeskId) => {
         try {
             if (!frontdeskId) {
                 console.log("frontdeskId is undefined");
