@@ -680,7 +680,10 @@ function SaleTeamUse() {
                                                     <span><i class="bx bx-plus me-0 me-sm-1"></i>Lead</span>
                                                 </button>
                                             </div>
-                                        </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
+                                        </div>
+                                        </div>
+                                        </div>
+                                        <table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
@@ -722,33 +725,40 @@ function SaleTeamUse() {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+                                            <div class="row mx-2"><div class="col-sm-12 col-md-6">
+                                                <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
+                                                 aria-live="polite">Showing 1 to 10 of 50 entries</div>
+                                                 </div><div class="col-sm-12 col-md-6">
+                                                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
                                     </div>
 
                                     <div className="offcanvas offcanvas-end w-50" tabIndex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
                                         <div className="row">
                                             <div className="col-md-12">
-                                                <div className="offcanvas-header">
-                                                    <h5 id="offcanvasAddUserLabel" className="offcanvas-title">Enquiry Information</h5>
+                                                <div className="offcanvas-header cus_headerr">
+                                                <h5 id="offcanvasAddUserLabel" className="offcanvas-title"><i class="bx bx-user bx-sm"></i> Enquiry Information</h5>
                                                     <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                                 </div>
                                             </div>
-                                            <div className="offcanvas-body mx-0 flex-grow-0 row de-flex">
-                                                <div className="col-md-4">
-                                                    <p id="offcanvasAddUserLabel" className="offcanvas-title mb-2">Upload Via</p>
+                                            <div className="flex-grow-0 ">
+                                                <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
+                                                        <div className='header_choos_details'>
+                                                        <div className='d-flex'>
+                                                    <div className="">
+                                                    <p id="offcanvasAddUserLabel" className="offcanvas-title"> Upload Via</p>
                                                 </div>
-                                                <div className="col-md-4 form-check">
+                                                <div className=" form-check cus_email">
                                                     <input
                                                         className="form-check-input"
                                                         type="radio"
                                                         onClick={() => toggleDropdown('email')}
                                                         name="flexRadioDefault"
                                                         id="flexRadioDefault1"
-                                                        placeholder="Email"
+                                                        placeholder="Email" checked
                                                     />
                                                     <span>Email</span>
                                                 </div>
-                                                <div className="col-md-4 form-check">
+                                                <div className=" form-check cus_mobile">
                                                     <input
                                                         className="form-check-input"
                                                         type="radio"
@@ -759,24 +769,43 @@ function SaleTeamUse() {
                                                     />
                                                     <span>Mobile</span>
                                                 </div>
-
+                                                    </div>
+                                                        </div>
+                                                  
+                                                </div>
+                                                
+                                                <div className='row'>
                                                 <div className="col-md-6 question-update-lead">
-                                                    <div className={`slider ${sliderActive ? 'active' : ''}`}>
+                                                    <div className={`slider pt--15 ${sliderActive ? 'active' : ''}`}>
                                                         <div className="input-fields-container-lead mx-0 flex-grow-0">
-                                                            <div className='row de-flex'>
+                                                            <div className=''>
+                                                              <div className='flex-row'>
+                                                              <div className='heading_frm'>
+                                                                        <h2>Addon Below field <small>(If Required)</small></h2>
+                                                                    </div>
+                                                              </div>
                                                                 <div className='lead col-md-12'>
-                                                                    <p className="offcanvas-title-lead mt-4 mb-4">Add Input Fields</p>
-                                                                </div>
-                                                                <div className='lead col-md-12'><input
+                                                                    
+                                                                    <input
                                                                     type="text"
-                                                                    className="form-control mb-3"
+                                                                    className="form-control search_dta mb-3"
                                                                     placeholder="Search fields..."
                                                                     value={searchTerm}
                                                                     onChange={(e) => setSearchTerm(e.target.value)}
                                                                 />
                                                                 </div>
                                                                 <div className="input-fields-container">
-                                                                    <table className="table">
+                                                                {filteredInputs.map(input => (
+                                                                    <div key={input.id} className='d-flex pb-2'>
+                                                                        <div className='input_cus'>
+                                                                        <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
+                                                                        </div>
+                                                                        <div className='name_cus'>
+                                                                        <span>{input.label}</span>
+                                                                            </div>
+                                                                    </div>
+ ))}
+                                                                    {/* <table className="table">
                                                                         <tbody>
 
                                                                             {filteredInputs.map(input => (
@@ -791,7 +820,7 @@ function SaleTeamUse() {
                                                                             ))}
 
                                                                         </tbody>
-                                                                    </table>
+                                                                    </table> */}
                                                                 </div>
                                                             </div>
 
@@ -799,10 +828,12 @@ function SaleTeamUse() {
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <form className="add-new-user pt-4" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
+                                                   
+                                                    <form className="add-new-user" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
+                                                    <div className='right_form-fields'>
                                                         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                                                             <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-                                                                <ul className="list widget_dragable" id="dragItemBox">
+                                                                <ul className="list widget_dragable cus_leftsfields" id="dragItemBox">
                                                                     {items.map((item) => (
                                                                         <Draggable
                                                                             key={item.id}
@@ -878,12 +909,17 @@ function SaleTeamUse() {
                                                                 <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                             </div>
                                                         )}
-                                                        <div className="mb-3 fv-plugins-icon-container d-flex">
+                                                         </div>
+                                                       <div className="mb-3 fv-plugins-icon-container d-flex">
                                                             <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
                                                             <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
                                                         </div>
                                                     </form>
+                                                   
+                                                    
                                                 </div>
+                                                </div>
+                                              
                                             </div>
                                         </div>
                                     </div>

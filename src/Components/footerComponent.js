@@ -11,7 +11,7 @@ function Footer() {
                     <script>
                         document.write(new Date().getFullYear());
                     </script>
-                    <a href="#" target="_blank" class="footer-link fw-bolder">The Good Student</a>
+                    <a href="#" target="_blank" class="footer-link fw-bolder">2024 Technogaze LMS</a>
                 </div>
                 <div>
                     <a href="https://technogaze.com/" class="footer-link me-4" target="_blank">Technogaze Solutions Pvt.Ltd</a>
