@@ -663,48 +663,58 @@ function SaleTeamUse() {
                                 </div>
 
                                 <div class="card">
-                                    <div class="card-header border-bottom">
+                                    <div class="card-header border-bottom custom_searchbar">
                                         <h5 class="card-title">Search Filter</h5>
-                                        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
-                                            <div class="col-md-4 user_role"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
+                                        <div class="d-flex justify-content-between align-items-center row  gap-3 gap-md-0 cus_srchbox">
+                                            <div class="col-md-4 user_roleu"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
                                             <div class="col-md-4 user_plan"><select id="UserPlan" class="form-select text-capitalize"><option value=""> Select Plan </option><option value="Basic">Basic</option><option value="Company">Company</option><option value="Enterprise">Enterprise</option><option value="Team">Team</option></select></div>
                                             <div class="col-md-4 user_status"><select id="FilterTransaction" class="form-select text-capitalize"><option value=""> Select Status </option><option value="Pending" class="text-capitalize">Pending</option><option value="Active" class="text-capitalize">Active</option><option value="Inactive" class="text-capitalize">Inactive</option></select></div>
                                         </div>
                                     </div>
                                     <div class="card-datatable table-responsive">
-                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"><div class="row mx-2"><div class="col-md-2">
-                                            <div className="me-3">
-                                                <div className="dataTables_length" id="DataTables_Table_0_length">
-                                                    <label>
-                                                        <select
-                                                            name="DataTables_Table_0_length"
-                                                            aria-controls="DataTables_Table_0"
-                                                            className="form-select"
-                                                            onChange={(e) => setPage(1)} // Reset to page 1 on changing page size
-                                                        >
-                                                            <option value="10">10</option>
-                                                            <option value="25">25</option>
-                                                            <option value="50">50</option>
-                                                            <option value="100">100</option>
-                                                        </select>
-                                                    </label>
+                                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                            <div class="row mx-2">
+                                                <div class="col-md-2">
+                                                    <div class="me-3">
+                                                        <div class="dataTables_length" id="DataTables_Table_0_length">
+                                                            <label>
+                                                                <select
+                                                                    name="DataTables_Table_0_length"
+                                                                    aria-controls="DataTables_Table_0"
+                                                                    className="form-select"
+                                                                    onChange={(e) => setPage(1)} // Reset to page 1 on changing page size
+                                                                >
+                                                                    <option value="10">10</option>
+                                                                    <option value="25">25</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                </select>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-10">
+                                                    <div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex 
+                                                            align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"  >
+                                                        <div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
+                                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label>
+                                                        </div>
+                                                        <div class="btn-group d-flex flex-row">
+                                                            <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex"
+                                                                tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
+                                                                aria-expanded="false">
+                                                                <span><i class="bx bx-export me-1"></i>Export</span>
+                                                            </button>
+
+                                                            <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+
+                                                                <span><i class="bx bx-plus me-0 me-sm-1"></i>Lead</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div><div class="col-md-10"><div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>
-                                            <input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0" /></label></div>
-                                            <div class="btn-group d-flex flex-row">
-                                                <button class="btn buttons-collection dropdown-toggle btn-label-secondary mx-3 d-flex"
-                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
-                                                    aria-expanded="false">
-                                                    <span><i class="bx bx-export me-1"></i>Export</span>
-                                                </button>
-
-                                                <button class="btn btn-secondary add-new btn-primary d-flex cus_Add" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
-
-                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i>Lead</span>
-                                                </button>
-                                            </div>
-                                        </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
+                                            <table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
@@ -731,11 +741,12 @@ function SaleTeamUse() {
                                                             <td>{item.workingStatus}</td>
                                                             <td>{item.leadPlatform}</td>
                                                             <td>
-                                                                <div class="d-inline-block text-nowrap">
-                                                                    <Link to={`/addsaleteam/${item.id}`} className="navbar-brand" >  <button class="btn btn-sm btn-icon" data-bs-target="#editUser" data-bs-toggle="modal">
-                                                                        <i class="bx bx-edit"></i>
+                                                                <div class="d-inline-block text-nowrap edt_pencil">
+                                                                    <Link to={`/addsaleteam/${item.id}`} className="pr--5" >
+                                                                        <button class="btn btn-sm btn-icon edit_sales" data-bs-target="#editUser" data-bs-toggle="modal">
+                                                                            <i class="bx bx-edit"></i>
 
-                                                                    </button>
+                                                                        </button>
                                                                     </Link>
                                                                     <button class="btn btn-sm btn-icon delete-record" onClick={() => handleDelete(item.id)}>
                                                                         <i class="bx bx-trash"></i>
@@ -770,61 +781,83 @@ function SaleTeamUse() {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </div >
+                                    </div >
 
                                     <div className="offcanvas offcanvas-end w-50" tabIndex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
                                         <div className="row">
                                             <div className="col-md-12">
-                                                <div className="offcanvas-header">
-                                                    <h5 id="offcanvasAddUserLabel" className="offcanvas-title">Enquiry Information</h5>
+                                                <div className="offcanvas-header cus_headerr">
+                                                    <h5 id="offcanvasAddUserLabel" className="offcanvas-title"><i class="bx bx-user bx-sm"></i> Enquiry Information</h5>
                                                     <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                                 </div>
                                             </div>
-                                            <div className="offcanvas-body mx-0 flex-grow-0 row de-flex">
-                                                <div className="col-md-4">
-                                                    <p id="offcanvasAddUserLabel" className="offcanvas-title mb-2">Upload Via</p>
-                                                </div>
-                                                <div className="col-md-4 form-check">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="radio"
-                                                        onClick={() => toggleDropdown('email')}
-                                                        name="flexRadioDefault"
-                                                        id="flexRadioDefault1"
-                                                        placeholder="Email"
-                                                    />
-                                                    <span>Email</span>
-                                                </div>
-                                                <div className="col-md-4 form-check">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="radio"
-                                                        onClick={() => toggleDropdown('mobile')}
-                                                        name="flexRadioDefault"
-                                                        id="flexRadioDefault1"
-                                                        placeholder="Mobile"
-                                                    />
-                                                    <span>Mobile</span>
+                                            <div className="flex-grow-0 ">
+                                                <div className='col-12 col-xl-12 col-lg-12 col-md-12'>
+                                                    <div className='header_choos_details'>
+                                                        <div className='d-flex'>
+                                                            <div className="">
+                                                                <p id="offcanvasAddUserLabel" className="offcanvas-title"> Upload Via</p>
+                                                            </div>
+                                                            <div className=" form-check cus_email">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    onClick={() => toggleDropdown('email')}
+                                                                    name="flexRadioDefault"
+                                                                    id="flexRadioDefault1"
+                                                                    placeholder="Email" checked
+                                                                />
+                                                                <span>Email</span>
+                                                            </div>
+                                                            <div className=" form-check cus_mobile">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    onClick={() => toggleDropdown('mobile')}
+                                                                    name="flexRadioDefault"
+                                                                    id="flexRadioDefault1"
+                                                                    placeholder="Mobile"
+                                                                />
+                                                                <span>Mobile</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
 
-                                                <div className="col-md-6 question-update-lead">
-                                                    <div className={`slider ${sliderActive ? 'active' : ''}`}>
-                                                        <div className="input-fields-container-lead mx-0 flex-grow-0">
-                                                            <div className='row de-flex'>
-                                                                <div className='lead col-md-12'>
-                                                                    <p className="offcanvas-title-lead mt-4 mb-4">Add Input Fields</p>
-                                                                </div>
-                                                                <div className='lead col-md-12'><input
-                                                                    type="text"
-                                                                    className="form-control mb-3"
-                                                                    placeholder="Search fields..."
-                                                                    value={searchTerm}
-                                                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                                                />
-                                                                </div>
-                                                                <div className="input-fields-container">
-                                                                    <table className="table">
+                                                <div className='row'>
+                                                    <div className="col-md-6 question-update-lead">
+                                                        <div className={`slider pt--15 ${sliderActive ? 'active' : ''}`}>
+                                                            <div className="input-fields-container-lead mx-0 flex-grow-0">
+                                                                <div className=''>
+                                                                    <div className='flex-row'>
+                                                                        <div className='heading_frm'>
+                                                                            <h2>Addon Below field <small>(If Required)</small></h2>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className='lead col-md-12'>
+
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control search_dta mb-3"
+                                                                            placeholder="Search fields..."
+                                                                            value={searchTerm}
+                                                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="input-fields-container">
+                                                                        {filteredInputs.map(input => (
+                                                                            <div key={input.id} className='d-flex pb-2'>
+                                                                                <div className='input_cus'>
+                                                                                    <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
+                                                                                </div>
+                                                                                <div className='name_cus'>
+                                                                                    <span>{input.label}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                        {/* <table className="table">
                                                                         <tbody>
 
                                                                             {filteredInputs.map(input => (
@@ -839,187 +872,211 @@ function SaleTeamUse() {
                                                                             ))}
 
                                                                         </tbody>
-                                                                    </table>
+                                                                    </table> */}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
 
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <form className="add-new-user pt-4" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
-                                                        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                                            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-                                                                <ul className="list widget_dragable" id="dragItemBox">
-                                                                    {items.map((item) => (
-                                                                        <Draggable
-                                                                            key={item.id}
-                                                                            id={item.id}
-                                                                            component={
-                                                                                <li className="draggable_column_item">
+                                                    <div className="col-md-6">
 
-                                                                                    {item.component}
+                                                        <form className="add-new-user" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
+                                                            <div className='right_form-fields'>
+                                                                <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                                                    <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                                                                        <ul className="list widget_dragable cus_leftsfields" id="dragItemBox">
+                                                                            {items.map((item) => (
+                                                                                <Draggable
+                                                                                    key={item.id}
+                                                                                    id={item.id}
+                                                                                    component={
+                                                                                        <li className="draggable_column_item">
 
-                                                                                </li>
-                                                                            }
+                                                                                            {item.component}
+
+                                                                                        </li>
+                                                                                    }
+                                                                                />
+                                                                            ))}
+                                                                        </ul>
+                                                                    </SortableContext>
+                                                                </DndContext>
+                                                                <div className="mb-1 fv-plugins-icon-container lead-form">
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control enquery-form"
+                                                                        id="add-user-fullname"
+                                                                        placeholder="Candidate Frist Name*"
+                                                                        name="name"
+                                                                        onChange={(e) => handleChange(e, 'name')}
+
+                                                                    />
+                                                                    <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                </div>
+                                                                <div className="mb-1 fv-plugins-icon-container lead-form">
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control enquery-form"
+                                                                        id="add-user-fullname"
+                                                                        placeholder="Candidate Last Name*"
+                                                                        name="lastname"
+                                                                        onChange={(e) => handleChange(e, 'lastname')}
+
+                                                                    />
+                                                                    <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                </div>
+
+
+                                                                <div className="mb-1 fv-plugins-icon-container lead-form"><select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' onChange={(e) => handleChange(e, 'roleId')}>
+                                                                    <option value="">Assign to Owner*</option>
+                                                                    <option value={userDataFinOne.id}>{userDataFinOne.name}</option>
+                                                                </select>
+                                                                    <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                </div>
+
+                                                                {isExpanded === 'mobile' ? (
+                                                                    <div className="mb-1 fv-plugins-icon-container lead-form">
+                                                                        <input
+                                                                            type="text"
+                                                                            id="add-user-contact"
+                                                                            className="form-control phone-mask enquery-form"
+                                                                            placeholder="Candidate Mobile Number*"
+                                                                            name="phoneNumber"
+                                                                            onChange={(e) => handleChange(e, 'phoneNumber')}
+
                                                                         />
-                                                                    ))}
-                                                                </ul>
-                                                            </SortableContext>
-                                                        </DndContext>
-                                                        <div className="mb-1 fv-plugins-icon-container lead-form">
-                                                            <input
-                                                                type="text"
-                                                                className="form-control enquery-form"
-                                                                id="add-user-fullname"
-                                                                placeholder="Candidate Frist Name*"
-                                                                name="name"
-                                                                onChange={(e) => handleChange(e, 'name')}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="mb-1 fv-plugins-icon-container lead-form">
+                                                                        <input
+                                                                            type="text"
+                                                                            id="add-user-email"
+                                                                            className="form-control enquery-form"
+                                                                            placeholder="Candidate Email Id*"
+                                                                            name="email"
+                                                                            onChange={(e) => handleChange(e, 'email')}
 
-                                                            />
-                                                            <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                        </div>
-                                                        <div className="mb-1 fv-plugins-icon-container lead-form">
-                                                            <input
-                                                                type="text"
-                                                                className="form-control enquery-form"
-                                                                id="add-user-fullname"
-                                                                placeholder="Candidate Last Name*"
-                                                                name="lastname"
-                                                                onChange={(e) => handleChange(e, 'lastname')}
-
-                                                            />
-                                                            <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                        </div>
-
-
-                                                        <div className="mb-1 fv-plugins-icon-container lead-form"><select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' onChange={(e) => handleChange(e, 'roleId')}>
-                                                            <option value="">Assign to Owner*</option>
-                                                            <option value={userDataFinOne.id}>{userDataFinOne.name}</option>
-                                                        </select>
-                                                            <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                                        </div>
-
-                                                        {isExpanded === 'mobile' ? (
-                                                            <div className="mb-1 fv-plugins-icon-container lead-form">
-                                                                <input
-                                                                    type="text"
-                                                                    id="add-user-contact"
-                                                                    className="form-control phone-mask enquery-form"
-                                                                    placeholder="Candidate Mobile Number*"
-                                                                    name="phoneNumber"
-                                                                    onChange={(e) => handleChange(e, 'phoneNumber')}
-
-                                                                />
+                                                                        />
+                                                                        <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        ) : (
-                                                            <div className="mb-1 fv-plugins-icon-container lead-form">
-                                                                <input
-                                                                    type="text"
-                                                                    id="add-user-email"
-                                                                    className="form-control enquery-form"
-                                                                    placeholder="Candidate Email Id*"
-                                                                    name="email"
-                                                                    onChange={(e) => handleChange(e, 'email')}
-
-                                                                />
-                                                                <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                                            <div className="mb-3 fv-plugins-icon-container d-flex mr--45">
+                                                                <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+                                                                <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
                                                             </div>
-                                                        )}
-                                                        <div className="mb-3 fv-plugins-icon-container d-flex">
-                                                            <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
-                                                            <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                                                        </form>
+
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div >
+                                {/*  <!-- Modal -->
+                            <!-- Edit User Modal --> */}
+                                < div class="modal fade modal_addsalteam" id="editUser" tabindex="-1" hidden="true" >
+                                    <div class="modal-dialog modal-lg modal-simple modal-edit-user">
+                                        <div class="modal-content">
+                                            <div class="modal-header update_info">
+                                                <div className='flex-row'>
+                                                    <div>
+                                                        <h5 class="modal-title">Edit User Information</h5>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div className='pl--25 pr--25 pb--25 pt--20'>
+                                                    <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
+                                                        <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                            <label for="flatpickr-datetime" class="form-label">Date</label>
+                                                            <input type="date" class="form-control" placeholder="YYYY-MM-DD HH:MM" id="flatpickr-datetime" name='date'
+                                                                value={date} onChange={(e) => setDate(e.target.value)} />
                                                         </div>
+                                                        <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                            <label class="form-label" for="modalEditUserFirstName">Full Name</label>
+                                                            <input type="text" id="modalEditUserFirstName" name='name' class="form-control" placeholder="John"
+                                                                value={name} onChange={(e) => setName(e.target.value)}
+                                                            />
+                                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                                                        <div class="col-12 col-md-6 fv-plugins-icon-container">
+                                                            <label class="form-label" for="modalEditUserLastName">Age</label>
+                                                            <input type="text" id="modalEditUserLastName" name='age'
+                                                                onChange={(e) => setAge(e.target.value)}
+                                                                defaultValue={age} class="form-control" placeholder="Doe" />
+                                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                                                        <div class="col-12 col-md-6">
+                                                            <label class="form-label" for="modalEditUserPhone">Phone Number</label>
+                                                            <div class="input-group input-group-merge">
+                                                                <span class="input-group-text">+91</span>
+                                                                <input type="text" id="modalEditUserPhone"
+                                                                    name='phoneNumber'
+                                                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                                                    defaultValue={phoneNumber} class="form-control phone-number-mask phnnmbr" placeholder="202 555 0111" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-md-6">
+                                                            <label class="form-label" for="modalEditUserEmail">Email</label>
+                                                            <input type="text" id="modalEditUserEmail" name='email'
+                                                                onChange={(e) => setEmail(e.target.value)}
+                                                                defaultValue={email} class="form-control" placeholder="example@domain.com" />
+                                                        </div>
+                                                        <div class="col-12 col-md-6">
+                                                            <label class="form-label" for="modalEditUserEmail">Working Status</label>
+                                                            <input type="text" id="modalEditUserEmail" name='workingStatus'
+                                                                onChange={(e) => setWorkingStatus(e.target.value)}
+                                                                defaultValue={workingStatus} class="form-control" placeholder="student" />
+                                                        </div>
+                                                        <div class="col-12 col-md-6">
+                                                            <label class="form-label" for="modalEditTaxID">leadPlatform</label>
+                                                            <input type="text" id="modalEditTaxID" name="leadPlatform" onChange={(e) => setLeadPlatform(e.target.value)}
+                                                                defaultValue={leadPlatform} class="form-control modal-edit-tax-id" placeholder="Call" />
+                                                        </div>
+
+                                                        <div class="col-12 col-md-6">
+                                                            <label class="form-label" for="modalEditTaxID">remark</label>
+                                                            <input type="text" id="modalEditTaxID" name="remark" onChange={(e) => setRemark(e.target.value)}
+                                                                defaultValue={remark} class="form-control modal-edit-tax-id" placeholder="remark" />
+                                                        </div>
+
+
+                                                        <div class="col-12 text-center ">
+                                                            <div className='d-flex'>
+
+                                                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
+
+
+                                                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+
+
+                                                            </div>
+
+                                                        </div>
+                                                        <input type="hidden" />
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                {/*  <!-- Modal -->
-                            <!-- Edit User Modal --> */}
-                                <div class="modal fade" id="editUser" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-simple modal-edit-user">
-                                        <div class="modal-content p-3 p-md-5">
-                                            <div class="modal-body">
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                <div class="text-center mb-4">
-                                                    <h3>Edit User Information</h3>
-                                                    <p>Updating user details will receive a privacy audit.</p>
-                                                </div>
-                                                <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
-                                                    <div class="col-12 col-md-6 fv-plugins-icon-container">
-                                                        <label for="flatpickr-datetime" class="form-label">Date</label>
-                                                        <input type="date" class="form-control" placeholder="YYYY-MM-DD HH:MM" id="flatpickr-datetime" name='date'
-                                                            value={date} onChange={(e) => setDate(e.target.value)} />
-                                                    </div>
-                                                    <div class="col-12 col-md-6 fv-plugins-icon-container">
-                                                        <label class="form-label" for="modalEditUserFirstName">Full Name</label>
-                                                        <input type="text" id="modalEditUserFirstName" name='name' class="form-control" placeholder="John"
-                                                            value={name} onChange={(e) => setName(e.target.value)}
-                                                        />
-                                                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                    <div class="col-12 col-md-6 fv-plugins-icon-container">
-                                                        <label class="form-label" for="modalEditUserLastName">Age</label>
-                                                        <input type="text" id="modalEditUserLastName" name='age'
-                                                            onChange={(e) => setAge(e.target.value)}
-                                                            defaultValue={age} class="form-control" placeholder="Doe" />
-                                                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                                                    <div class="col-12 col-md-6">
-                                                        <label class="form-label" for="modalEditUserPhone">Phone Number</label>
-                                                        <div class="input-group input-group-merge">
-                                                            <span class="input-group-text">+91</span>
-                                                            <input type="text" id="modalEditUserPhone"
-                                                                name='phoneNumber'
-                                                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                                                defaultValue={phoneNumber} class="form-control phone-number-mask" placeholder="202 555 0111" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <label class="form-label" for="modalEditUserEmail">Email</label>
-                                                        <input type="text" id="modalEditUserEmail" name='email'
-                                                            onChange={(e) => setEmail(e.target.value)}
-                                                            defaultValue={email} class="form-control" placeholder="example@domain.com" />
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <label class="form-label" for="modalEditUserEmail">Working Status</label>
-                                                        <input type="text" id="modalEditUserEmail" name='workingStatus'
-                                                            onChange={(e) => setWorkingStatus(e.target.value)}
-                                                            defaultValue={workingStatus} class="form-control" placeholder="student" />
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <label class="form-label" for="modalEditTaxID">leadPlatform</label>
-                                                        <input type="text" id="modalEditTaxID" name="leadPlatform" onChange={(e) => setLeadPlatform(e.target.value)}
-                                                            defaultValue={leadPlatform} class="form-control modal-edit-tax-id" placeholder="Call" />
-                                                    </div>
-
-                                                    <div class="col-12 col-md-6">
-                                                        <label class="form-label" for="modalEditTaxID">remark</label>
-                                                        <input type="text" id="modalEditTaxID" name="remark" onChange={(e) => setRemark(e.target.value)}
-                                                            defaultValue={remark} class="form-control modal-edit-tax-id" placeholder="remark" />
-                                                    </div>
-
-
-                                                    <div class="col-12 text-center">
-                                                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
-                                                        <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                                                    </div>
-                                                    <input type="hidden" /></form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                </div >
+                            </div >
                             {/*  <!-- Footer --> */}
 
-                            <Footer />
+                            < Footer />
 
                             {/*      <!-- / Footer --> */}
 
-                        </div>
+                        </div >
                     </div >
                     {/*     <!-- Overlay --> */}
-                    <div class="layout-overlay layout-menu-toggle"></div>
+                    < div class="layout-overlay layout-menu-toggle" ></div >
                 </div >
                 {/* / Layout wrapper  */}
 

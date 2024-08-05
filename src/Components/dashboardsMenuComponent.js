@@ -42,8 +42,9 @@ function DashBoardMenu(onLogout) {
                 <Link to="/dashboard" class="app-brand-link">
                     <span class="app-brand-logo demo">
                     </span>
-                    <span class="app-brand-text demo menu-text fw-bolder ms-2"><div class=" text-center">
-                        <img src="../assets/img/logo.png" alt class="ml--50" width={"43%"} />
+                    <span class=" demo menu-text fw-bolder">
+                        <div class=" text-center">
+                        <img src="../assets/img/dashboard.png" alt className='img-fluid'  />
                     </div></span>
                 </Link>
 
