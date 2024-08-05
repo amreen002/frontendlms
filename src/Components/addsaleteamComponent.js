@@ -657,7 +657,7 @@ function SaleTeamUse() {
                                 </div>
 
                                 <div class="card">
-                                    <div class="card-header border-bottom">
+                                    <div class="card-header border-bottom custom_searchbar">
                                         <h5 class="card-title">Search Filter</h5>
                                         <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
                                             <div class="col-md-4 user_role"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
@@ -710,8 +710,9 @@ function SaleTeamUse() {
                                                             <td>{item.workingStatus}</td>
                                                             <td>{item.leadPlatform}</td>
                                                             <td>
-                                                                <div class="d-inline-block text-nowrap">
-                                                                    <Link to={`/addsaleteam/${item.id}`} className="navbar-brand" >  <button class="btn btn-sm btn-icon" data-bs-target="#editUser" data-bs-toggle="modal">
+                                                                <div class="d-inline-block text-nowrap edt_pencil">
+                                                                    <Link to={`/addsaleteam/${item.id}`} className="pr--5" > 
+                                                                     <button class="btn btn-sm btn-icon edit_sales" data-bs-target="#editUser" data-bs-toggle="modal">
                                                                         <i class="bx bx-edit"></i>
 
                                                                     </button>
@@ -910,7 +911,7 @@ function SaleTeamUse() {
                                                             </div>
                                                         )}
                                                          </div>
-                                                       <div className="mb-3 fv-plugins-icon-container d-flex">
+                                                       <div className="mb-3 fv-plugins-icon-container d-flex mr--45">
                                                             <button type="submit" className="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
                                                             <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
                                                         </div>
@@ -926,15 +927,22 @@ function SaleTeamUse() {
                                 </div>
                                 {/*  <!-- Modal -->
                             <!-- Edit User Modal --> */}
-                                <div class="modal fade" id="editUser" tabindex="-1" aria-hidden="true">
+                                <div class="modal fade modal_addsalteam" id="editUser" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-lg modal-simple modal-edit-user">
-                                        <div class="modal-content p-3 p-md-5">
-                                            <div class="modal-body">
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                <div class="text-center mb-4">
-                                                    <h3>Edit User Information</h3>
-                                                    <p>Updating user details will receive a privacy audit.</p>
+                                        <div class="modal-content">
+                                            <div class="modal-header update_info">
+                                                <div className='flex-row'>
+                                                    <div>
+                                                    <h5 class="modal-title">Edit User Information</h5>
+                                                  
+                                                    </div>
+                                                 
                                                 </div>
+       
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+                                            <div class="modal-body">
+                                               <div className='pl--25 pr--25 pb--25 pt--20'>
                                                 <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
                                                     <div class="col-12 col-md-6 fv-plugins-icon-container">
                                                         <label for="flatpickr-datetime" class="form-label">Date</label>
@@ -960,7 +968,7 @@ function SaleTeamUse() {
                                                             <input type="text" id="modalEditUserPhone"
                                                                 name='phoneNumber'
                                                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                                                defaultValue={phoneNumber} class="form-control phone-number-mask" placeholder="202 555 0111" />
+                                                                defaultValue={phoneNumber} class="form-control phone-number-mask phnnmbr" placeholder="202 555 0111" />
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-md-6">
@@ -988,11 +996,21 @@ function SaleTeamUse() {
                                                     </div>
 
 
-                                                    <div class="col-12 text-center">
-                                                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
-                                                        <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                    <div class="col-12 text-center ">
+                                                        <div className='d-flex'>
+                                                           
+                                                            <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
+
+                                                    
+                                                       <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                    
+                                                       
+                                                        </div>
+                                                       
                                                     </div>
-                                                    <input type="hidden" /></form>
+                                                    <input type="hidden" />
+                                                    </form>
+                                                    </div>
                                             </div>
                                         </div>
                                     </div>
