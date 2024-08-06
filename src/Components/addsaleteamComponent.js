@@ -978,7 +978,7 @@ function SaleTeamUse() {
                                 </div >
                                 {/*  <!-- Modal -->
                             <!-- Edit User Modal --> */}
-                                < div class="modal fade modal_addsalteam" id="editUser" tabindex="-1" hidden="true" >
+                                <div class="modal fade modal_addsalteam" id="editUser" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-lg modal-simple modal-edit-user">
                                         <div class="modal-content">
                                             <div class="modal-header update_info">

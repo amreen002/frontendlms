@@ -232,18 +232,18 @@ const InstructorCourseadd = () => {
                     }
                 });
 
-                    toast.success(userdata.message, {
-                        position: "top-right",
-                        autoClose: true,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
+                toast.success(userdata.message, {
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
 
-                    });
-                    handleNext()
+                });
+                handleNext()
             }
 
         } catch (error) {
@@ -276,16 +276,16 @@ const InstructorCourseadd = () => {
                     }
                 });
                 const userdata = response.data
-                    toast.success(userdata.response, {
-                        position: "top-right",
-                        autoClose: true,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
-                    });
+                toast.success(userdata.response, {
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
 
                 handleNext()
 
@@ -332,19 +332,19 @@ const InstructorCourseadd = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                    toast.success(response.message, {
-                        position: "top-right",
-                        autoClose: true,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
+                toast.success(response.message, {
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
 
-                    });
+                });
 
-                    handleNext()
+                handleNext()
 
             }
 
@@ -391,18 +391,18 @@ const InstructorCourseadd = () => {
                 });
                 window.location.href = '/createcourse'
                 const userdata = response.data
-                    toast.success('All Data Submitted Successfully', {
-                        position: "top-right",
-                        autoClose: true,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
+                toast.success('All Data Submitted Successfully', {
+                    position: "top-right",
+                    autoClose: true,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
 
-                    });
-                    handleNext()
+                });
+                handleNext()
 
             }
 
@@ -500,11 +500,19 @@ const InstructorCourseadd = () => {
 
                             {/* Progress Bar */}
                             <div className="progress-container">
-                                <div className="progress" style={{ width: getProgressWidth() }}></div>
-                                <div className={`circle ${formStepsNum >= 2 ? 'active' : ''}`} data-title="Personal">2</div>
-                                <div className={`circle ${formStepsNum >= 3 ? 'active' : ''}`} data-title="Contact">3</div>
-                                <div className={`circle ${formStepsNum >= 4 ? 'active' : ''}`} data-title="Experiences">4</div>
-                                <div className={`circle ${formStepsNum >= 1 ? 'active' : ''}`} data-title="Links">1</div>
+                                <div className={`progress ${formStepsNum > 1 ? 'active' : ''}`} style={{ width: getProgressWidth() }}></div>
+                                <div className={`circle ${formStepsNum >= 2 ? 'active' : ''} ${formStepsNum > 2 ? 'checkmark-visible' : ''}`} data-title="Personal">
+                                    {formStepsNum > 2 ? <span className="checkmark">✔</span> : '2'}
+                                </div>
+                                <div className={`circle ${formStepsNum >= 3 ? 'active' : ''} ${formStepsNum > 3 ? 'checkmark-visible' : ''}`} data-title="Contact">
+                                    {formStepsNum > 3 ? <span className="checkmark">✔</span> : '3'}
+                                </div>
+                                <div className={`circle ${formStepsNum >= 4 ? 'active' : ''} ${formStepsNum > 4 ? 'checkmark-visible' : ''}`} data-title="Experiences">
+                                    {formStepsNum > 4 ? <span className="checkmark">✔</span> : '4'}
+                                </div>
+                                <div className={`circle ${formStepsNum >= 1 ? 'active' : ''} ${formStepsNum > 1 ? 'checkmark-visible' : ''}`} data-title="Links">
+                                    {formStepsNum > 1 ? <span className="checkmark">✔</span> : '1'}
+                                </div>
                             </div>
 
                             {/* Form Steps */}
@@ -608,7 +616,7 @@ const InstructorCourseadd = () => {
                                         </div>
                                         <div className='prqust-course'>
                                             <button type='submit' >
-                                              Save 
+                                                Save
                                             </button>
                                         </div>
                                     </div>
@@ -642,7 +650,7 @@ const InstructorCourseadd = () => {
                                         </div>
                                         <div className='prqust-course'>
                                             <button type='submit' disabled={isNextDisabled}>
-                                               Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i>
+                                                Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -710,13 +718,13 @@ const InstructorCourseadd = () => {
                                     </div>
                                     <div className='flex-row d-flex justify-content-between mt-5'>
                                         <div className='prqust-course'>
-                                            <button type='button' onClick={handlePrev}  disabled={isPrevDisabled}>
+                                            <button type='button' onClick={handlePrev} disabled={isPrevDisabled}>
                                                 <i className="fa-arrow-left fa-regular fa-sharp ml--10"></i> Previous
                                             </button>
                                         </div>
                                         <div className='prqust-course'>
-                                            <button type='submit'  disabled={isNextDisabled} >
-                                               Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i>
+                                            <button type='submit' disabled={isNextDisabled} >
+                                                Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i>
                                             </button>
                                         </div>
                                     </div>

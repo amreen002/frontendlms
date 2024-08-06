@@ -17,7 +17,7 @@ function SteperformComponent() {
     const datatoken = localStorage.getItem('datatoken');
     const coursedatafetch = JSON.parse(datatoken)
     const { saleteamId } = useParams();
-    const [step, setStep] = useState(1);
+    const [formStepsNum, setFormStepsNum] = useState(1);
     const [table, setTable] = useState([]);
     const [dataUser, setTabledataUser] = useState([]);
     const [dataUserss, setTabledataUserssss] = useState({});
@@ -575,25 +575,36 @@ function SteperformComponent() {
     };
 
     const handleNext = () => {
-        setStep((prevStep) => prevStep + 1);
+        if (formStepsNum < 6) {
+            setFormStepsNum(formStepsNum + 1);
+        }
     };
 
     const handlePrevious = () => {
-        setStep((prevStep) => prevStep - 1);
+        if (formStepsNum > 1) {
+            setFormStepsNum(formStepsNum - 1);
+        }
     };
 
     const handleDragEnd = (event) => {
         const { active, over } = event;
         if (active && over && active.id !== over.id) {
-            setTable((items) => {
+            setSaleTeamData((items) => {
                 const oldIndex = items.findIndex((item) => item.id === active.id);
                 const newIndex = items.findIndex((item) => item.id === over.id);
                 return arrayMove(items, oldIndex, newIndex);
             });
-            setSelectedTask(table.find(task => task.id === active.id));
+            setSelectedTask(saleTeamData.find(task => task.id === active.id));
 
         }
     };
+
+    const getProgressWidth = () => {
+        const progressWidths = ['0%', '0%', '25%', '48%', '73%', '96%'];
+        return progressWidths[formStepsNum] || '0%';
+    };
+    const isPrevDisabled = formStepsNum === 1;
+    const isNextDisabled = formStepsNum === 6;
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setPage(newPage);
@@ -729,25 +740,34 @@ function SteperformComponent() {
                                     </div>
                                 </div>
 
-
-                                <div className="">
-                                    <div className="container-fluid">
-                                        <div className="row">
-                                            <div className="col-12 col-md-1 col-xl-1 col-lg-1">
-                                                <div className="stepper-steps">
-                                                    <div className={`step ${step === 1 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 1 ? 'active disply' : 'displys'}`}>1</span></div>
-                                                    <div className={`line ${step > 1 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 2 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 2 ? 'active disply' : 'displys'}`}>2</span></div>
-                                                    <div className={`line ${step > 2 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 3 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 3 ? 'active disply' : 'displys'}`}>3</span></div>
-                                                    <div className={`line ${step > 3 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 4 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 4 ? 'active disply' : 'displys'}`}>4</span></div>
-                                                    <div className={`line ${step > 4 ? 'active' : ''}`}></div>
-                                                    <div className={`step step_line ${step === 5 ? 'active' : 'bx bx-check tf-icons chek_icon'}`}> <span className={`step ${step === 5 ? 'active disply' : 'displys'}`}>5</span></div>
+                                <div className="create-te-course-area-start ptb--100 bg-white">
+                                    <div className="container">
+                                        <div className="row  g-5">
+                                            <div className="col-12 col-md-12 col-xl-12 col-lg-12">
+                                                {/* Progress Bar */}
+                                                {/* Progress Bar */}
+                                                <div className="progress-container">
+                                                    <div className={`progress ${formStepsNum > 1 ? 'active' : ''}`} style={{ width: getProgressWidth() }}></div>
+                                                    <div className={`circle ${formStepsNum >= 2 ? 'active' : ''} ${formStepsNum > 2 ? 'checkmark-visible' : ''}`} data-title="Personal">
+                                                        {formStepsNum > 2 ? <span className="checkmark">✔</span> : '2'}
+                                                    </div>
+                                                    <div className={`circle ${formStepsNum >= 3 ? 'active' : ''} ${formStepsNum > 3 ? 'checkmark-visible' : ''}`} data-title="Contact">
+                                                        {formStepsNum > 3 ? <span className="checkmark">✔</span> : '3'}
+                                                    </div>
+                                                    <div className={`circle ${formStepsNum >= 4 ? 'active' : ''} ${formStepsNum > 4 ? 'checkmark-visible' : ''}`} data-title="Experiences">
+                                                        {formStepsNum > 4 ? <span className="checkmark">✔</span> : '4'}
+                                                    </div>
+                                                    <div className={`circle ${formStepsNum >= 5 ? 'active' : ''} ${formStepsNum > 5 ? 'checkmark-visible' : ''}`} data-title="FiveStep">
+                                                        {formStepsNum > 5 ? <span className="checkmark">✔</span> : '5'}
+                                                    </div>
+                                                    <div className={`circle ${formStepsNum >= 1 ? 'active' : ''} ${formStepsNum > 1 ? 'checkmark-visible' : ''}`} data-title="Links">
+                                                        {formStepsNum > 1 ? <span className="checkmark">✔</span> : '1'}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="col-12 col-md-11 col-xl-11 col-lg-11 ">
-                                                {step === 1 && (
+                                            <div className="col-12 col-md-12 col-xl-12 col-lg-12 ">
+                                                {/* Form Steps */}
+                                                {formStepsNum === 1 && (
                                                     <div className="step-content">
                                                         <div className="container">
                                                             <div className="row">
@@ -787,7 +807,7 @@ function SteperformComponent() {
                                                                                             </td>
                                                                                             <td>
                                                                                                 <div className="d-flex align-items-center">
-                                                                                                    <a href={`https://wa.me/${lead.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                                    <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
                                                                                                         <FaWhatsapp className="lead-li-icon me-2 " color="#25D366" /> {/* WhatsApp icon */}
                                                                                                     </a>
                                                                                                     <a href={`tel:${lead.phoneNumber}`}>
@@ -860,15 +880,14 @@ function SteperformComponent() {
                                                             <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
                                                         </div>
                                                     </div>
-
-
                                                 )}
-                                                {step === 2 && (
+
+                                                {formStepsNum === 2 && (
                                                     <><div className="step-content">
                                                         <div className="row">
                                                             <div className="col-12 col-md-5 col-xl-5 col-lg-5">
                                                                 <div className="card-details p-4 bg-light shadow-sm rounded">
-                                                                    <h2 className="mb-4">Re-assign Lead</h2>
+                                                                    <h2 className="mb-4">Re-Assign Lead</h2>
                                                                     <h4 className="mb-4">{selectedTask && selectedTask.name}</h4>
                                                                     {selectedTask && (
                                                                         <form id={selectedTask.id}>
@@ -883,7 +902,7 @@ function SteperformComponent() {
                                                                                 <select
                                                                                     id={`roleSelect-${selectedTask.id}`}
                                                                                     className="form-select"
-                                                                                    value={roleId}
+                                                                                    defaultValue={roleId}
                                                                                     onChange={(e) => setRoleId(e.target.value)}
                                                                                 >
                                                                                     <option value="">-Select Assigned to-</option>
@@ -978,9 +997,6 @@ function SteperformComponent() {
                                                                                                         <p className="mt-3">{tasks.remark}</p>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <div className="col-12 col-xl-2 col-lg-2 col-md-2 date_col">
-                                                                                                    <button className="btn btn-primary">Next</button>
-                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
 
@@ -999,7 +1015,8 @@ function SteperformComponent() {
 
                                                     </>
                                                 )}
-                                                {step === 3 && (
+
+                                                {formStepsNum === 3 && (
                                                     <div className="row">
                                                         {/*              <!-- Lead Details Card --> */}
                                                         <div className="col-12 col-md-12 col-xl-12 mt-3">
@@ -1055,7 +1072,7 @@ function SteperformComponent() {
                                                                                     <td>{item.User && item.User.Role && item.User.Role.Name}</td>
                                                                                     <td>
                                                                                         <div className="d-flex align-items-center">
-                                                                                            <a href={`https://wa.me/${item.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                            <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
                                                                                                 <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
                                                                                             </a>
                                                                                             <a href={`tel:${item.phoneNumber}`}>
@@ -1314,18 +1331,18 @@ function SteperformComponent() {
                                                         <div className="justify-content-between mt-4">
                                                             <div className="row d-flex">
                                                                 <div className="col-md-2">
-                                                                    <Button variant="secondary" onClick={handlePrevious}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
+                                                                    <Button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
                                                                 </div>
                                                                 <div className="col-md-2">
-                                                                    <Button variant="primary" onClick={handleNext}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                    <Button variant="primary" onClick={() => setFormStepsNum(prev => prev < 5 ? prev + 1 : prev)} disabled={formStepsNum === 5}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                     </div>
-
                                                 )}
-                                                {step === 4 && (
+
+                                                {formStepsNum === 4 && (
                                                     <div className="step-content">
                                                         <div className="card">
                                                             <div className="card-datatable table-responsive">
@@ -1379,7 +1396,7 @@ function SteperformComponent() {
                                                                                 <td>{item.User && item.User.Role && item.User.Role.Name}</td>
                                                                                 <td>
                                                                                     <div className="d-flex align-items-center">
-                                                                                        <a href={`https://wa.me/${item.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                        <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
                                                                                             <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
                                                                                         </a>
                                                                                         <a href={`tel:${item.phoneNumber}`}>
@@ -1422,14 +1439,12 @@ function SteperformComponent() {
                                                         <div className="justify-content-between mt-4">
                                                             <div className="row d-flex">
                                                                 <div className="col-md-2">
-                                                                    <Button variant="secondary" onClick={handlePrevious}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
+                                                                    <Button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
                                                                 </div>
                                                                 <div className="col-md-2">
-                                                                    <Button variant="primary" onClick={handleNext}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                    <Button variant="primary" onClick={() => setFormStepsNum(prev => prev < 5 ? prev + 1 : prev)} disabled={formStepsNum === 5}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
                                                                 </div>
                                                             </div>
-
-
                                                         </div>
                                                         {/* Offcanvas Component */}
                                                         <div
@@ -1633,53 +1648,53 @@ function SteperformComponent() {
                                                                                 />
                                                                             </div>
                                                                             {/*        <div className="col-md-6 mb-3">
-                                                                                <label className="form-label" htmlFor="exampleFormControlSelect2">Country</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    placeholder="CountryId"
-                                                                                    name='CountryId'
-                                                                                    onChange={handleCountryChange}
-                                                                                    value={CountryId}
-                                                                                >
-                                                                                    <option value=''>Select Country</option>
-                                                                                    {countryTable.map((option) => (
-                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                    ))}
-                                                                                </select>
-                                                                            </div> */}
+                                                                               <label className="form-label" htmlFor="exampleFormControlSelect2">Country</label>
+                                                                               <select
+                                                                                   id="exampleFormControlSelect2"
+                                                                                   className="select2 form-select"
+                                                                                   placeholder="CountryId"
+                                                                                   name='CountryId'
+                                                                                   onChange={handleCountryChange}
+                                                                                   value={CountryId}
+                                                                               >
+                                                                                   <option value=''>Select Country</option>
+                                                                                   {countryTable.map((option) => (
+                                                                                       <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                   ))}
+                                                                               </select>
+                                                                           </div> */}
                                                                             {/*    <div className="col-md-6 mb-3">
-                                                                                <label className="form-label" htmlFor="exampleFormControlSelect2">State</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    placeholder="StateId"
-                                                                                    name='StateId'
-                                                                                    onChange={handleStateChange}
-                                                                                    value={StateId}
-                                                                                >
-                                                                                    <option value=''>Select State</option>
-                                                                                    {selectedCountry.map((option) => (
-                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                    ))}
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-6 mb-3">
-                                                                                <label className="form-label" htmlFor="exampleFormControlSelect2">District</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    placeholder="DistrictId"
-                                                                                    name='DistrictId'
-                                                                                    onChange={(e) => setDistrictId(e.target.value)}
-                                                                                    value={DistrictId}
-                                                                                >
-                                                                                    <option value=''>Select District</option>
-                                                                                    {selectedState.map((option) => (
-                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                    ))}
-                                                                                </select>
-                                                                            </div> */}
+                                                                               <label className="form-label" htmlFor="exampleFormControlSelect2">State</label>
+                                                                               <select
+                                                                                   id="exampleFormControlSelect2"
+                                                                                   className="select2 form-select"
+                                                                                   placeholder="StateId"
+                                                                                   name='StateId'
+                                                                                   onChange={handleStateChange}
+                                                                                   value={StateId}
+                                                                               >
+                                                                                   <option value=''>Select State</option>
+                                                                                   {selectedCountry.map((option) => (
+                                                                                       <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                   ))}
+                                                                               </select>
+                                                                           </div>
+                                                                           <div className="col-md-6 mb-3">
+                                                                               <label className="form-label" htmlFor="exampleFormControlSelect2">District</label>
+                                                                               <select
+                                                                                   id="exampleFormControlSelect2"
+                                                                                   className="select2 form-select"
+                                                                                   placeholder="DistrictId"
+                                                                                   name='DistrictId'
+                                                                                   onChange={(e) => setDistrictId(e.target.value)}
+                                                                                   value={DistrictId}
+                                                                               >
+                                                                                   <option value=''>Select District</option>
+                                                                                   {selectedState.map((option) => (
+                                                                                       <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                   ))}
+                                                                               </select>
+                                                                           </div> */}
                                                                             <div className="col-md-4 mb-3">
                                                                                 <label className="form-label" htmlFor="add-user-email">City</label>
                                                                                 <input
@@ -1773,7 +1788,7 @@ function SteperformComponent() {
                                                         </div>
                                                     </div>
                                                 )}
-                                                {step === 5 && (
+                                                {formStepsNum === 5 && (
                                                     <div className="step-content">
                                                         <div className="container">
                                                             <div className="row">
@@ -1818,7 +1833,7 @@ function SteperformComponent() {
 
                                                                                             <td>
                                                                                                 <div className="d-flex align-items-center">
-                                                                                                    <a href={`https://wa.me/${lead.phoneNumber}`} target="_blank" rel="noopener noreferrer">
+                                                                                                    <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
                                                                                                         <FaWhatsapp className="lead-li-icon me-1 " color="#25D366" /> {/* WhatsApp icon */}
                                                                                                     </a>
                                                                                                     <a href={`tel:${lead.phoneNumber}`}>
@@ -1902,7 +1917,7 @@ function SteperformComponent() {
                                                                             <h3>Information</h3>
 
                                                                         </div>
-                                                                        <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate} novalidate="novalidate">
+                                                                        <form id="editUserForm" class="row g-3 fv-plugins-bootstrap5 fv-plugins-framework" onSubmit={handleUpdate2} novalidate="novalidate">
 
 
                                                                             <div class="col-12 col-md-6 fv-plugins-icon-container">
@@ -2053,7 +2068,7 @@ function SteperformComponent() {
                                                                             </div>
 
 
-                                                                            <div class="col-12 text-center">
+                                                                            <div class="d-flex  col-12 text-center">
                                                                                 <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
                                                                                 <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                                                             </div>
@@ -2062,14 +2077,24 @@ function SteperformComponent() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-12 col-md-2 text-end mt-3">
-                                                            <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
+                                                        <div className="justify-content-between mt-4">
+                                                            <div className="row d-flex">
+                                                                <div className="col-12 col-md-2 text-start mt-3">
+                                                                    <button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</button>
+                                                                </div>
+                                                                <div className="col-12 col-md-2 text-end mt-3">
+                                                                    <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
+                                                                </div>
+                                                            </div>
                                                         </div>
+
+
                                                     </div>
 
                                                 )}
-                                                {step === 6 && (<ThankYouCard handleNext={handleNext} />)}
+                                                {formStepsNum === 6 && (<ThankYouCard handleNext={handleNext} />)}
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
