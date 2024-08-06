@@ -675,7 +675,7 @@ function SaleTeamUse() {
                                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
                                             <div class="row mx-2">
                                                 <div class="col-md-2">
-                                                    <div class="me-3">
+                                                    <div class="me-3 mt--5">
                                                         <div class="dataTables_length" id="DataTables_Table_0_length">
                                                             <label>
                                                                 <select
@@ -757,13 +757,11 @@ function SaleTeamUse() {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div className="row mx-2">
-                                                <div className="col-sm-12 col-md-6">
+                                            <div className="row mx-2 pt--20">
+                                                <div className="col-sm-12 col-md-12">
                                                     <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
                                                         Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
                                                     </div>
-                                                </div>
-                                                <div className="col-sm-12 col-md-6">
                                                     <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
                                                         <ul className="pagination">
                                                             <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
@@ -780,6 +778,7 @@ function SaleTeamUse() {
                                                         </ul>
                                                     </div>
                                                 </div>
+                                              
                                             </div>
                                         </div >
                                     </div >
@@ -880,7 +879,6 @@ function SaleTeamUse() {
                                                         </div>
                                                     </div>
                                                     <div className="col-md-6">
-
                                                         <form className="add-new-user" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
                                                             <div className='right_form-fields'>
                                                                 <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

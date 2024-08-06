@@ -353,19 +353,19 @@ function CoursesP() {
                                 </div>
 
                                 <div class="card">
-                                    <div class="card-header border-bottom">
+                                    <div class="card-header border-bottom custom_searchbar">
                                         <h5 class="card-title">Search Filter</h5>
-                                        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
-                                            <div class="col-md-4 user_role"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
+                                        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0 cus_srchbox">
+                                            <div class="col-md-4 user_roleu"><select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option><option value="Admin">Admin</option><option value="Author">Author</option><option value="Editor">Editor</option><option value="Maintainer">Maintainer</option><option value="Subscriber">Subscriber</option></select></div>
                                             <div class="col-md-4 user_plan"><select id="UserPlan" class="form-select text-capitalize"><option value=""> Select Plan </option><option value="Basic">Basic</option><option value="Company">Company</option><option value="Enterprise">Enterprise</option><option value="Team">Team</option></select></div>
                                             <div class="col-md-4 user_status"><select id="FilterTransaction" class="form-select text-capitalize"><option value=""> Select Status </option><option value="Pending" class="text-capitalize">Pending</option><option value="Active" class="text-capitalize">Active</option><option value="Inactive" class="text-capitalize">Inactive</option></select></div>
                                         </div>
                                     </div>
                                     <div class="card-datatable table-responsive">
                                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
-                                            <div class="row mx-2">
+                                            <div class="row mx-2 ">
                                                 <div class="col-md-2">
-                                                    <div class="me-3">
+                                                    <div class="me-3 mt--5">
                                                         <div class="dataTables_length" id="DataTables_Table_0_length">
                                                             <label>
                                                                 <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" 
