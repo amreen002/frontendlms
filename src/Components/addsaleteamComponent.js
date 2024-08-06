@@ -847,7 +847,7 @@ function SaleTeamUse() {
                                                                     </div>
                                                                     <div className="input-fields-container">
                                                                         {filteredInputs.map(input => (
-                                                                            <div key={input.id} className='d-flex pb-2'>
+                                                                            <div key={input.id} className='d-flex pb-2 cus_btm_left'>
                                                                                 <div className='input_cus'>
                                                                                     <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
                                                                                 </div>
