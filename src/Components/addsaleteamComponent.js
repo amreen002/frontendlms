@@ -5,7 +5,7 @@ import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { DndContext, closestCenter } from '@dnd-kit/core';
-// import { FaPlus } from 'react-icons/fa';
+import { FaLock, FaEnvelope, FaWhatsapp, FaGoogle, FaLinkedin, FaBriefcase, FaCircle } from 'react-icons/fa'; // Import necessary icons
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import Draggable from '../Components/draggableComponent';
 const { REACT_APP_API_ENDPOINT } = process.env;
@@ -42,7 +42,7 @@ function SaleTeamUse() {
         { id: 'date', label: 'Date*' },
         { id: 'remark', label: 'Remark*' },
         { id: 'workingStatus', label: 'Select Specialisation*' },
-        { id: 'status', label: 'Choose Forms Interested in*' },
+        { id: 'lead_status', label: 'Choose Forms Interested in*' },
         { id: 'age', label: 'Age*' },
         { id: 'CountryId', label: 'Country*' },
         { id: 'StateId', label: 'State*' },
@@ -55,6 +55,7 @@ function SaleTeamUse() {
         { id: 'batchId', label: 'Select Webinar Topic*' },
         { id: 'username', label: 'User Name*' },
         { id: 'leadPlatform', label: 'Select Lead Platform*' },
+        { id: 'status', label: 'Select Status*' },
     ];
 
 
@@ -63,6 +64,9 @@ function SaleTeamUse() {
         fetchData1(saleteamId);
     }, [saleteamId]);
 
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
 
 
     const fetchData1 = async (saleteamId) => {
@@ -92,6 +96,7 @@ function SaleTeamUse() {
                 setWorkingStatus(userData.workingStatus);
                 setLeadPlatform(userData.leadPlatform);
                 setRemark(userData.remark)
+               /*  setStatus(userData.status) */
             }
         } catch (err) {
             console.log(err.response);
@@ -236,7 +241,6 @@ function SaleTeamUse() {
             console.error('Error fetching data:', error);
         }
     };
-
     const fetchData8 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -317,7 +321,6 @@ function SaleTeamUse() {
         // Clear input fields after update
 
     };
-
     const handleDragEnd = (event) => {
         const { active, over } = event;
         if (active && over && active.id !== over.id) {
@@ -328,12 +331,10 @@ function SaleTeamUse() {
             });
         }
     };
-
     const handleChange = (e, id) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
     const addInput = (type) => {
         const id = `input-${type}`;
         if (items.some(item => item.id === id)) {
@@ -348,9 +349,6 @@ function SaleTeamUse() {
 
         setItems((items) => [...items, newItem]);
     };
-
-
-
     const renderInput = (type, id) => {
         switch (type) {
             case 'date':
@@ -412,13 +410,26 @@ function SaleTeamUse() {
                         onChange={(e) => handleChange(e, id)}
                     />
                 );
-            case 'status':
+            case 'lead_status':
                 return (
                     <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Forms Interested in*' name='status'
                         onChange={(e) => handleChange(e, id)}>
                         <option value="">Choose Forms Interested in*</option>
                         <option value="Interested">Interested</option>
                         <option value="Not Interested">Not Interested</option>
+                    </select>
+                )
+            case 'status':
+                return (
+                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Status*' name='status'
+                        onChange={(e) => handleChange(e, id)}>
+                        <option value="" selected >Choose Status*</option>
+                        <option value="1st Call">1st Call</option>
+                        <option value="2nd Call">2nd Call</option>
+                        <option value="3rd Call">3rd Call</option>
+                        <option value="4rd Call">4rd Call</option>
+                        <option value="Not Responding (N/R)">Not Responding (N/R)</option>
+                        <option value="Other">Other</option>
                     </select>
                 )
             case 'age':
@@ -518,9 +529,9 @@ function SaleTeamUse() {
             case 'leadPlatform':
                 return (
                     <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Specialistion*</option>
+                        <option value="">Select Lead Platform*</option>
                         <option value="Google">Google</option>
-                        <option value="Linkdin">Linkdin</option>
+                        <option value="LinkedIn">LinkedIn</option>
                         <option value="Indeen">Indeen</option>
                         <option value="Directly">Directly Communication</option>
                     </select>
@@ -529,15 +540,12 @@ function SaleTeamUse() {
                 return null;
         }
     };
-
     const toggleDropdown = (type) => {
         setIsExpanded(type);
     };
-
     const filteredInputs = inputs.filter(input =>
         input.label.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
     const handleRemove = (id) => {
         setItems((items) => items.filter((item) => item.id !== id));
         setFormData((prev) => {
@@ -546,13 +554,30 @@ function SaleTeamUse() {
             return newFormData;
         });
     };
-
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setPage(newPage);
         }
     };
-
+    const isToday = (date) => {
+        const today = new Date();
+        return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+    };
+    const leadIcon = (lead) => {
+        if (isToday(new Date(lead.createdAt))) {
+            return lead.TelecallerCheckbox ? (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-c" style={{ color: "green" }}></i>
+            ) : (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-t" style={{ color: "#FF9800" }}></i>
+            );
+        } else {
+            return lead.TelecallerCheckbox ? (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-c" style={{ color: "green" }}></i>
+            ) : (
+                <i className="lead-li-icon fa-sharp fa-solid fa-circle-o" style={{ color: "#007BFF" }}></i>
+            );
+        }
+    };
     return (
         <>
             {/*     <!-- Layout wrapper --> */}
@@ -719,27 +744,73 @@ function SaleTeamUse() {
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">lead</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Full Name</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Plan: activate to sort column ascending">Contact </th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Billing: activate to sort column ascending">Email</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Working Status</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Lead Platform</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Status: activate to sort column ascending">Platform</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="118px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {table.map((item) => (
+                                                    {table.map((item, index) => (
                                                         <tr key={item.id}>
                                                             <td class="sorting_1">
 
                                                             </td>
-                                                            <td>{item.id}</td>
-                                                            <td>{item.name}</td>
-                                                            <td>{item.phoneNumber}</td>
-                                                            <td>{item.email}</td>
-                                                            <td>{item.workingStatus}</td>
-                                                            <td>{item.leadPlatform}</td>
+                                                            <td>{(page - 1) * 10 + index + 1}</td>
+                                                            <td>
+                                                                {leadIcon(item)}
+                                                            </td>
+                                                            <td>
+                                                               <i class="fa-solid fa-user me-2"></i><span>{item.name}</span>
+                                                            </td>
+                                                            <td>
+                                                                <div className="d-flex align-items-center">
+                                                                    <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
+                                                                        <FaWhatsapp className="lead-li-icon me-2 " color="#25D366" /> {/* WhatsApp icon */}
+                                                                    </a>
+                                                                    <a href={`tel:${item.phoneNumber}`}>
+                                                                        <span>{item.phoneNumber}</span>
+                                                                    </a>
+
+
+                                                                </div>
+                                                            </td>
+                                                            <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{item.email}</span></td>
+                                                            <td>
+                                                                <div className="d-flex align-items-center">
+                                                                    <i className="bx bx-briefcase me-2"></i>
+                                                                    <span>{item.workingStatus}</span>
+                                                                </div>
+                                                            </td>
+
+                                                            <td>
+                                                                <div className="align-items-center">
+                                                                    {item.leadPlatform == "Google" ? (
+                                                                        <a href={`https://www.google.com/search?q=${item.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                            <FaGoogle color="#4285F4" /> {/* Google icon */}
+                                                                        </a>
+                                                                    ) : item.leadPlatform == "LinkedIn" ? (
+                                                                        <a href={`https://www.linkedin.com/search/results/all/?keywords=${item.leadPlatform}`} target="_blank" rel="noopener noreferrer">
+                                                                            <FaLinkedin color="#0077B5" /> {/* LinkedIn icon */}
+                                                                        </a>
+                                                                    ) : item.leadPlatform == "Indeed" ? (
+                                                                        <a href={`https://www.indeed.com/q-${item.leadPlatform}-jobs.html`} target="_blank" rel="noopener noreferrer">
+                                                                            <i class="fa-sharp fa-solid fa-info" style={{ color: "#2557a7" }}></i>
+                                                                            {/*   <FaBriefcase className="me-2" color="#FAFAFA" /> {/* Indeed icon */}
+                                                                        </a>
+                                                                    ) : (<i className="bx bx-briefcase"></i>)
+
+                                                                    }
+
+
+
+
+                                                                </div>
+                                                            </td>
                                                             <td>
                                                                 <div class="d-inline-block text-nowrap edt_pencil">
                                                                     <Link to={`/addsaleteam/${item.id}`} className="pr--5" >
@@ -778,7 +849,7 @@ function SaleTeamUse() {
                                                         </ul>
                                                     </div>
                                                 </div>
-                                              
+
                                             </div>
                                         </div >
                                     </div >
@@ -856,22 +927,6 @@ function SaleTeamUse() {
                                                                                 </div>
                                                                             </div>
                                                                         ))}
-                                                                        {/* <table className="table">
-                                                                        <tbody>
-
-                                                                            {filteredInputs.map(input => (
-                                                                                <tr key={input.id} className='row de-flex'>
-                                                                                    <td className="lead col-md-2">
-                                                                                        <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
-                                                                                    </td>
-                                                                                    <td className='lead col-md-10'>
-                                                                                        <span>{input.label}</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            ))}
-
-                                                                        </tbody>
-                                                                    </table> */}
                                                                     </div>
                                                                 </div>
 

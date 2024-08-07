@@ -24,14 +24,11 @@ function SteperformComponent() {
     const [roleId, setRoleId] = useState('');
     const [selectedTask, setSelectedTask] = useState(null);
     // State variables
-    const [selectedColumn, setSelectedColumn] = useState('');
-
     const [selectedItem, setSelectedItem] = useState([]);
     const [date, setDate] = useState('');
     const [name, setName] = useState('');
+    const [lastname, setLastName] = useState('');
     const [age, setAge] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [email, setEmail] = useState('');
     const [workingStatus, setWorkingStatus] = useState('');
     const [leadPlatform, setLeadPlatform] = useState('');
     const [status, setStatus] = useState('');
@@ -40,7 +37,6 @@ function SteperformComponent() {
     const [visitDate, setVisitDate] = useState('')
     const [gender, setGender] = useState('');
     const [Education, setEducation] = useState('')
-    const [coursesId, setCoursesId] = useState('')
     const [AddressType, setAddressType] = useState('')
     const [PostalCode, setPostalCode] = useState('')
     const [Address, setAddress] = useState('')
@@ -59,9 +55,11 @@ function SteperformComponent() {
     const [teamData, setTeamData] = useState([]);
     const [TelecallerCheckbox, setTelecallerCheckbox] = useState(false);
     const [createdItems, setCreatedItems] = useState({});
-    const [showOtpInput, setShowOtpInput] = useState({ email: false, mobile: false });
-    const [otp, setOtp] = useState({ email: '', mobile: '' });
-    const [otpVerified, setOtpVerified] = useState({ email: false, mobile: false });
+    const [AddressableId, setAddressableId] = useState('');
+    const [batchId, setbatchId] = useState('');
+    const [courseId, setcourseId] = useState('');
+    const [lead_status, setleadstatus] = useState('');
+    const [username, setusername] = useState('');
     const [coursesTable, setCoursesTable] = useState([]);
     const [countryTable, setCountryTable] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState('');
@@ -70,6 +68,29 @@ function SteperformComponent() {
     const { frontdeskId } = useParams();
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
+    const [otp, setOtp] = useState({ phone: '', email: '' });
+    const [otpVerified, setOtpVerified] = useState({ phone: false, email: false });
+    const [phoneNumber, setPhoneNumber] = useState(selectedItem ? selectedItem.phoneNumber : '');
+    const [showOtpInput, setShowOtpInput] = useState({ phone: false, email: false });
+    const [otpSentTime, setOtpSentTime] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [email, setEmail] = useState(selectedItem ? selectedItem.email : '');
+
+    useEffect(() => {
+        if (otpSentTime) {
+            const timer = setInterval(() => {
+                const timeElapsed = Math.floor((Date.now() - otpSentTime) / 1000);
+                const timeRemaining = 60 - timeElapsed; // Adjusted to 30 seconds
+                setTimeLeft(timeRemaining);
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    setShowOtpInput({ phone: false, email: false });
+                }
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [otpSentTime]);
+
     const handleCountryChange = (e) => {
         const selectedCountryId = parseInt(e.target.value);
         const selectedCountry = countryTable.find(country => country.id === selectedCountryId);
@@ -139,6 +160,26 @@ function SteperformComponent() {
         fetchData8(page)
     }, [page]);
 
+    useEffect(() => {
+        if (selectedItem) {
+            setName(selectedItem.name || '');
+            setLastName(selectedItem.lastname || '');
+            setRoleId(selectedItem.roleId || '');
+            setPhoneNumber(selectedItem.phoneNumber || '');
+            setEmail(selectedItem.email || '');
+            setWorkingStatus(selectedItem.workingStatus || '');
+            setLeadPlatform(selectedItem.leadPlatform || '');
+            setVisitDate(selectedItem.visitDate || '');
+            setStatus(selectedItem.status || '');
+            setRemark(selectedItem.remark || '');
+            setAddressableId(selectedItem.AddressableId || '');
+            setbatchId(selectedItem.batchId || '');
+            setcourseId(selectedItem.courseId || '');
+            setleadstatus(selectedItem.lead_status || '');
+            setusername(selectedItem.username || '');
+        }
+    }, [selectedItem]);
+
     const fetchData0 = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
@@ -152,6 +193,7 @@ function SteperformComponent() {
                 });
                 const userData = response.data.usertelecallerteam.rows;
                 setTotalPages(response.data.usertelecallerteam.totalPage || 1); // Ensure totalPages has a default value
+                console.log(userData)
                 setSaleTeamData(userData)
                 setDate(userData.date)
                 setName(userData.name);
@@ -161,6 +203,7 @@ function SteperformComponent() {
                 setWorkingStatus(userData.workingStatus);
                 setLeadPlatform(userData.leadPlatform);
                 setRoleId(userData.roleId)
+                setStatus(userData.status)
             }
 
         } catch (error) {
@@ -227,31 +270,38 @@ function SteperformComponent() {
                 console.log("saleteamId is undefined");
                 return;
             }
-            const token = localStorage.getItem('token');
 
+            const token = localStorage.getItem('token');
             if (token) {
                 const response = await axios.get(`${REACT_APP_API_ENDPOINT}/listsaleteam/${saleteamId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
-
                     }
                 });
+
                 const userData = response.data.saleteam;
-                setUserData(response.data.saleteam)
-                setDate(userData.date)
+                setUserData(userData);
                 setName(userData.name);
+                setLastName(userData.lastname);
                 setAge(userData.age);
                 setPhoneNumber(userData.phoneNumber);
                 setEmail(userData.email);
                 setWorkingStatus(userData.workingStatus);
                 setLeadPlatform(userData.leadPlatform);
                 setTelecallerCheckbox(userData.TelecallerCheckbox);
-                setRoleId(userData.roleId)
+                setRoleId(userData.roleId);
+                setStatus(userData.status);
+                setAddressableId(userData.AddressableId);
+                setbatchId(userData.batchId);
+                setcourseId(userData.courseId);
+                setleadstatus(userData.lead_status);
+                setusername(userData.username);
             }
         } catch (err) {
             console.log(err.response);
         }
-    }
+    };
+
 
     const fetchData5 = async (page = 1) => {
         try {
@@ -359,7 +409,7 @@ function SteperformComponent() {
                 setUserData(userData)
                 setGender(userData.gender)
                 setEducation(userData.Education);
-                setCoursesId(userData.coursesId);
+                setcourseId(userData.courseId);
                 setAddressType(userData.Address.AddressType);
                 setPostalCode(userData.Address.PostalCode);
                 setAddress(userData.Address.Address);
@@ -383,7 +433,7 @@ function SteperformComponent() {
     const handleSubmit2 = async (e) => {
         e.preventDefault();
         try {
-            let formData = { name, workingStatus, phoneNumber, email, age, date, remark, visitDate, roleId, gender, Education, coursesId, AddressType, PostalCode, Address, DistrictId, City, StateId, CountryId, Area, CounselingDepartmentAllotted, CounselorName, CounselorRoomNo }
+            let formData = { name, workingStatus, phoneNumber, email, age, date, remark, visitDate, roleId, gender, Education, courseId, AddressType, PostalCode, Address, DistrictId, City, StateId, CountryId, Area, CounselingDepartmentAllotted, CounselorName, CounselorRoomNo }
             const token = localStorage.getItem('token');
             if (token) {
                 await axios.post(`${REACT_APP_API_ENDPOINT}/addfrontdesk`, formData, {
@@ -423,13 +473,49 @@ function SteperformComponent() {
         localStorage.setItem('telecallerPersonNames', JSON.stringify(telecallerPersonNames));
     }, [telecallerPersonNames]);
 
-    const handleOtpVerification = (type) => {
-        // Add OTP verification logic here
-        console.log(`Verifying OTP for ${type}: ${otp[type]}`);
-        setOtpVerified({ ...otpVerified, [type]: true });
-        setShowOtpInput({ ...showOtpInput, [type]: false });
+    const handleOtpVerification = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${REACT_APP_API_ENDPOINT}/verifyotp`, { otp, phoneNumber, email });
+            if (response.data.success) {
+                alert('OTP verified successfully');
+                setOtpSentTime(Date.now());
+                setShowOtpInput(true);
+                // You can add additional actions upon successful verification
+            } else {
+                alert('Invalid OTP');
+            }
+        } catch (error) {
+            console.error('Error verifying OTP:', error);
+        }
     };
-    // Trigger fetch data when searchTerm changes
+
+    const handleSendOtp = async (e, type) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                let response = await axios.post(`${REACT_APP_API_ENDPOINT}/sendotp`, {
+                    phoneNumber: type === 'phone' ? phoneNumber : undefined,
+                    email: type === 'email' ? email : undefined
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                if (response.status === 200) {
+                    alert('OTP sent successfully');
+                    setOtpSentTime(Date.now());
+                    setShowOtpInput(prevState => ({ ...prevState, [type]: true }));
+                } else {
+                    alert('Failed to send OTP');
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     const handleCheckboxChange = (e, item) => {
         const isChecked = e.target.checked;
@@ -453,6 +539,12 @@ function SteperformComponent() {
             setRemark(item.remark);
             setVisitDate(item.visitDate);
             setRoleId(item.roleId)
+            setLastName(item.lastname);
+            setAddressableId(item.AddressableId);
+            setbatchId(item.batchId);
+            setcourseId(item.courseId);
+            setleadstatus(item.lead_status);
+            setusername(item.username);
             setTelecallerCheckbox(e.target.checked);
             setFormVisible(true);
         } else {
@@ -468,7 +560,13 @@ function SteperformComponent() {
             setCreatedAt('');
             setRemark('');
             setVisitDate('');
+            setLastName('');
             setRoleId('')
+            setAddressableId('');
+            setbatchId('');
+            setcourseId('');
+            setleadstatus('');
+            setusername('');
             setFormVisible(false);
         }
 
@@ -483,7 +581,7 @@ function SteperformComponent() {
 
             const token = localStorage.getItem('token');
             if (token) {
-                const formData = { name, age, phoneNumber, email, workingStatus, leadPlatform, date, status, remark, visitDate, roleId };
+                const formData = { name, age, phoneNumber, email, workingStatus, leadPlatform, date, status, remark, visitDate, roleId, lastname, username, courseId, batchId, AddressableId, lead_status };
                 if (window.confirm('Are you sure you want to Lead Forwarded ?')) {
                     // Save it! 
                     await axios.post(`${REACT_APP_API_ENDPOINT}/addtelecallerteam`, formData, {
@@ -521,7 +619,7 @@ function SteperformComponent() {
     }
 
 
-    const handleUpdate2 = async (e, saleteamId) => {
+    const handleUpdate = async (e, saleteamId) => {
         e.preventDefault();
         const { checked } = e.target;
         const newValue = checked ? 'Allotted' : 'Allotted';
@@ -552,10 +650,10 @@ function SteperformComponent() {
         }
     };
 
-    const handleUpdate = async (e) => {
+    const handleUpdate2 = async (e) => {
         e.preventDefault();
         try {
-            const updatedUserData = { remark, gender, Education, coursesId, AddressType, PostalCode, Address, DistrictId, City, StateId, CountryId, Area, CounselingDepartmentAllotted, CounselorName, CounselorRoomNo };
+            const updatedUserData = { remark, gender, Education, courseId, AddressType, PostalCode, Address, DistrictId, City, StateId, CountryId, Area, CounselingDepartmentAllotted, CounselorName, CounselorRoomNo };
             const token = localStorage.getItem('token');
 
             if (token) {
@@ -610,6 +708,7 @@ function SteperformComponent() {
             setPage(newPage);
         }
     };
+
     return (
         <>
             <div class="layout-wrapper layout-content-navbar">
@@ -640,7 +739,7 @@ function SteperformComponent() {
                                                     <div class="content-left">
                                                         <span class="fs-5 fw-bold">Lead Details</span>
                                                         <div class="d-flex align-items-end mt-2">
-                                                            <h4 class="mb-0 me-2">SuperAdmin</h4>
+                                                            <span class="mb-0 me-2">SuperAdmin</span>
                                                         </div>
                                                         <div class="row mt-2">
                                                             <div class="col-12 col-xl-4">
@@ -740,7 +839,7 @@ function SteperformComponent() {
                                     </div>
                                 </div>
 
-                                <div className="create-te-course-area-start ptb--100 bg-white">
+                                <div className="create-te-course-area-start ptb--25 bg-white">
                                     <div className="container">
                                         <div className="row  g-5">
                                             <div className="col-12 col-md-12 col-xl-12 col-lg-12">
@@ -772,12 +871,13 @@ function SteperformComponent() {
                                                         <div className="container">
                                                             <div className="row">
                                                                 {/*              <!-- Lead Details Card --> */}
-                                                                <div className="col-12 col-md-12 col-xl-12 mt-3">
+                                                                <div className="col-12 col-md-12 col-xl-12 mt-1">
                                                                     <div className="card card-lead-details shadow-sm">
                                                                         <div className="table-responsive">
                                                                             <table className="table table-hover">
                                                                                 <thead>
                                                                                     <tr>
+                                                                                        <th scope="col" width="50px">s.no</th>
                                                                                         <th scope="col" width="50px">Lead</th>
                                                                                         <th scope="col" width="300px" >Name</th>
                                                                                         <th scope="col" width="300px">Email</th>
@@ -789,15 +889,25 @@ function SteperformComponent() {
                                                                                     </tr>
                                                                                 </thead>
                                                                                 <tbody>
-                                                                                    {saleTeamData.map((lead) => (
+                                                                                    {saleTeamData.map((lead, index) => (
                                                                                         <tr key={lead.id}>
+                                                                                            <td>{(page - 1) * 10 + index + 1}</td>
                                                                                             <td>
                                                                                                 {leadIcon(lead)}
                                                                                             </td>
                                                                                             <td>
-                                                                                                <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{lead.name}</p>
+                                                                                                <i class="fa-solid fa-user me-2"></i>{lead.name}<span>{lead.lastname}</span>
                                                                                             </td>
-                                                                                            <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{lead.email}</span></td>
+                                                                                            <td>
+                                                                                                <a
+                                                                                                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent('Inquiry from Technogaze')}&body=${encodeURIComponent('Hello,I am reaching out from Technogaze regarding...')}`}
+                                                                                                    target="_blank"
+                                                                                                    rel="noopener noreferrer"
+                                                                                                >
+                                                                                                    <i className="fa-solid fa-envelope me-2"></i>
+                                                                                                    <span>{lead.email}</span>
+                                                                                                </a>
+                                                                                            </td>
                                                                                             <td>{lead.User && lead.User.Role && lead.User.Role.Name}</td>
                                                                                             <td>
                                                                                                 <div className="d-flex align-items-center">
@@ -811,7 +921,7 @@ function SteperformComponent() {
                                                                                                         <FaWhatsapp className="lead-li-icon me-2 " color="#25D366" /> {/* WhatsApp icon */}
                                                                                                     </a>
                                                                                                     <a href={`tel:${lead.phoneNumber}`}>
-                                                                                                        <span className="fw-bold">{lead.phoneNumber}</span>
+                                                                                                        <span>{lead.phoneNumber}</span>
                                                                                                     </a>
 
 
@@ -823,7 +933,7 @@ function SteperformComponent() {
                                                                                                         <a href={`https://www.google.com/search?q=${lead.leadPlatform}`} target="_blank" rel="noopener noreferrer">
                                                                                                             <FaGoogle color="#4285F4" /> {/* Google icon */}
                                                                                                         </a>
-                                                                                                    ) : lead.leadPlatform == "Linkdin" ? (
+                                                                                                    ) : lead.leadPlatform == "LinkedIn" ? (
                                                                                                         <a href={`https://www.linkedin.com/search/results/all/?keywords=${lead.leadPlatform}`} target="_blank" rel="noopener noreferrer">
                                                                                                             <FaLinkedin color="#0077B5" /> {/* LinkedIn icon */}
                                                                                                         </a>
@@ -885,7 +995,7 @@ function SteperformComponent() {
                                                 {formStepsNum === 2 && (
                                                     <><div className="step-content">
                                                         <div className="row">
-                                                            <div className="col-12 col-md-5 col-xl-5 col-lg-5">
+                                                            <div className="col-12 col-md-5 col-xl-5 col-lg-5 mt-1">
                                                                 <div className="card-details p-4 bg-light shadow-sm rounded">
                                                                     <h2 className="mb-4">Re-Assign Lead</h2>
                                                                     <h4 className="mb-4">{selectedTask && selectedTask.name}</h4>
@@ -985,7 +1095,7 @@ function SteperformComponent() {
                                                                                                 </div>
                                                                                                 <div className="col-12 col-xl-8 col-lg-8 col-md-8">
                                                                                                     <div>
-                                                                                                        <p className="namee">{tasks.name}</p>
+                                                                                                        <p className="namee">{tasks.name} {tasks.lastname}</p>
                                                                                                         <div>
                                                                                                             <span>{tasks.email}</span>
                                                                                                             <span className="ml--10">{tasks.phoneNumber}</span>
@@ -1019,7 +1129,7 @@ function SteperformComponent() {
                                                 {formStepsNum === 3 && (
                                                     <div className="row">
                                                         {/*              <!-- Lead Details Card --> */}
-                                                        <div className="col-12 col-md-12 col-xl-12 mt-3">
+                                                        <div className="col-12 col-md-12 col-xl-12 mt-1">
                                                             <div className="card">
                                                                 <div className="card-header">
                                                                     <h5 className="card-title">Lead Details</h5>
@@ -1041,8 +1151,7 @@ function SteperformComponent() {
                                                                         <tbody>
                                                                             {saleTeamData.map((item, index) => (
                                                                                 <tr key={item.id}>
-
-                                                                                    <td>{index + 1}</td>
+                                                                                    <td>{(page - 1) * 10 + index + 1}</td>
                                                                                     <td>{leadIcon(item)}</td>
                                                                                     {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
                                                                                         <td>
@@ -1067,7 +1176,7 @@ function SteperformComponent() {
                                                                                     )}
 
                                                                                     <td>
-                                                                                        <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{item.name}</p>
+                                                                                        <i class="fa-solid fa-user me-2"></i>{item.name}<span>{item.lastname}</span>
                                                                                     </td>
                                                                                     <td>{item.User && item.User.Role && item.User.Role.Name}</td>
                                                                                     <td>
@@ -1076,18 +1185,27 @@ function SteperformComponent() {
                                                                                                 <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
                                                                                             </a>
                                                                                             <a href={`tel:${item.phoneNumber}`}>
-                                                                                                <span className="fw-bold">{item.phoneNumber}</span>
+                                                                                                <span>{item.phoneNumber}</span>
                                                                                             </a>
                                                                                         </div>
                                                                                     </td>
-                                                                                    <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{item.email}</span></td>
+                                                                                    <td>
+                                                                                        <a
+                                                                                            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(item.email)}&su=${encodeURIComponent('Inquiry from Technogaze')}&body=${encodeURIComponent('Hello,I am reaching out from Technogaze regarding...')}`}
+                                                                                            target="_blank"
+                                                                                            rel="noopener noreferrer"
+                                                                                        >
+                                                                                            <i className="fa-solid fa-envelope me-2"></i>
+                                                                                            <span>{item.email}</span>
+                                                                                        </a>
+                                                                                    </td>
                                                                                     <td>
                                                                                         <div className="d-flex align-items-center">
                                                                                             {item.leadPlatform == "Google" ? (
                                                                                                 <a href={`https://www.google.com/search?q=${item.leadPlatform}`} target="_blank" rel="noopener noreferrer">
                                                                                                     <FaGoogle className="me-2" color="#4285F4" /> {/* Google icon */}
                                                                                                 </a>
-                                                                                            ) : item.leadPlatform == "Linkdin" ? (
+                                                                                            ) : item.leadPlatform == "LinkedIn" ? (
                                                                                                 <a href={`https://www.linkedin.com/search/results/all/?keywords=${item.leadPlatform}`} target="_blank" rel="noopener noreferrer">
                                                                                                     <FaLinkedin className="me-2" color="#0077B5" /> {/* LinkedIn icon */}
                                                                                                 </a>
@@ -1144,7 +1262,7 @@ function SteperformComponent() {
                                                             style={{ display: formVisible ? 'block' : 'none' }}
                                                         >
                                                             <div className="offcanvas-header">
-                                                                <h5 className="offcanvas-title" id="offcanvasExampleLabel">Team</h5>
+                                                                <h5 className="offcanvas-title" id="offcanvasExampleLabel">Verify Form Counselor</h5>
                                                                 <button
                                                                     type="button"
                                                                     className="btn-close"
@@ -1154,92 +1272,96 @@ function SteperformComponent() {
                                                             </div>
                                                             <div className="offcanvas-body">
                                                                 {selectedItem && (
-                                                                    <form onSubmit={handleSubmit}>
+                                                                    <form className="row" onSubmit={handleSubmit}>
                                                                         <div className="mb-3">
-                                                                            <label htmlFor="edit-name" className="form-label">Full Name</label>
+                                                                            <label htmlFor="edit-first-name" className="form-label">First Name</label>
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control"
-                                                                                id="edit-name"
-                                                                                value={selectedItem?.name || ''}
-                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value })}
+                                                                                id="edit-first-name"
+                                                                                value={selectedItem.name}
+                                                                                onChange={(e) => setName(e.target.value)}
                                                                             />
                                                                         </div>
                                                                         <div className="mb-3">
-                                                                            <label htmlFor="edit-age" className="form-label">Age</label>
+                                                                            <label htmlFor="edit-last-name" className="form-label">Last Name</label>
                                                                             <input
-                                                                                type="number"
+                                                                                type="text"
                                                                                 className="form-control"
-                                                                                id="edit-age"
-                                                                                value={selectedItem?.age || ''}
-                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, age: e.target.value })}
+                                                                                id="edit-last-name"
+                                                                                value={selectedItem.lastname}
+                                                                                onChange={(e) => setLastName(e.target.value)}
                                                                             />
                                                                         </div>
-                                                                        <div className="mb-3">
-                                                                            <input
-                                                                                type="hidden"
-                                                                                className="form-control telecallar-team"
-                                                                                id="add-user-fullname"
-                                                                                name='roleId'
-                                                                                value={selectedItem?.roleId || ''}
-                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, roleId: e.target.value })}
-                                                                                style={{ display: "none" }}
-                                                                            />
-                                                                        </div>
+                                                                        <input
+                                                                            type="hidden"
+                                                                            className="form-control telecallar-team"
+                                                                            id="add-user-roleId"
+                                                                            name="roleId"
+                                                                            value={selectedItem.roleId}
+                                                                            onChange={(e) => setRoleId(e.target.value)}
+                                                                        />
                                                                         <div className="mb-3">
                                                                             <label htmlFor="edit-phone" className="form-label">Contact</label>
                                                                             <div className="d-flex align-items-center">
                                                                                 <input
-                                                                                    type="text"
+                                                                                    type="tel"
                                                                                     className="form-control"
-                                                                                    id="edit-phone"
-                                                                                    value={selectedItem?.phoneNumber || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, phoneNumber: e.target.value })}
+                                                                                    id="phoneNumber"
+                                                                                    value={phoneNumber}
+                                                                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                                                                    required
                                                                                 />
-                                                                                <Button
-                                                                                    variant="outline-secondary"
-                                                                                    className="ml-2"
-                                                                                    onClick={() => setShowOtpInput({ ...showOtpInput, mobile: !showOtpInput.mobile })}
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-outline-secondary ml-2"
+                                                                                    onClick={(e) => handleSendOtp(e, 'phone')}
+                                                                                /*  disabled={timeLeft > 0 && showOtpInput.phone} */
                                                                                 >
-                                                                                    <FaLock /> {showOtpInput.mobile ? 'Cancel' : 'Verify'}
-                                                                                </Button>
+                                                                                    {showOtpInput.phone ? 'Resend OTP' : 'Send OTP'}
+                                                                                </button>
                                                                             </div>
-                                                                            {showOtpInput.mobile && (
+                                                                            {showOtpInput.phone && (
                                                                                 <div className="mt-2">
                                                                                     <input
                                                                                         type="text"
                                                                                         className="form-control"
                                                                                         placeholder="Enter OTP"
-                                                                                        value={otp.mobile}
-                                                                                        onChange={(e) => setOtp({ ...otp, mobile: e.target.value })}
+                                                                                        value={otp.phone}
+                                                                                        onChange={(e) => setOtp(prevState => ({ ...prevState, phone: e.target.value }))}
                                                                                     />
-                                                                                    <Button
-                                                                                        variant="primary"
-                                                                                        className="mt-2"
-                                                                                        onClick={() => handleOtpVerification('mobile')}
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="btn btn-primary mt-2"
+                                                                                        onClick={(e) => handleOtpVerification(e, 'phone')}
+                                                                                    /*   disabled={timeLeft <= 0} */
                                                                                     >
                                                                                         Verify OTP
-                                                                                    </Button>
+                                                                                    </button>
+                                                                                    {timeLeft > 0 && <p>OTP expires in {timeLeft} seconds</p>}
                                                                                 </div>
                                                                             )}
                                                                         </div>
+
+
                                                                         <div className="mb-3">
                                                                             <label htmlFor="edit-email" className="form-label">Email</label>
                                                                             <div className="d-flex align-items-center">
                                                                                 <input
                                                                                     type="email"
                                                                                     className="form-control"
-                                                                                    id="edit-email"
-                                                                                    value={selectedItem?.email || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, email: e.target.value })}
+                                                                                    id="email"
+                                                                                    value={email}
+                                                                                    onChange={(e) => setEmail(e.target.value)}
+                                                                                    required
                                                                                 />
-                                                                                <Button
-                                                                                    variant="outline-secondary"
-                                                                                    className="ml-2"
-                                                                                    onClick={() => setShowOtpInput({ ...showOtpInput, email: !showOtpInput.email })}
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-outline-secondary ml-2"
+                                                                                    onClick={(e) => handleSendOtp(e, 'email')}
                                                                                 >
-                                                                                    <FaEnvelope /> {showOtpInput.email ? 'Cancel' : 'Verify'}
-                                                                                </Button>
+                                                                                    <FaEnvelope /> {showOtpInput.email ? 'Cancel' : 'Send OTP'}
+                                                                                </button>
                                                                             </div>
                                                                             {showOtpInput.email && (
                                                                                 <div className="mt-2">
@@ -1248,22 +1370,23 @@ function SteperformComponent() {
                                                                                         className="form-control"
                                                                                         placeholder="Enter OTP"
                                                                                         value={otp.email}
-                                                                                        onChange={(e) => setOtp({ ...otp, email: e.target.value })}
+                                                                                        onChange={(e) => setOtp(prevState => ({ ...prevState, email: e.target.value }))}
                                                                                     />
-                                                                                    <Button
-                                                                                        variant="primary"
-                                                                                        className="mt-2"
-                                                                                        onClick={() => handleOtpVerification('email')}
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="btn btn-primary mt-2"
+                                                                                        onClick={(e) => handleOtpVerification(e, 'email')}
                                                                                     >
                                                                                         Verify OTP
-                                                                                    </Button>
+                                                                                    </button>
+                                                                                    {timeLeft > 0 && <p>OTP expires in {timeLeft} seconds</p>}
                                                                                 </div>
                                                                             )}
                                                                         </div>
                                                                         <div className="mb-3">
                                                                             <label htmlFor="edit-working-status" className="form-label">Select Specialistion</label>
-                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={selectedItem?.workingStatus || ''}
-                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, workingStatus: e.target.value })}>
+                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={selectedItem.workingStatus}
+                                                                                onChange={(e) => setWorkingStatus(e.target.value)}>
                                                                                 <option value="">Select Specialistion*</option>
                                                                                 <option value="Employee">Employee</option>
                                                                                 <option value="Student">Student</option>
@@ -1272,8 +1395,8 @@ function SteperformComponent() {
                                                                         </div>
                                                                         <div className="mb-3">
                                                                             <label htmlFor="edit-lead-platform" className="form-label">Lead Platform</label>
-                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' value={selectedItem?.leadPlatform || ''}
-                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, leadPlatform: e.target.value })}>
+                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' value={selectedItem?.leadPlatform}
+                                                                                onChange={(e) => setLeadPlatform(e.target.value)}>
                                                                                 <option value="">Select Specialistion*</option>
                                                                                 <option value="Google">Google</option>
                                                                                 <option value="Linkdin">Linkdin</option>
@@ -1288,7 +1411,7 @@ function SteperformComponent() {
                                                                                 className="form-control"
                                                                                 id="flatpickr-datetime"
                                                                                 name='visitDate'
-                                                                                defaultValue={visitDate}
+                                                                                value={selectedItem?.visitDate}
                                                                                 onChange={(e) => setVisitDate(e.target.value)}
                                                                             />
                                                                         </div>
@@ -1298,7 +1421,7 @@ function SteperformComponent() {
                                                                                 id="exampleFormControlSelect2"
                                                                                 className="form-select"
                                                                                 name="status"
-                                                                                value={status}
+                                                                                value={selectedItem?.status}
                                                                                 onChange={(e) => setStatus(e.target.value)}
                                                                             >
                                                                                 <option value="">----Choose one----</option>
@@ -1316,13 +1439,15 @@ function SteperformComponent() {
                                                                                 type="text"
                                                                                 id="modalEditTaxID"
                                                                                 name="remark"
+                                                                                value={selectedItem?.remark}
                                                                                 onChange={(e) => setRemark(e.target.value)}
-                                                                                defaultValue={remark}
                                                                                 className="form-control"
                                                                                 placeholder="Remark"
                                                                             />
                                                                         </div>
-                                                                        <Button type="submit" className="btn btn-primary">Save</Button>
+                                                                        <button type="submit" className="btn btn-success" disabled={!otpVerified.phone && !otpVerified.email}>
+                                                                            Submit
+                                                                        </button>
                                                                     </form>
                                                                 )}
                                                             </div>
@@ -1344,446 +1469,385 @@ function SteperformComponent() {
 
                                                 {formStepsNum === 4 && (
                                                     <div className="step-content">
-                                                        <div className="card">
-                                                            <div className="card-datatable table-responsive">
-                                                                <table className="datatables-users table border-top">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th width="150px">S.NO</th>
-                                                                            <th width="200px">Update Lead</th>
-                                                                            <th width="250px">Enquiry Forward</th>
-                                                                            <th width="300px">Full Name</th>
-                                                                            <th width="350px">Assign to Users</th>
-                                                                            <th width="190px;">Contact</th>
-                                                                            <th width="200px;">Email</th>
+                                                        <div className="container">
+                                                            <div className="row">
+                                                                {/*              <!-- Lead Details Card --> */}
+                                                                <div className="col-12 col-md-12 col-xl-12 mt-1">
+                                                                    <div className="card">
+                                                                        <div className="card-datatable table-responsive">
+                                                                            <table className="datatables-users table border-top">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th width="50px">S.NO</th>
+                                                                                        <th width="200px">Update Lead</th>
+                                                                                        <th width="250px">Enquiry Forward</th>
+                                                                                        <th width="300px">Full Name</th>
+                                                                                        <th width="350px">Assign to Users</th>
+                                                                                        <th width="190px;">Contact</th>
+                                                                                        <th width="250px;">Email</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {teamData.map((item, index) => (
+                                                                                        <tr key={item.id}>
+                                                                                            <td>{(page - 1) * 10 + index + 1}</td>
+                                                                                            <td>
+                                                                                                {leadIcon(item)}
+                                                                                            </td>
+                                                                                            {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
+                                                                                                <td>
+                                                                                                    <input
+                                                                                                        type="checkbox"
+                                                                                                        checked={createdItems[item.id] !== undefined ? createdItems[item.id] : item.TelecallerCheckbox}
+                                                                                                        onChange={(e) => handleCheckboxChange(e, item)}
+                                                                                                        disabled={item.TelecallerCheckbox}
+                                                                                                        data-bs-toggle="offcanvas"
+                                                                                                        data-bs-target="#editTeam"
+                                                                                                    />
+                                                                                                </td>
+                                                                                            ) : (
+                                                                                                <td>
+                                                                                                    <input
+                                                                                                        type="checkbox"
+                                                                                                        checked={item.TelecallerCheckbox} // Reflect the checkbox state for other users
+                                                                                                        disabled // Always disabled for other users
+                                                                                                        data-bs-toggle="offcanvas"
+                                                                                                        data-bs-target="#editTeam"
+                                                                                                    />
+                                                                                                </td>
+                                                                                            )}
 
+                                                                                            <td>
+                                                                                                <i class="fa-solid fa-user me-2"></i> <span>{item.name}</span>
+                                                                                            </td>
+                                                                                            <td>{item.User && item.User.Role && item.User.Role.Name}</td>
+                                                                                            <td>
+                                                                                                <div className="d-flex align-items-center">
+                                                                                                    <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
+                                                                                                        <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
+                                                                                                    </a>
+                                                                                                    <a href={`tel:${item.phoneNumber}`}>
+                                                                                                        <span>{item.phoneNumber}</span>
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <a
+                                                                                                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(item.email)}&su=${encodeURIComponent('Inquiry from Technogaze')}&body=${encodeURIComponent('Hello,I am reaching out from Technogaze regarding...')}`}
+                                                                                                    target="_blank"
+                                                                                                    rel="noopener noreferrer"
+                                                                                                >
+                                                                                                    <i className="fa-solid fa-envelope me-2"></i>
+                                                                                                    <span>{item.email}</span>
+                                                                                                </a>
+                                                                                            </td>
 
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {teamData.map((item, index) => (
-                                                                            <tr key={item.id}>
-                                                                                <td>{index + 1}</td>
-                                                                                <td>
-                                                                                    {leadIcon(item)}
-                                                                                </td>
-                                                                                {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
-                                                                                    <td>
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            checked={createdItems[item.id] !== undefined ? createdItems[item.id] : item.TelecallerCheckbox}
-                                                                                            onChange={(e) => handleCheckboxChange(e, item)}
-                                                                                            disabled={item.TelecallerCheckbox}
-                                                                                            data-bs-toggle="offcanvas"
-                                                                                            data-bs-target="#editTeam"
-                                                                                        />
-                                                                                    </td>
-                                                                                ) : (
-                                                                                    <td>
-                                                                                        <input
-                                                                                            type="checkbox"
-                                                                                            checked={item.TelecallerCheckbox} // Reflect the checkbox state for other users
-                                                                                            disabled // Always disabled for other users
-                                                                                            data-bs-toggle="offcanvas"
-                                                                                            data-bs-target="#editTeam"
-                                                                                        />
-                                                                                    </td>
-                                                                                )}
-
-                                                                                <td>
-                                                                                    <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{item.name}</p>
-                                                                                </td>
-                                                                                <td>{item.User && item.User.Role && item.User.Role.Name}</td>
-                                                                                <td>
-                                                                                    <div className="d-flex align-items-center">
-                                                                                        <a href={`https://web.whatsapp.com/send?phone=+919893688878&text=Hello`} target="_blank" rel="noopener noreferrer">
-                                                                                            <FaWhatsapp className="lead-li-icon me-2" color="#25D366" />
-                                                                                        </a>
-                                                                                        <a href={`tel:${item.phoneNumber}`}>
-                                                                                            <span className="fw-bold">{item.phoneNumber}</span>
-                                                                                        </a>
-                                                                                    </div>
-                                                                                </td>
-                                                                                <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{item.email}</span></td>
-
-                                                                            </tr>
-                                                                        ))}
-                                                                    </tbody>
-                                                                </table>
-                                                                <div className="row mx-2">
-                                                                    <div className="col-sm-12 col-md-6">
-                                                                        <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
-                                                                            Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-sm-12 col-md-6">
-                                                                        <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
-                                                                            <ul className="pagination">
-                                                                                <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
-                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
-                                                                                </li>
-                                                                                {[...Array(totalPages).keys()].map(p => (
-                                                                                    <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
-                                                                                        <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
-                                                                                    </li>
-                                                                                ))}
-                                                                                <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
-                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
-                                                                                </li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="justify-content-between mt-4">
-                                                            <div className="row d-flex">
-                                                                <div className="col-md-2">
-                                                                    <Button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
-                                                                </div>
-                                                                <div className="col-md-2">
-                                                                    <Button variant="primary" onClick={() => setFormStepsNum(prev => prev < 5 ? prev + 1 : prev)} disabled={formStepsNum === 5}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        {/* Offcanvas Component */}
-                                                        <div
-                                                            className="offcanvas offcanvas-end w-50"
-                                                            tabIndex="-1"
-                                                            id="editTeam"
-                                                            aria-labelledby="offcanvasExampleLabel"
-                                                            style={{ display: formVisible ? 'block' : 'none' }}
-                                                        >
-                                                            <div className="offcanvas-header">
-                                                                <h5 className="offcanvas-title" id="offcanvasExampleLabel">Edit Team</h5>
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn-close"
-                                                                    aria-label="Close"
-                                                                    onClick={() => setFormVisible(false)}
-                                                                ></button>
-                                                            </div>
-                                                            <div className="offcanvas-body">
-                                                                {selectedItem && (
-                                                                    <form onSubmit={handleSubmit}>
-                                                                        <div className="row">
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-name" className="form-label">Full Name</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    id="edit-name"
-                                                                                    value={selectedItem?.name || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value })}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-age" className="form-label">Age</label>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    className="form-control"
-                                                                                    id="edit-age"
-                                                                                    value={selectedItem?.age || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, age: e.target.value })}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-phone" className="form-label">Contact</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    id="edit-phone"
-                                                                                    value={selectedItem?.phoneNumber || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, phoneNumber: e.target.value })}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-email" className="form-label">Email</label>
-                                                                                <input
-                                                                                    type="email"
-                                                                                    className="form-control"
-                                                                                    id="edit-email"
-                                                                                    value={selectedItem?.email || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, email: e.target.value })}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-working-status" className="form-label">Select Specialistion</label>
-                                                                                <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={selectedItem?.workingStatus || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, workingStatus: e.target.value })}>
-                                                                                    <option value="">Select Specialistion*</option>
-                                                                                    <option value="Employee">Employee</option>
-                                                                                    <option value="Student">Student</option>
-                                                                                    <option value="Entrepreneur">Entrepreneur</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-lead-platform" className="form-label">Lead Platform</label>
-                                                                                <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' value={selectedItem?.leadPlatform || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, leadPlatform: e.target.value })}>
-                                                                                    <option value="">Select Specialistion*</option>
-                                                                                    <option value="Google">Google</option>
-                                                                                    <option value="Linkdin">Linkdin</option>
-                                                                                    <option value="Indeen">Indeen</option>
-                                                                                    <option value="Directly">Directly Communication</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="flatpickr-datetime" className="form-label">Visiting Date</label>
-                                                                                <input
-                                                                                    type="date"
-                                                                                    className="form-control"
-                                                                                    id="flatpickr-datetime"
-                                                                                    name='visitDate'
-                                                                                    defaultValue={visitDate}
-                                                                                    onChange={(e) => setVisitDate(e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Status</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="form-select"
-                                                                                    name="status"
-                                                                                    value={selectedItem?.status || ''}
-                                                                                    onChange={(e) => setSelectedItem({ ...selectedItem, status: e.target.value })}
-                                                                                >
-                                                                                    <option value="">----Choose one----</option>
-                                                                                    <option value="1st Call">1st Call</option>
-                                                                                    <option value="2nd Call">2nd Call</option>
-                                                                                    <option value="3rd Call">3rd Call</option>
-                                                                                    <option value="4th Call">4th Call</option>
-                                                                                    <option value="Not Responding (N/R)">Not Responding (N/R)</option>
-                                                                                    <option value="Other">Other</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Gender</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    placeholder="gender"
-                                                                                    name='gender'
-                                                                                    defaultValue={gender}
-                                                                                    onChange={(e) => setGender(e.target.value)}
-                                                                                >
-                                                                                    <option value="">Select</option>
-                                                                                    <option value="Female">Female</option>
-                                                                                    <option value="Male">Male</option>
-                                                                                    <option value="Other">Other</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Education</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    name="Education"
-                                                                                    defaultValue={Education}
-                                                                                    onChange={(e) => setEducation(e.target.value)}
-                                                                                >
-                                                                                    <option value="">Select</option>
-                                                                                    <option value="Education">Education</option>
-                                                                                    <option value="School">School</option>
-                                                                                    <option value="Graduation">Graduation</option>
-                                                                                    <option value="Master">Master</option>
-                                                                                    <option value="Any other Skill">Any other Skill</option>
-                                                                                    <option value="Other">Other</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-6 mb-3">
-                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Courses Look For</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    name="coursesId"
-                                                                                    defaultValue={coursesId}
-                                                                                    onChange={(e) => setCoursesId(e.target.value)}
-                                                                                >
-                                                                                    <option value="">Select</option>
-                                                                                    {coursesTable.map((option) => (
-                                                                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                        </tr>
                                                                                     ))}
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Address Type</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    name="AddressType"
-                                                                                    defaultValue={AddressType}
-                                                                                    onChange={(e) => setAddressType(e.target.value)}
-                                                                                >
-                                                                                    <option value="">Select</option>
-                                                                                    <option value="Current Address">Current Address</option>
-                                                                                    <option value="Residential Address">Residential Address</option>
-                                                                                    <option value="Office Address">Office Address</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label className="form-label" htmlFor="add-user-email">Address</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    id="add-user-email"
-                                                                                    className="form-control"
-                                                                                    placeholder="Address"
-                                                                                    aria-label="Address"
-                                                                                    name='Address'
-                                                                                    onChange={(e) => setAddress(e.target.value)}
-                                                                                    value={Address}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label className="form-label" htmlFor="add-user-email">Postal Code</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    id="add-user-email"
-                                                                                    className="form-control"
-                                                                                    placeholder="PostalCode"
-                                                                                    aria-label="PostalCode"
-                                                                                    name='PostalCode'
-                                                                                    onChange={(e) => setPostalCode(e.target.value)}
-                                                                                    value={PostalCode}
-                                                                                />
-                                                                            </div>
-                                                                            {/*        <div className="col-md-6 mb-3">
-                                                                               <label className="form-label" htmlFor="exampleFormControlSelect2">Country</label>
-                                                                               <select
-                                                                                   id="exampleFormControlSelect2"
-                                                                                   className="select2 form-select"
-                                                                                   placeholder="CountryId"
-                                                                                   name='CountryId'
-                                                                                   onChange={handleCountryChange}
-                                                                                   value={CountryId}
-                                                                               >
-                                                                                   <option value=''>Select Country</option>
-                                                                                   {countryTable.map((option) => (
-                                                                                       <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                   ))}
-                                                                               </select>
-                                                                           </div> */}
-                                                                            {/*    <div className="col-md-6 mb-3">
-                                                                               <label className="form-label" htmlFor="exampleFormControlSelect2">State</label>
-                                                                               <select
-                                                                                   id="exampleFormControlSelect2"
-                                                                                   className="select2 form-select"
-                                                                                   placeholder="StateId"
-                                                                                   name='StateId'
-                                                                                   onChange={handleStateChange}
-                                                                                   value={StateId}
-                                                                               >
-                                                                                   <option value=''>Select State</option>
-                                                                                   {selectedCountry.map((option) => (
-                                                                                       <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                   ))}
-                                                                               </select>
-                                                                           </div>
-                                                                           <div className="col-md-6 mb-3">
-                                                                               <label className="form-label" htmlFor="exampleFormControlSelect2">District</label>
-                                                                               <select
-                                                                                   id="exampleFormControlSelect2"
-                                                                                   className="select2 form-select"
-                                                                                   placeholder="DistrictId"
-                                                                                   name='DistrictId'
-                                                                                   onChange={(e) => setDistrictId(e.target.value)}
-                                                                                   value={DistrictId}
-                                                                               >
-                                                                                   <option value=''>Select District</option>
-                                                                                   {selectedState.map((option) => (
-                                                                                       <option key={option.id} value={option.id}>{option.name}</option>
-                                                                                   ))}
-                                                                               </select>
-                                                                           </div> */}
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label className="form-label" htmlFor="add-user-email">City</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    id="add-user-email"
-                                                                                    className="form-control"
-                                                                                    placeholder="City"
-                                                                                    aria-label="City"
-                                                                                    name='City'
-                                                                                    onChange={(e) => setCity(e.target.value)}
-                                                                                    value={City}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label className="form-label" htmlFor="add-user-email">Area</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    id="add-user-email"
-                                                                                    className="form-control"
-                                                                                    placeholder="Area"
-                                                                                    aria-label="Area"
-                                                                                    name='Area'
-                                                                                    onChange={(e) => setArea(e.target.value)}
-                                                                                    value={Area}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="exampleFormControlSelect2" className="form-label">Counseling Department Allotted</label>
-                                                                                <select
-                                                                                    id="exampleFormControlSelect2"
-                                                                                    className="select2 form-select"
-                                                                                    name="CounselingDepartmentAllotted"
-                                                                                    defaultValue={CounselingDepartmentAllotted}
-                                                                                    onChange={(e) => setCounselingDepartmentAllotted(e.target.value)}
-                                                                                >
-                                                                                    <option value="">Select</option>
-                                                                                    <option value="Education">Education</option>
-                                                                                    <option value="School">School</option>
-                                                                                    <option value="Graduation">Graduation</option>
-                                                                                    <option value="Master">Master</option>
-                                                                                    <option value="Any other Skill">Any other Skill</option>
-                                                                                    <option value="Other">Other</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-counselor-name" className="form-label">Counselor Name</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    id="edit-counselor-name"
-                                                                                    value={CounselorName || ''}
-                                                                                    onChange={(e) => setCounselorName(e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-4 mb-3">
-                                                                                <label htmlFor="edit-counselor-room-no" className="form-label">Counselor Room No</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    id="edit-counselor-room-no"
-                                                                                    value={CounselorRoomNo || ''}
-                                                                                    onChange={(e) => setCounselorRoomNo(e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-md-12 mb-3">
-                                                                                <label htmlFor="edit-remark" className="form-label">Remarks</label>
-                                                                                <textarea
-                                                                                    className="form-control"
-                                                                                    id="edit-remark"
-                                                                                    rows="3"
-                                                                                    value={remark || ''}
-                                                                                    onChange={(e) => setRemark(e.target.value)}
-                                                                                ></textarea>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div className="row mx-2">
+                                                                                <div className="col-sm-12 col-md-6">
+                                                                                    <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                                                        Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-sm-12 col-md-6">
+                                                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                                                        <ul className="pagination">
+                                                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                                                            </li>
+                                                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                                                </li>
+                                                                                            ))}
+                                                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div className="d-flex justify-content-end">
-                                                                            <Button
-                                                                                variant="secondary"
-                                                                                className="me-2"
+                                                                    </div>
+                                                                    <div className="justify-content-between mt-4">
+                                                                        <div className="row d-flex">
+                                                                            <div className="col-md-2">
+                                                                                <Button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
+                                                                            </div>
+                                                                            <div className="col-md-2">
+                                                                                <Button variant="primary" onClick={() => setFormStepsNum(prev => prev < 5 ? prev + 1 : prev)} disabled={formStepsNum === 5}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    {/* Offcanvas Component */}
+                                                                    <div
+                                                                        className="offcanvas offcanvas-end w-50"
+                                                                        tabIndex="-1"
+                                                                        id="editTeam"
+                                                                        aria-labelledby="offcanvasExampleLabel"
+                                                                        style={{ display: formVisible ? 'block' : 'none' }}
+                                                                    >
+                                                                        <div className="offcanvas-header">
+                                                                            <h5 className="offcanvas-title" id="offcanvasExampleLabel">Verify All Information Counselor</h5>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="btn-close"
+                                                                                aria-label="Close"
                                                                                 onClick={() => setFormVisible(false)}
-                                                                            >
-                                                                                Close
-                                                                            </Button>
-                                                                            <Button variant="primary" type="submit">
-                                                                                Save changes
-                                                                            </Button>
+                                                                            ></button>
                                                                         </div>
-                                                                    </form>
-                                                                )}
+                                                                        <div className="offcanvas-body">
+                                                                            {selectedItem && (
+                                                                                <form onSubmit={handleSubmit2}>
+                                                                                    <div className="row">
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-name" className="form-label">Full Name</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control"
+                                                                                                id="edit-name"
+                                                                                                value={selectedItem?.name}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value })}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-age" className="form-label">Age</label>
+                                                                                            <input
+                                                                                                type="number"
+                                                                                                className="form-control"
+                                                                                                id="edit-age"
+                                                                                                value={selectedItem?.age || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, age: e.target.value })}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-phone" className="form-label">Contact</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control"
+                                                                                                id="edit-phone"
+                                                                                                value={selectedItem?.phoneNumber || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, phoneNumber: e.target.value })}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-email" className="form-label">Email</label>
+                                                                                            <input
+                                                                                                type="email"
+                                                                                                className="form-control"
+                                                                                                id="edit-email"
+                                                                                                value={selectedItem?.email || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, email: e.target.value })}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-working-status" className="form-label">Select Specialistion</label>
+                                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' value={selectedItem?.workingStatus || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, workingStatus: e.target.value })}>
+                                                                                                <option value="">Select Specialistion*</option>
+                                                                                                <option value="Employee">Employee</option>
+                                                                                                <option value="Student">Student</option>
+                                                                                                <option value="Entrepreneur">Entrepreneur</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-lead-platform" className="form-label">Lead Platform</label>
+                                                                                            <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' value={selectedItem?.leadPlatform || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, leadPlatform: e.target.value })}>
+                                                                                                <option value="">Select Specialistion*</option>
+                                                                                                <option value="Google">Google</option>
+                                                                                                <option value="LinkedIn">LinkedIn</option>
+                                                                                                <option value="Indeen">Indeen</option>
+                                                                                                <option value="Directly">Directly Communication</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="flatpickr-datetime" className="form-label">Visiting Date</label>
+                                                                                            <input
+                                                                                                type="date"
+                                                                                                className="form-control"
+                                                                                                id="flatpickr-datetime"
+                                                                                                name='visitDate'
+                                                                                                defaultValue={visitDate}
+                                                                                                onChange={(e) => setVisitDate(e.target.value)}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="exampleFormControlSelect2" className="form-label">Status</label>
+                                                                                            <select
+                                                                                                id="exampleFormControlSelect2"
+                                                                                                className="form-select"
+                                                                                                name="status"
+                                                                                                value={selectedItem?.status || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, status: e.target.value })}
+                                                                                            >
+                                                                                                <option value="">----Choose one----</option>
+                                                                                                <option value="1st Call">1st Call</option>
+                                                                                                <option value="2nd Call">2nd Call</option>
+                                                                                                <option value="3rd Call">3rd Call</option>
+                                                                                                <option value="4th Call">4th Call</option>
+                                                                                                <option value="Not Responding (N/R)">Not Responding (N/R)</option>
+                                                                                                <option value="Other">Other</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="exampleFormControlSelect2" className="form-label">Gender</label>
+                                                                                            <select
+                                                                                                id="exampleFormControlSelect2"
+                                                                                                className="select2 form-select"
+                                                                                                placeholder="gender"
+                                                                                                name='gender'
+                                                                                                defaultValue={gender}
+                                                                                                onChange={(e) => setGender(e.target.value)}
+                                                                                            >
+                                                                                                <option value="">Select</option>
+                                                                                                <option value="Female">Female</option>
+                                                                                                <option value="Male">Male</option>
+                                                                                                <option value="Other">Other</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-6 mb-3">
+                                                                                            <label htmlFor="exampleFormControlSelect2" className="form-label">Education</label>
+                                                                                            <select
+                                                                                                id="exampleFormControlSelect2"
+                                                                                                className="select2 form-select"
+                                                                                                name="Education"
+                                                                                                defaultValue={Education}
+                                                                                                onChange={(e) => setEducation(e.target.value)}
+                                                                                            >
+                                                                                                <option value="">Select</option>
+                                                                                                <option value="Education">Education</option>
+                                                                                                <option value="School">School</option>
+                                                                                                <option value="Graduation">Graduation</option>
+                                                                                                <option value="Master">Master</option>
+                                                                                                <option value="Any other Skill">Any other Skill</option>
+                                                                                                <option value="Other">Other</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-6 mb-3">
+                                                                                            <label htmlFor="exampleFormControlSelect2" className="form-label">Courses Look For</label>
+                                                                                            <select
+                                                                                                id="exampleFormControlSelect2"
+                                                                                                className="form-select"
+                                                                                                name="courseId"
+                                                                                                value={selectedItem?.courseId || ''}
+                                                                                                onChange={(e) => setSelectedItem({ ...selectedItem, courseId: e.target.value })}
+                                                                                            >
+                                                                                                <option value="">Select</option>
+                                                                                                {coursesTable.map((option) => (
+                                                                                                    <option key={option.id} value={option.id}>{option.name}</option>
+                                                                                                ))}
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="exampleFormControlSelect2" className="form-label">Address Type</label>
+                                                                                            <select
+                                                                                                id="exampleFormControlSelect2"
+                                                                                                className="select2 form-select"
+                                                                                                name="AddressType"
+                                                                                                defaultValue={AddressType}
+                                                                                                onChange={(e) => setAddressType(e.target.value)}
+                                                                                            >
+                                                                                                <option value="">Select</option>
+                                                                                                <option value="Current Address">Current Address</option>
+                                                                                                <option value="Residential Address">Residential Address</option>
+                                                                                                <option value="Office Address">Office Address</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label className="form-label" htmlFor="add-user-email">Address</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                id="add-user-email"
+                                                                                                className="form-control"
+                                                                                                placeholder="Address"
+                                                                                                aria-label="Address"
+                                                                                                name='Address'
+                                                                                                onChange={(e) => setAddress(e.target.value)}
+                                                                                                value={Address}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label className="form-label" htmlFor="add-user-email">Postal Code</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                id="add-user-email"
+                                                                                                className="form-control"
+                                                                                                placeholder="PostalCode"
+                                                                                                aria-label="PostalCode"
+                                                                                                name='PostalCode'
+                                                                                                onChange={(e) => setPostalCode(e.target.value)}
+                                                                                                value={PostalCode}
+                                                                                            />
+                                                                                        </div>
+
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label className="form-label" htmlFor="add-user-email">City</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                id="add-user-email"
+                                                                                                className="form-control"
+                                                                                                placeholder="City"
+                                                                                                aria-label="City"
+                                                                                                name='City'
+                                                                                                onChange={(e) => setCity(e.target.value)}
+                                                                                                value={City}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label className="form-label" htmlFor="add-user-email">Area</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                id="add-user-email"
+                                                                                                className="form-control"
+                                                                                                placeholder="Area"
+                                                                                                aria-label="Area"
+                                                                                                name='Area'
+                                                                                                onChange={(e) => setArea(e.target.value)}
+                                                                                                value={Area}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-4 mb-3">
+                                                                                            <label htmlFor="edit-counselor-name" className="form-label">Counselor Name</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control"
+                                                                                                id="edit-counselor-name"
+                                                                                                value={CounselorName || ''}
+                                                                                                onChange={(e) => setCounselorName(e.target.value)}
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="col-md-12 mb-3">
+                                                                                            <label htmlFor="edit-remark" className="form-label">Remarks</label>
+                                                                                            <textarea
+                                                                                                className="form-control"
+                                                                                                id="edit-remark"
+                                                                                                rows="3"
+                                                                                                value={remark || ''}
+                                                                                                onChange={(e) => setRemark(e.target.value)}
+                                                                                            ></textarea>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="d-flex justify-content-end">
+                                                                                        <Button
+                                                                                            variant="secondary"
+                                                                                            className="me-2"
+                                                                                            onClick={() => setFormVisible(false)}
+                                                                                        >
+                                                                                            Close
+                                                                                        </Button>
+                                                                                        <Button variant="primary" type="submit">
+                                                                                            Save changes
+                                                                                        </Button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1793,7 +1857,7 @@ function SteperformComponent() {
                                                         <div className="container">
                                                             <div className="row">
                                                                 {/*              <!-- Lead Details Card --> */}
-                                                                <div className="col-12 col-md-12 col-xl-12 mt-3">
+                                                                <div className="col-12 col-md-12 col-xl-12 mt-1">
                                                                     <div className="card card-lead-details shadow-sm">
                                                                         <div className="table-responsive">
                                                                             <table className="table table-hover">
@@ -1820,9 +1884,18 @@ function SteperformComponent() {
                                                                                             <td><i class="fa-solid fa-id-badge me-1" style={{ color: "#f01010e7" }}></i><span>{lead.enquiryId}</span></td>
 
                                                                                             <td>
-                                                                                                <p className="mb-0 fw-bold"><i class="fa-solid fa-user me-2"></i>{lead.name}</p>
+                                                                                                <i class="fa-solid fa-user me-2"></i><span>{lead.name}</span>
                                                                                             </td>
-                                                                                            <td><i class="fa-solid fa-envelope me-2  fw-bold"></i><span>{lead.email}</span></td>
+                                                                                            <td>
+                                                                                                <a
+                                                                                                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent('Inquiry from Technogaze')}&body=${encodeURIComponent('Hello,I am reaching out from Technogaze regarding...')}`}
+                                                                                                    target="_blank"
+                                                                                                    rel="noopener noreferrer"
+                                                                                                >
+                                                                                                    <i className="fa-solid fa-envelope me-2"></i>
+                                                                                                    <span>{lead.email}</span>
+                                                                                                </a>
+                                                                                            </td>
                                                                                             <td>{lead.User && lead.User.Role && lead.User.Role.Name}</td>
                                                                                             <td>
                                                                                                 <div className="d-flex align-items-center">
@@ -1837,7 +1910,7 @@ function SteperformComponent() {
                                                                                                         <FaWhatsapp className="lead-li-icon me-1 " color="#25D366" /> {/* WhatsApp icon */}
                                                                                                     </a>
                                                                                                     <a href={`tel:${lead.phoneNumber}`}>
-                                                                                                        <span className="fw-bold">{lead.phoneNumber}</span>
+                                                                                                        <span>{lead.phoneNumber}</span>
                                                                                                     </a>
 
 
@@ -1904,7 +1977,16 @@ function SteperformComponent() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-
+                                                                <div className="justify-content-between mt-4">
+                                                                    <div className="row d-flex">
+                                                                        <div className="col-md-2">
+                                                                            <Button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</Button>
+                                                                        </div>
+                                                                        <div className="col-md-2">
+                                                                            <Button variant="primary" onClick={handleNext}>Next  <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></Button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         {/*            <!-- telecalteam Modal table --> */}
@@ -1945,7 +2027,7 @@ function SteperformComponent() {
                                                                             </div>
                                                                             <div class="col-12 col-md-6 fv-plugins-icon-container">
                                                                                 <label for="exampleFormControlSelect2" class="form-label">Courses Look For</label>
-                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" name="coursesId" value={coursesId} onChange={(e) => setCoursesId(e.target.value)}>
+                                                                                <select id="exampleFormControlSelect2" class="select2 form-select" name="courseId" value={courseId} onChange={(e) => setcourseId(e.target.value)}>
                                                                                     <option value="">Select</option>
                                                                                     {coursesTable.map((option) => (
                                                                                         <option key={option.id} value={option.id}>{option.name}</option>
@@ -2074,16 +2156,6 @@ function SteperformComponent() {
                                                                             </div>
                                                                             <input type="hidden" /></form>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="justify-content-between mt-4">
-                                                            <div className="row d-flex">
-                                                                <div className="col-12 col-md-2 text-start mt-3">
-                                                                    <button variant="secondary" onClick={() => setFormStepsNum(prev => prev > 1 ? prev - 1 : prev)} disabled={formStepsNum === 1}>  <i className="fa-arrow-left fa-regular fa-sharp mr--10"></i>Previous</button>
-                                                                </div>
-                                                                <div className="col-12 col-md-2 text-end mt-3">
-                                                                    <button variant="primary" onClick={handleNext}>Next <i className="fa-arrow-right fa-regular fa-sharp ml--10"></i></button>
                                                                 </div>
                                                             </div>
                                                         </div>

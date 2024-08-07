@@ -581,7 +581,7 @@ function StudentUse() {
                                                     {table.map((item, index) => (
                                                         <tr key={item.id}>
                                                             <td class="sorting_1">
-                                                                {index + 1}
+                                                                {(page - 1) * 10 + index + 1}
                                                             </td>
                                                             <td>{item.id}</td>
                                                             <td>{item.Name + " " + item.LastName}</td>
