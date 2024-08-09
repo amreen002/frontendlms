@@ -522,7 +522,7 @@ function Topic() {
                                                                     <td class="sorting_1">
 
                                                                     </td>
-                                                                    <td>{index + 1}</td>
+                                                                    <td>{(page - 1) * 10 + index + 1}</td>
                                                                     <td>{item.LessionTitle}</td>
                                                                     <td>{item.Course && item.Course.name}</td>
                                                                     

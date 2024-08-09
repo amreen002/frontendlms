@@ -559,7 +559,7 @@ function Quizze() {
                                                     {quizze.map((item, index) => (
                                                         <tr key={item.id}>
                                                             <td class="sorting_1">
-                                                                <td>{index + 1}</td>
+                                                            <td>{(page - 1) * 10 + index + 1}</td>
                                                             </td>
                                                             <td>{item.QuizzName}</td>
                                                             <td>{item.QuizzStartTime}</td>
