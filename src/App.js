@@ -78,7 +78,7 @@ import UpdateModelRouter from './Routers/updatemodelRouter.js';
 import UpdateContentRouter from './Routers/updatecontentRouter.js';
 import UpdatequestionsRouter from './Routers/updatequestionsingleRouter.js'
 import SteperformPage from './Routers/steperformRouter.js'
-
+import Update from './Routers/updateRouter.js'
 const { REACT_APP_API_ENDPOINT } = process.env;
 // -----app-----------------------
 function App() {
@@ -430,6 +430,7 @@ function App() {
           <Route path='/updatesubject/:topicId'   element={loggedIn === true ? (<UpdateSubjectRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
           <Route path='/updatemodel/:lessionId'   element={loggedIn === true ? (<UpdateModelRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
           <Route path='/updatecontent/:videoId'   element={loggedIn === true ? (<UpdateContentRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/update'   element={loggedIn === true ? (<Update onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
         </Routes>
       </BrowserRouter>
     </CartProvider>
