@@ -424,7 +424,7 @@ function CoursesP() {
 
                                                             <td>
                                                                 <div class="d-inline-block text-nowrap">
-                                                                    <Link to={`/courses/${item.id}`} className="navbar-brand" >  <button class="btn btn-sm btn-icon" data-bs-target="#editUser" data-bs-toggle="modal">
+                                                                    <Link to={`/courses/${item.id}`} className="navbar-brand" >  <button class="btn btn-sm btn-icon edit_sales" data-bs-target="#editUser" data-bs-toggle="modal">
                                                                         <i class="bx bx-edit"></i>
 
                                                                     </button>
