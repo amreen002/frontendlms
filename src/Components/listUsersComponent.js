@@ -33,7 +33,7 @@ function ListUse() {
     };
     const [formData, setFormData] = useState({
         name: '',
-        lastname:'',
+        lastname: '',
         userName: '',
         email: '',
         password: '',
@@ -124,8 +124,8 @@ function ListUse() {
                     }
                 });
 
-                setTable(response.data.users);
-                setTotalPages(response.data.users.totalPage ||1);
+                setTable(response.data.users.rows);
+                setTotalPages(response.data.users.totalPage || 1);
             }// Updated state variable
         } catch (err) {
             console.log(err.response);
@@ -258,8 +258,8 @@ function ListUse() {
         const data = new FormData();
         if (selectedFiles) {
             data.append('file', selectedFiles[0]);
-        }    
-         const formDataWithCoursesId = {
+        }
+        const formDataWithCoursesId = {
             ...formData,
             CousesId: formData.CousesId.join(',')  // Convert array to comma-separated string
         };
@@ -458,13 +458,13 @@ function ListUse() {
                                                 </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
-                                                        <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="353px;" aria-label="User: activate to sort column ascending" aria-sort="descending">So.Id</th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="353px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Full Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="176px;" aria-label="Role: activate to sort column ascending">User Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="118px;" aria-label="Plan: activate to sort column ascending">Contact </th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Billing: activate to sort column ascending">Email</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="115px;" aria-label="Status: activate to sort column ascending">Role</th>
+                                                    <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">so.id</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="150px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Profile</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Full Name</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">User Name</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Plan: activate to sort column ascending">Contact </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Billing: activate to sort column ascending">Email</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Status: activate to sort column ascending">Role</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="145px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
@@ -472,6 +472,7 @@ function ListUse() {
                                                 <tbody>
                                                     {table.map((item, index) => (
                                                         <tr key={item.id}>
+                                                            <td>{(page - 1) * 10 + index + 1}</td>
                                                             <td class="sorting_1">
                                                                 <div class="d-flex justify-content-start align-items-center user-name">
                                                                     <div class="avatar-wrapper"><div class="avatar avatar-sm me-3">
@@ -482,7 +483,6 @@ function ListUse() {
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td>{index + 1}</td>
                                                             <td>{item.name} {item.lastname}</td>
                                                             <td>{item.userName}</td>
                                                             <td>{item.phoneNumber}</td>
@@ -498,7 +498,7 @@ function ListUse() {
                                                                     </button>
 
                                                                     {activeService === 'dropdownprofile' && (
-                                                                        <div classNmae="dropdown-menu dropdown-menu-end m-0">
+                                                                        <div classNmae="dropdown-menu dropdown-menu-end">
                                                                             <Link to={`/userviews/${item.id}`} classNmae="dropdown-item">View</Link></div>
                                                                     )}</div>
                                                             </td>
@@ -507,7 +507,30 @@ function ListUse() {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                            <div class="row mx-2"><div class="col-sm-12 col-md-6"><div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing 1 to 10 of 50 entries</div></div><div class="col-sm-12 col-md-6"><div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a></li><li class="paginate_button page-item active"><a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a></li><li class="paginate_button page-item "><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a></li><li class="paginate_button page-item next" id="DataTables_Table_0_next"><a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a></li></ul></div></div></div></div>
+                                            <div className="row mx-2 pt--20">
+                                                <div className="col-sm-12 col-md-12">
+                                                    <div className="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                                        Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, totalPages * 10)} of {totalPages * 10} entries
+                                                    </div>
+                                                    <div className="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                                        <ul className="pagination">
+                                                            <li className={`paginate_button page-item previous ${page === 1 ? 'disabled' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page - 1)} className="page-link">Previous</a>
+                                                            </li>
+                                                            {[...Array(totalPages).keys()].map(p => (
+                                                                <li key={p + 1} className={`paginate_button page-item ${page === p + 1 ? 'active' : ''}`}>
+                                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(p + 1)} className="page-link">{p + 1}</a>
+                                                                </li>
+                                                            ))}
+                                                            <li className={`paginate_button page-item next ${page === totalPages ? 'disabled' : ''}`}>
+                                                                <a href="#" aria-controls="DataTables_Table_0" role="link" onClick={() => handlePageChange(page + 1)} className="page-link">Next</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
@@ -737,7 +760,7 @@ function ListUse() {
 
                                                 {isVisible === '5' && (
                                                     <div>
-                                                        {formData.studentId==4 ? (
+                                                        {formData.studentId == 4 ? (
                                                             <div className='row'>
                                                                 <div class="col-12">
                                                                     <label class="form-label" for="add-user-contact">Student Date</label>
@@ -764,7 +787,7 @@ function ListUse() {
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                        ) : formData.teacherId==3 ? (
+                                                        ) : formData.teacherId == 3 ? (
                                                             <div className='row'>
                                                                 <div class="col-12">
                                                                     <label htmlFor="exampleFormControlSelect2" className="form-label field_name"> Class</label>

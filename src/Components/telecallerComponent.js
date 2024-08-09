@@ -39,7 +39,7 @@ function TelecallerUse() {
 
                     }
                 });
-                setTable(response.data.saleteam);
+                setTable(response.data.saleteam.rows);
             }
         } catch (err) {
             console.log(err.response);

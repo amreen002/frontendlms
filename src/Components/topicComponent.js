@@ -129,7 +129,9 @@ function Topic() {
         }
 
         try {
-          
+            const token = localStorage.getItem('token');
+
+            if (token) {
             if (window.confirm('Are You Sure Information Check this Information')) {
                 // Make the API request
                 const response = await axios.post(`${REACT_APP_API_ENDPOINT}/topic`, formData, {
@@ -168,6 +170,7 @@ function Topic() {
                     theme: "colored",
                 });
             }
+        }
         } catch (error) {
             console.error(error);
             setErrors({ api: error.response?.data?.message || 'An error occurred while creating the topic.' });
@@ -384,7 +387,7 @@ function Topic() {
                                                             <td class="sorting_1">
 
                                                             </td>
-                                                            <td>{index + 1}</td>
+                                                            <td>{(page - 1) * 10 + index + 1}</td>
                                                             <td>{item.name}</td>
                                                             <td>{item.Course && item.Course.name}</td>
                                                             <td>{item.Course && item.Course.CoursePrice}</td>

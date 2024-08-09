@@ -605,7 +605,7 @@ function ListUse() {
                                                 {table.map((item, index) => (
                                                     <tr key={item.id}>
                                                         <td className="sorting_1"></td>
-                                                        <td>{item.id}</td>
+                                                        <td>{(page - 1) * 10 + index + 1}</td>
                                                         <td>{item.Name + " " + item.LastName}</td>
                                                         <td>{item.Email}</td>
                                                         <td>{item.PhoneNumber}</td>
