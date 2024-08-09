@@ -124,7 +124,7 @@ function ListUse() {
                     }
                 });
 
-                setTable(response.data.users);
+                setTable(response.data.users.rows);
                 setTotalPages(response.data.users.totalPage || 1);
             }// Updated state variable
         } catch (err) {
@@ -458,13 +458,13 @@ function ListUse() {
                                                 </div></div></div><table class="datatables-users table border-top dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" width="1390px;">
                                                 <thead>
                                                     <tr>
-                                                        <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="353px;" aria-label="User: activate to sort column ascending" aria-sort="descending">So.Id</th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="353px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Full Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="176px;" aria-label="Role: activate to sort column ascending">User Name</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="118px;" aria-label="Plan: activate to sort column ascending">Contact </th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="217px;" aria-label="Billing: activate to sort column ascending">Email</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="115px;" aria-label="Status: activate to sort column ascending">Role</th>
+                                                    <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">so.id</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="150px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Profile</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="User: activate to sort column ascending" aria-sort="descending">Full Name</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">User Name</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Plan: activate to sort column ascending">Contact </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Billing: activate to sort column ascending">Email</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Status: activate to sort column ascending">Role</th>
                                                         <th class="sorting_disabled" rowspan="1" colspan="1" width="145px;" aria-label="Actions">Actions</th>
 
                                                     </tr>
@@ -472,6 +472,7 @@ function ListUse() {
                                                 <tbody>
                                                     {table.map((item, index) => (
                                                         <tr key={item.id}>
+                                                            <td>{(page - 1) * 10 + index + 1}</td>
                                                             <td class="sorting_1">
                                                                 <div class="d-flex justify-content-start align-items-center user-name">
                                                                     <div class="avatar-wrapper"><div class="avatar avatar-sm me-3">
@@ -482,7 +483,6 @@ function ListUse() {
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td>{(page - 1) * 10 + index + 1}</td>
                                                             <td>{item.name} {item.lastname}</td>
                                                             <td>{item.userName}</td>
                                                             <td>{item.phoneNumber}</td>
@@ -498,7 +498,7 @@ function ListUse() {
                                                                     </button>
 
                                                                     {activeService === 'dropdownprofile' && (
-                                                                        <div classNmae="dropdown-menu dropdown-menu-end m-0">
+                                                                        <div classNmae="dropdown-menu dropdown-menu-end">
                                                                             <Link to={`/userviews/${item.id}`} classNmae="dropdown-item">View</Link></div>
                                                                     )}</div>
                                                             </td>

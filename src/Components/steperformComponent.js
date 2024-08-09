@@ -991,7 +991,6 @@ function SteperformComponent() {
                                                         </div>
                                                     </div>
                                                 )}
-
                                                 {formStepsNum === 2 && (
                                                     <><div className="step-content">
                                                         <div className="row">
@@ -1125,7 +1124,6 @@ function SteperformComponent() {
 
                                                     </>
                                                 )}
-
                                                 {formStepsNum === 3 && (
                                                     <div className="row">
                                                         {/*              <!-- Lead Details Card --> */}
@@ -1153,7 +1151,7 @@ function SteperformComponent() {
                                                                                 <tr key={item.id}>
                                                                                     <td>{(page - 1) * 10 + index + 1}</td>
                                                                                     <td>{leadIcon(item)}</td>
-                                                                                    {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
+                                                                                    {coursedatafetch && coursedatafetch.Role && item.User && item.User.Role && coursedatafetch.Role.Name === item.User.Role.Name ? (
                                                                                         <td>
                                                                                             <input
                                                                                                 type="checkbox"
@@ -1466,7 +1464,6 @@ function SteperformComponent() {
 
                                                     </div>
                                                 )}
-
                                                 {formStepsNum === 4 && (
                                                     <div className="step-content">
                                                         <div className="container">
@@ -1494,7 +1491,7 @@ function SteperformComponent() {
                                                                                             <td>
                                                                                                 {leadIcon(item)}
                                                                                             </td>
-                                                                                            {coursedatafetch.name === item.User.name && item.User.Role && item.User.Role.Name ? (
+                                                                                            {coursedatafetch && coursedatafetch.Role && item.User && item.User.Role && coursedatafetch.Role.Name === item.User.Role.Name ? (
                                                                                                 <td>
                                                                                                     <input
                                                                                                         type="checkbox"
