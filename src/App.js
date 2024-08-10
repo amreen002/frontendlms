@@ -44,18 +44,14 @@ import CompleteProfile from './Routers/completeprofileRouters.js';
 import InstructoreaddquizeRouter from './Routers/instructoreaddquizeRouter.js'
 import InstructorviewquizRouter from './Routers/instructorviewquizRouters.js'
 import MultiplequestionRouter from './Routers/multiplequestionRouters.js'
-
 import StudentQuestionViewRouter from './Routers/studentquestionviewRouters.js'
 import StudentAddquestionRouter from './Routers/studentquizattemptRouter.js'
-
 import SignupRouter from './Routers/signupRouter.js';
 import Lsa from './Routers/Lsa.js';
-
 import { CartProvider } from './Context/CartContext';
 import CartComponent from './Components/Cart.js';
 import CheckoutPage from './Components/CheckoutComponemt.js';
 import UsersMyProfileRouter from './Routers/userprofileRouter.js'
-
 import StudentwishlistRouter from './Routers/studenwishlistRouter.js';
 import CalenderRouter from './Routers/calenderRouter.js'
 import AssignmentRouter from './Routers/assignmentRouter.js'
@@ -69,8 +65,6 @@ import QuizeResultRouter from './Routers/quizresultRouter.js'
 import AttempquestionRouter from './Routers/attemtedquestionRouter.js'
 import StudentMaterialesRouter from './Routers/studentmaterialesRouter.js'
 import EasyserviceRouter from './Routers/easyserviceRouter.js';
-
-
 import QuizeUpdateRouter from './Routers/quizeupdateRouter.js';
 import UpdatequestionRouter from './Routers/questionupdateRouter.js';
 import UpdateSubjectRouter from './Routers/updatesubjectRouter.js';
@@ -78,7 +72,7 @@ import UpdateModelRouter from './Routers/updatemodelRouter.js';
 import UpdateContentRouter from './Routers/updatecontentRouter.js';
 import UpdatequestionsRouter from './Routers/updatequestionsingleRouter.js'
 import SteperformPage from './Routers/steperformRouter.js'
-import Update from './Routers/updateRouter.js'
+import EnquiryUpdate from './Routers/EnquiryupdateRouter.js'
 const { REACT_APP_API_ENDPOINT } = process.env;
 // -----app-----------------------
 function App() {
@@ -430,7 +424,7 @@ function App() {
           <Route path='/updatesubject/:topicId'   element={loggedIn === true ? (<UpdateSubjectRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
           <Route path='/updatemodel/:lessionId'   element={loggedIn === true ? (<UpdateModelRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
           <Route path='/updatecontent/:videoId'   element={loggedIn === true ? (<UpdateContentRouter onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
-          <Route path='/update'   element={loggedIn === true ? (<Update onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
+          <Route path='/update'   element={loggedIn === true ? (<EnquiryUpdate onLogout={handleLogout} />) : (<Login onLogin={handleLogin} />)} />
         </Routes>
       </BrowserRouter>
     </CartProvider>

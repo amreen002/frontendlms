@@ -1,5 +1,5 @@
 import React from 'react'
-import Update from '../Components/updateComponent';
+import Update from '../Components/enquiryupdateComponent';
 
 function update(onLogout) {
   return (
