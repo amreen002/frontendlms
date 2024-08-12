@@ -5,6 +5,7 @@ import Navbar from './navComponemt';
 import DashBoardMenus from './dashboardsMenuComponent';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { DndContext, closestCenter } from '@dnd-kit/core';
+import { debounce } from 'lodash';
 import { FaLock, FaEnvelope, FaWhatsapp, FaGoogle, FaLinkedin, FaBriefcase, FaCircle } from 'react-icons/fa'; // Import necessary icons
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import Draggable from '../Components/draggableComponent';
@@ -24,10 +25,8 @@ function SaleTeamUse() {
     const [leadPlatform, setLeadPlatform] = useState("");
     const [remark, setRemark] = useState("");
     const [userData, setUserData] = useState({});
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({});
     const [items, setItems] = useState([]);
-    const [nextId, setNextId] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [sliderActive, setSliderActive] = useState(false);
     const [dataUser, setTabledataUser] = useState([]);
@@ -41,38 +40,108 @@ function SaleTeamUse() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1); // Track total pages for pagination
     const [selectedTask, setSelectedTask] = useState(null);
+    const [checkedInputs, setCheckedInputs] = useState({});
     const [telecallerPersonNames, setTelecallerPersonNames] = useState(() => {
         const savedNames = JSON.parse(localStorage.getItem('telecallerPersonNames'));
         return savedNames !== null ? savedNames : {};
-    });
-    const inputs = [
-        { id: 'date', label: 'Date' },
-        { id: 'remark', label: 'Remark' },
-        { id: 'workingStatus', label: 'Select Specialisation' },
-        { id: 'lead_status', label: 'Choose Forms Interested in' },
-        { id: 'age', label: 'Age' },
-        { id: 'CountryId', label: 'Country' },
-        { id: 'StateId', label: 'State' },
-        { id: 'courseId', label: 'Course' },
-        { id: 'DistrictId', label: 'City' },
-        { id: 'Address', label: 'Address' },
-        { id: 'Area', label: 'Area' },
-        { id: 'PostalCode', label: 'Postal Code' },
-        { id: 'AddressType', label: 'Address Type' },
-        { id: 'batchId', label: 'Select Webinar Topic' },
-        { id: 'username', label: 'User Name' },
-        { id: 'leadPlatform', label: 'Select Lead Platform' },
-        { id: 'status', label: 'Select Status' },
-    ];
+    })
 
+    const [allInputFields, setAllInputFields] = useState([]);
+    const fetchAllInputFields = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const response = await axios.get(`${REACT_APP_API_ENDPOINT}/inputfeilds`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const userData = response.data.checkedInputs
+                const initial = {};
+                setAllInputFields(response.data.checkedInputs || []);
+                userData.map(items => {
+                    // Initialize the checkedInputs state here if needed
+                    initial[items.id] = { isChecked: items.checkedInputs.isChecked };
+                });
+                setCheckedInputs(initial);
+            }
+        } catch (error) {
+            console.error('Error fetching all input fields', error);
+        }
+    };
+
+    // Basic debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    const debouncedUpdateCheckboxState = debounce(async (inputId, isChecked, label, type) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                await axios.patch(`${REACT_APP_API_ENDPOINT}/inputfeilds/${inputId}`,
+                    {
+                        userId: coursedatafetch.id,
+                        checkedInputs: {
+                            id: type,
+                            label,
+                            isChecked
+                        }
+                    },
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Error updating checkbox state', error);
+        }
+    }, 300);
+    // Adjust debounce delay as needed
+
+
+    // Function to handle checkbox change
+    const handleCheckboxChange = (e, id, type, label) => {
+        const { checked } = e.target;
+        setCheckedInputs((prev) => {
+            const newCheckedInputs = { ...prev };
+
+            if (newCheckedInputs[id]) {
+                newCheckedInputs[id].isChecked = checked;
+            } else {
+                newCheckedInputs[id] = {
+                    id: type,
+                    label,
+                    isChecked: checked
+                };
+            }
+
+            // Update the checkbox state on the server
+            debouncedUpdateCheckboxState(id, checked, label, type);
+
+            return newCheckedInputs;
+        });
+    };
+
+
+
+    // saleteamId set data
+
+
+
+    // saleteamId set data
     useEffect(() => {
         fetchData1(saleteamId);
     }, [saleteamId]);
 
+    // page set data
     useEffect(() => {
         fetchData(page);
-    }, [page]);
+    }, [page])
 
+    // all view set data
     useEffect(() => {
         fetchData();
         fetchData2()
@@ -82,11 +151,15 @@ function SaleTeamUse() {
         fetchData6()
         fetchData7()
         fetchData8()
-    }, []);
+        fetchAllInputFields()
+    }, [])
 
+    // update telecallerPersonNames use set data
     useEffect(() => {
         localStorage.setItem('telecallerPersonNames', JSON.stringify(telecallerPersonNames));
     }, [telecallerPersonNames]);
+
+    // lead fetch data
     const fetchData = async (page = 1) => {
         try {
             const token = localStorage.getItem('token');
@@ -104,6 +177,7 @@ function SaleTeamUse() {
             console.log(err.response);
         }
     }
+    // lead fetch data getbyId
     const fetchData1 = async (saleteamId) => {
         try {
             if (!saleteamId) {
@@ -138,6 +212,7 @@ function SaleTeamUse() {
             console.log(err.response);
         }
     }
+    // Assigin to user fetch data 
     const fetchData2 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -154,6 +229,7 @@ function SaleTeamUse() {
             console.log(err.response);
         }
     }
+    // country fetch data 
     const fetchData3 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -172,7 +248,8 @@ function SaleTeamUse() {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }
+    // course fetch data 
     const fetchData4 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -191,7 +268,8 @@ function SaleTeamUse() {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }
+    // state fetch data 
     const fetchData5 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -210,7 +288,8 @@ function SaleTeamUse() {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }
+    // batch fetch data 
     const fetchData6 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -229,7 +308,8 @@ function SaleTeamUse() {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }
+    // city fetch data 
     const fetchData7 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -248,7 +328,8 @@ function SaleTeamUse() {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }
+    // user wise data fetch data 
     const fetchData8 = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -265,6 +346,7 @@ function SaleTeamUse() {
             console.log(err.response);
         }
     }
+    // lead create
     const handleSubmit = async (e) => {
         e.preventDefault();
         const dataToSubmit = {
@@ -286,6 +368,7 @@ function SaleTeamUse() {
             alert('Failed to send message.');
         }
     }
+    // lead delete
     const handleDelete = async (saleteamId) => {
         try {
             const token = localStorage.getItem('token');
@@ -305,6 +388,7 @@ function SaleTeamUse() {
             alert('An error occurred while deleting data');
         }
     }
+    // lead update
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
@@ -328,7 +412,8 @@ function SaleTeamUse() {
 
         // Clear input fields after update
 
-    };
+    }
+    // lead update assign to users
     const handleUpdateAssignToUsers = async (e, saleteamId) => {
         e.preventDefault();
         const { checked } = e.target;
@@ -358,249 +443,311 @@ function SaleTeamUse() {
             console.error('Error updating user:', error);
             alert('An error occurred while updating user data');
         }
-    };
-    const handleDragEnd = (event) => {
+    }
+
+    // Handle drag and drop end event
+    const handleDragEnd = async (event) => {
         const { active, over } = event;
-        if (active && over && active.id !== over.id) {
-            setItems((items) => {
-                const oldIndex = items.findIndex((item) => item.id === active.id);
-                const newIndex = items.findIndex((item) => item.id === over.id);
-                return arrayMove(items, oldIndex, newIndex);
+
+        if (active.id !== over.id) {
+            setAllInputFields((items) => {
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over.id);
+                const newItems = arrayMove(items, oldIndex, newIndex);
+                return newItems;
             });
         }
     };
     const handleChange = (e, id) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { value } = e.target;
+        setFormData((prev) => ({ ...prev, [id]: value }));
     };
-    const addInput = (type) => {
-        const id = `input-${type}`;
-        if (items.some(item => item.id === id)) {
-            handleRemove(id);
-            return;
-        }
 
-        const newItem = {
-            id,
-            component: renderInput(type, id),
-        };
 
-        setItems((items) => [...items, newItem]);
+
+    // Mapping of types to rendering logic
+    const inputTypes = {
+        date: ({ id }) => (
+            <input
+                id={id}
+                type="date"
+                className="form-control enquery-form"
+                placeholder="Candidate Date"
+                name={id}
+                value={formData[id] || ''}
+                onChange={(e) => handleChange(e, id)}
+            />
+        ),
+        username: ({ id }) => (
+            <input
+                id={id}
+                type="text"
+                className="form-control enquery-form"
+                placeholder="Candidate User Name"
+                name={id}
+                value={formData[id] || ''}
+                onChange={(e) => handleChange(e, id)}
+            />
+        ),
+        workingStatus: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                placeholder="Select Specialization"
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select Specialization</option>
+                <option value="Employee">Employee</option>
+                <option value="Student">Student</option>
+                <option value="Entrepreneur">Entrepreneur</option>
+            </select>
+        ),
+        remark: ({ id }) => (
+            <input
+                id={id}
+                type="text"
+                className="form-control enquery-form"
+                placeholder="Remark"
+                name={id}
+                value={formData[id] || ''}
+                onChange={(e) => handleChange(e, id)}
+            />
+        ),
+        lead_status: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                placeholder="Choose Forms Interested in"
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Choose Forms Interested in</option>
+                <option value="Interested">Interested</option>
+                <option value="Not Interested">Not Interested</option>
+            </select>
+        ),
+        status: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                placeholder="Choose Status"
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Choose Status</option>
+                <option value="1st Call">1st Call</option>
+                <option value="2nd Call">2nd Call</option>
+                <option value="3rd Call">3rd Call</option>
+                <option value="4th Call">Not Responding (N/R)</option>
+                <option value="Other">Other</option>
+            </select>
+        ),
+        age: ({ id }) => (
+            <input
+                id={id}
+                type="number"
+                className="form-control enquery-form"
+                placeholder="Age"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            />
+        ),
+        StateId: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name="StateId"
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select State</option>
+                {state.map(option => (
+                    <option key={option.id} value={option.id}>
+                        {option.name}
+                    </option>
+                ))}
+            </select>
+        ),
+        CountryId: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select Country</option>
+                {countryTable.map(option => (
+                    <option key={option.id} value={option.id}>
+                        {option.name}
+                    </option>
+                ))}
+            </select>
+        ),
+        DistrictId: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select City</option>
+                {city.map(option => (
+                    <option key={option.id} value={option.id}>
+                        {option.name}
+                    </option>
+                ))}
+            </select>
+        ),
+        courseId: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select Course/Class</option>
+                {courses.map(option => (
+                    <option key={option.id} value={option.id}>
+                        {option.name}
+                    </option>
+                ))}
+            </select>
+        ),
+        batchId: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select Webinar Topic</option>
+                {batch.map(option => (
+                    <option key={option.id} value={option.id}>
+                        {option.Title}
+                    </option>
+                ))}
+            </select>
+        ),
+        AddressType: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select Address Type</option>
+                <option value="Current Address">Current Address</option>
+                <option value="Permanent Address">Permanent Address</option>
+                <option value="Residential Address">Residential Address</option>
+            </select>
+        ),
+        PostalCode: ({ id }) => (
+            <input
+                id={id}
+                type="number"
+                className="form-control enquery-form"
+                placeholder="Postal Code"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            />
+        ),
+        Address: ({ id }) => (
+            <input
+                id={id}
+                type="text"
+                className="form-control enquery-form"
+                placeholder="Address"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            />
+        ),
+        Area: ({ id }) => (
+            <input
+                id={id}
+                type="text"
+                className="form-control enquery-form"
+                placeholder="Area"
+                name={id}
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            />
+        ),
+        leadPlatform: ({ id }) => (
+            <select
+                id={id}
+                className="select2 form-select enquery-form"
+                name={id}
+                placeholder="Select Lead Platform"
+                onChange={(e) => handleChange(e, id)}
+                value={formData[id] || ''}
+            >
+                <option value="">Select Lead Platform</option>
+                <option value="Google">Google</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Indeed">Indeed</option>
+                <option value="Directly">Direct Communication</option>
+            </select>
+        ),
     };
+
+    // Render input function
     const renderInput = (type, id) => {
-        switch (type) {
-            case 'date':
-                return (
-                    <input
-                        type="date"
-                        className="form-control enquery-form"
-                        placeholder="Candidate Date"
-                        name="date"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'name':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Candidate Frist Name"
-                        name="name"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'lastname':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Candidate LastName"
-                        name="lastname"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'username':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Candidate User Name"
-                        name="username"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'workingStatus':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="workingStatus" placeholder='Select Specialistion*' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Specialistion</option>
-                        <option value="Employee">Employee</option>
-                        <option value="Student">Student</option>
-                        <option value="Entrepreneur">Entrepreneur</option>
-                    </select>
-                );
-            case 'remark':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Remark*"
-                        name="remark"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'lead_status':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Forms Interested in*' name='status'
-                        onChange={(e) => handleChange(e, id)}>
-                        <option value="">Choose Forms Interested in</option>
-                        <option value="Interested">Interested</option>
-                        <option value="Not Interested">Not Interested</option>
-                    </select>
-                )
-            case 'status':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" placeholder='Choose Status*' name='status'
-                        onChange={(e) => handleChange(e, id)}>
-                        <option value="" selected >Choose Status</option>
-                        <option value="1st Call">1st Call</option>
-                        <option value="2nd Call">2nd Call</option>
-                        <option value="3rd Call">3rd Call</option>
-                        <option value="4rd Call">4rd Call</option>
-                        <option value="Not Responding (N/R)">Not Responding (N/R)</option>
-                        <option value="Other">Other</option>
-                    </select>
-                )
-            case 'age':
-                return (
-                    <input
-                        type="number"
-                        className="form-control enquery-form"
-                        placeholder="Age"
-                        name="age"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'StateId':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='StateId' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select State</option>
-                        {state.map(option => (
-                            <option key={option.id} value={option.id}>{option.name}</option>
-                        ))}
-                    </select>
-                );
-            case 'CountryId':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='CountryId' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Country</option>
-                        {countryTable.map(option => (
-                            <option key={option.id} value={option.id}>{option.name}</option>
-                        ))}
-                    </select>
-                );
-            case 'DistrictId':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='DistrictId' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select City</option>
-                        {city.map(option => (
-                            <option key={option.id} value={option.id}>{option.name}</option>
-                        ))}
-                    </select>
-                );
-            case 'courseId':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='courseId' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Course/Class</option>
-                        {courses.map(option => (
-                            <option key={option.id} value={option.id}>{option.name}</option>
-                        ))}
-                    </select>
-                );
-            case 'batchId':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='batchId' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Webinar Topic</option>
-                        {batch.map(option => (
-                            <option key={option.id} value={option.id}>{option.Title}</option>
-                        ))}
-                    </select>
-                );
-            case 'AddressType':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='AddressType' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Address Type</option>
-                        <option value="Current Address">Current Address</option>
-                        <option value="Permanent Address">Permanent Address</option>
-                        <option value="Residential Address">Residential Address</option>
-                    </select>
-                );
-            case 'PostalCode':
-                return (
-                    <input
-                        type="number"
-                        className="form-control enquery-form"
-                        placeholder="Postal Code"
-                        name="PostalCode"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'Address':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Address"
-                        name="Address"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'Area':
-                return (
-                    <input
-                        type="text"
-                        className="form-control enquery-form"
-                        placeholder="Area"
-                        name="Area"
-                        onChange={(e) => handleChange(e, id)}
-                    />
-                );
-            case 'leadPlatform':
-                return (
-                    <select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name="leadPlatform" placeholder='Select Lead Platform*' onChange={(e) => handleChange(e, id)}>
-                        <option value="">Select Lead Platform</option>
-                        <option value="Google">Google</option>
-                        <option value="LinkedIn">LinkedIn</option>
-                        <option value="Indeen">Indeen</option>
-                        <option value="Directly">Directly Communication</option>
-                    </select>
-                );
-            default:
-                return null;
-        }
+
+        const InputComponent = inputTypes[type];
+        return InputComponent ? <InputComponent id={id} /> : null;
     };
+
+    // Map through all input fields and render only the checked ones
+    const allInputFieldsData = allInputFields
+        .filter(item => checkedInputs[item.id]?.isChecked) // Filter only checked items
+        .map(item => ({
+            id: item.checkedInputs.id,
+            component: renderInput(item.type, item.checkedInputs.id)
+        }));
+
+    // function toggleDropdown
     const toggleDropdown = (type) => {
         setIsExpanded(type);
-    };
-    const filteredInputs = inputs.filter(input =>
-        input.label.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    }
+    // function searching 
+    /*   const filteredInputs = inputs.filter(input =>
+          input.label.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+   */
+    // function remove input
     const handleRemove = (id) => {
-        setItems((items) => items.filter((item) => item.id !== id));
-        setFormData((prev) => {
-            const newFormData = { ...prev };
-            delete newFormData[id];
-            return newFormData;
-        });
-    };
+        setAllInputFields((items) => items.filter(item => item.id !== `input-${id}`));
+        const newData = { ...formData };
+        delete newData[`input-${id}`];
+        setFormData(newData);
+    }
+
+    // function page
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setPage(newPage);
         }
-    };
+    }
+
+    // function date D/M/Y
     const isToday = (date) => {
         const today = new Date();
         return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
-    };
+    }
+
+    // function lead view icon
     const leadIcon = (lead) => {
         if (isToday(new Date(lead.createdAt))) {
             return lead.TelecallerCheckbox ? (
@@ -782,8 +929,8 @@ function SaleTeamUse() {
                                                     <tr>
                                                         <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1" aria-label=""></th>
                                                         <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">S.NO</th>
-                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="100px;" aria-label="User: activate to sort column ascending" aria-sort="descending">lead</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Role: activate to sort column ascending">Full Name</th>
+                                                        <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="90px;" aria-label="User: activate to sort column ascending" aria-sort="descending">lead</th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="310px;" aria-label="Role: activate to sort column ascending">Full Name</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Plan: activate to sort column ascending">Contact </th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="250px;" aria-label="Billing: activate to sort column ascending">Email</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" width="200px;" aria-label="Status: activate to sort column ascending">Specialisation</th>
@@ -971,17 +1118,22 @@ function SaleTeamUse() {
                                                                             />
                                                                         </div>
                                                                         <div className="input-fields-container">
-                                                                            {filteredInputs.map(input => (
-                                                                                <div key={input.id} className='d-flex pb-2 cus_btm_left'>
-                                                                                    <div className='input_cus'>
-                                                                                        <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
+                                                                            {allInputFields.map((item) => (
+                                                                                <div key={item.id} className="d-flex pb-2 cus_btm_left">
+                                                                                    <div className="input_cus">
+                                                                                        <input
+                                                                                            type="checkbox"
+                                                                                            checked={!!checkedInputs[item.id]?.isChecked}
+                                                                                            onChange={(e) => handleCheckboxChange(e, item.id, item.type, item.checkedInputs?.label)}
+                                                                                        />
                                                                                     </div>
-                                                                                    <div className='name_cus'>
-                                                                                        <span>{input.label}</span>
+                                                                                    <div className="name_cus">
+                                                                                        <span>{item.checkedInputs?.label}</span>
                                                                                     </div>
                                                                                 </div>
                                                                             ))}
                                                                         </div>
+
                                                                     </div>
 
                                                                 </div>
@@ -990,34 +1142,16 @@ function SaleTeamUse() {
                                                         <div className="col-md-6">
                                                             <form className="add-new-user" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
                                                                 <div className='right_form-fields'>
-                                                                    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                                                        <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-                                                                            <ul className="list widget_dragable cus_leftsfields" id="dragItemBox">
-                                                                                {items.map((item) => (
-                                                                                    <Draggable
-                                                                                        key={item.id}
-                                                                                        id={item.id}
-                                                                                        component={
-                                                                                            <li className="draggable_column_item">
 
-                                                                                                {item.component}
 
-                                                                                            </li>
-                                                                                        }
-                                                                                    />
-                                                                                ))}
-                                                                            </ul>
-                                                                        </SortableContext>
-                                                                    </DndContext>
                                                                     <div className="mb-1 fv-plugins-icon-container lead-form">
                                                                         <input
                                                                             type="text"
                                                                             className="form-control enquery-form"
                                                                             id="add-user-fullname"
-                                                                            placeholder="Candidate Frist Name"
+                                                                            placeholder="Candidate First Name"
                                                                             name="name"
                                                                             onChange={(e) => handleChange(e, 'name')}
-
                                                                         />
                                                                         <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                                     </div>
@@ -1029,20 +1163,21 @@ function SaleTeamUse() {
                                                                             placeholder="Candidate Last Name"
                                                                             name="lastname"
                                                                             onChange={(e) => handleChange(e, 'lastname')}
-
                                                                         />
                                                                         <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                                     </div>
-
-
-                                                                    <div className="mb-1 fv-plugins-icon-container lead-form"><select id="exampleFormControlSelect2" class="select2 form-select enquery-form" name='roleId' onChange={(e) => handleChange(e, 'roleId')}>
-                                                                        <option value="">Assign to Owner</option>
-                                                                        <option value={userDataFinOne.id}>{userDataFinOne.name}</option>
-                                                                    </select>
+                                                                    <div className="mb-1 fv-plugins-icon-container lead-form">
+                                                                        <select
+                                                                            id="exampleFormControlSelect2"
+                                                                            className="select2 form-select enquery-form"
+                                                                            name='roleId'
+                                                                            onChange={(e) => handleChange(e, 'roleId')}
+                                                                        >
+                                                                            <option value="">Assign to Owner</option>
+                                                                            <option value={userDataFinOne.id}>{userDataFinOne.name}</option>
+                                                                        </select>
                                                                         <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                                     </div>
-
-
                                                                     <div className="mb-1 fv-plugins-icon-container lead-form">
                                                                         <input
                                                                             type="text"
@@ -1051,7 +1186,6 @@ function SaleTeamUse() {
                                                                             placeholder="Candidate Mobile Number"
                                                                             name="phoneNumber"
                                                                             onChange={(e) => handleChange(e, 'phoneNumber')}
-
                                                                         />
                                                                     </div>
                                                                     <div className="mb-1 fv-plugins-icon-container lead-form">
@@ -1062,7 +1196,6 @@ function SaleTeamUse() {
                                                                             placeholder="Candidate WhatsApp Number"
                                                                             name="WhatsApp"
                                                                             onChange={(e) => handleChange(e, 'WhatsApp')}
-
                                                                         />
                                                                     </div>
                                                                     <div className="mb-1 fv-plugins-icon-container lead-form">
@@ -1073,10 +1206,20 @@ function SaleTeamUse() {
                                                                             placeholder="Candidate Email Id"
                                                                             name="email"
                                                                             onChange={(e) => handleChange(e, 'email')}
-
                                                                         />
                                                                         <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                                     </div>
+                                                                    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                                                        <SortableContext items={allInputFieldsData.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                                                                            <ul className="list widget_dragable cus_leftsfields" id="dragItemBox">
+                                                                                {allInputFieldsData.map((item) => (
+                                                                                    item.component && (
+                                                                                        <Draggable key={item.id} id={item.id} component={<li className="draggable_column_item">{item.component}</li>} />
+                                                                                    )
+                                                                                ))}
+                                                                            </ul>
+                                                                        </SortableContext>
+                                                                    </DndContext>
 
                                                                 </div>
                                                                 <div className="mb-3 fv-plugins-icon-container d-flex mr--45">
@@ -1084,8 +1227,6 @@ function SaleTeamUse() {
                                                                     <button type="reset" className="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
                                                                 </div>
                                                             </form>
-
-
                                                         </div>
                                                     </div>
 
@@ -1102,64 +1243,12 @@ function SaleTeamUse() {
                                                 <div className="flex-grow-0 ">
                                                     <div className='container'>
                                                         <div className='row'>
-                                                            {/*    <div className="col-md-6 question-update-lead">
-                                                            <div className={`slider pt--15 ${sliderActive ? 'active' : ''}`}>
-                                                                <div className="input-fields-container-lead mx-0 flex-grow-0">
-                                                                    <div className=''>
-                                                                        <div className='flex-row'>
-                                                                            <div className='heading_frm'>
-                                                                                <h2>Addon Below field <small>(If Required)</small></h2>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className='lead col-md-12'>
-
-                                                                            <input
-                                                                                type="text"
-                                                                                className="form-control search_dta mb-3"
-                                                                                placeholder="Search fields..."
-                                                                                value={searchTerm}
-                                                                                onChange={(e) => setSearchTerm(e.target.value)}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="input-fields-container">
-                                                                            {filteredInputs.map(input => (
-                                                                                <div key={input.id} className='d-flex pb-2 cus_btm_left'>
-                                                                                    <div className='input_cus'>
-                                                                                        <input type="checkbox" onClick={() => addInput(input.id)} checked={items.some(item => item.id === `input-${input.id}`)} />
-                                                                                    </div>
-                                                                                    <div className='name_cus'>
-                                                                                        <span>{input.label}</span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-
-                                                                </div>
-                                                            </div>
-                                                        </div> */}
                                                             <div className="col-md-12">
                                                                 <form className="add-new-user" id="addNewUserForm" onSubmit={handleSubmit} noValidate>
                                                                     <div className='right_form-fields'>
-                                                                        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                                                            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-                                                                                <ul className="list widget_dragable cus_leftsfields" id="dragItemBox">
-                                                                                    {items.map((item) => (
-                                                                                        <Draggable
-                                                                                            key={item.id}
-                                                                                            id={item.id}
-                                                                                            component={
-                                                                                                <li className="draggable_column_item">
 
-                                                                                                    {item.component}
 
-                                                                                                </li>
-                                                                                            }
-                                                                                        />
-                                                                                    ))}
-                                                                                </ul>
-                                                                            </SortableContext>
-                                                                        </DndContext>
+
                                                                         <div className="mb-1 fv-plugins-icon-container lead-form">
                                                                             <input
                                                                                 type="text"
@@ -1228,6 +1317,18 @@ function SaleTeamUse() {
                                                                             />
                                                                             <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                                                         </div>
+                                                                        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                                                            <SortableContext items={allInputFieldsData.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                                                                                <ul className="list widget_dragable cus_leftsfields" id="dragItemBox">
+                                                                                    {allInputFieldsData.map((item) => (
+                                                                                        item.component && (
+                                                                                            <Draggable key={item.id} id={item.id} component={<li className="draggable_column_item">{item.component}</li>} />
+                                                                                        )
+                                                                                    ))}
+                                                                                </ul>
+                                                                            </SortableContext>
+                                                                        </DndContext>
+
 
                                                                     </div>
                                                                     <div className="mb-3 fv-plugins-icon-container d-flex mr--45">
